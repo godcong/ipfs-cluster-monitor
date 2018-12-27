@@ -100,6 +100,7 @@ func (cfg *Config) SetClient(remoteIP string) {
 // InitLoader ...
 func (cfg *Config) InitLoader() {
 	if !IsInitialized(cfg) {
+
 		//cfg.Make()
 		//isInitialized = true
 		return
