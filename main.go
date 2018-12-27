@@ -7,7 +7,7 @@ import (
 
 func main() {
 	engine := gin.Default()
-	api.DefaultConfig()
+	api.DefaultConfig().InitLoader()
 	api.Router(engine)
 
 }
