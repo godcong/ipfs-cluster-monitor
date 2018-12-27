@@ -17,11 +17,10 @@ func InitPost(s string) gin.HandlerFunc {
 				config.SetClient(remote)
 				config.Secret = secret
 			} else {
-				config.Secret = GenerateRandomString(32)
+				config.Secret = GenerateRandomString(64)
 			}
 
 			config.Make()
-
 			log.Println("initialized")
 		}
 
@@ -31,7 +30,6 @@ func InitPost(s string) gin.HandlerFunc {
 
 // HeartBeatGet ...
 func HeartBeatGet(s string) gin.HandlerFunc {
-
 	return func(ctx *gin.Context) {
 		response, err := http.Get("http://localhost:9094/peers")
 		if err != nil {

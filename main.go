@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/ipfs-cluster-monitor/api"
+	"github.com/godcong/ipfs-cluster-monitor/monitor"
 	"github.com/juju/errors"
 	"net/http"
 )
@@ -16,6 +17,9 @@ func main() {
 	if err != nil {
 		errors.ErrorStack(err)
 	}
+
+	monitor.StartRun()
+
 }
 
 // NoResponse ...

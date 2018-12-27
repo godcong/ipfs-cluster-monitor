@@ -26,10 +26,11 @@ var (
 
 // Config ...
 type Config struct {
-	RootPath string
-	Secret   string
-	HostType HostType
-	RemoteIP string
+	RootPath        string
+	Secret          string
+	HostType        HostType
+	RemoteIP        string
+	MonitorInterval int
 }
 
 // Peer ...
