@@ -9,10 +9,9 @@ import (
 
 func main() {
 	engine := gin.Default()
-	api.DefaultConfig().InitLoader()
 	engine.NoRoute(NoResponse)
 	api.Router(engine)
-	err := engine.Run()
+	err := engine.Run(":7758")
 	if err != nil {
 		errors.ErrorStack(err)
 	}

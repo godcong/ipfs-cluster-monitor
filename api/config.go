@@ -36,6 +36,7 @@ var config *Config
 
 func init() {
 	log.SetFlags(log.Lshortfile | log.Ldate)
+	config = DefaultConfig()
 }
 
 func defaultPath(name string) string {
@@ -83,12 +84,13 @@ func (cfg *Config) InitLoader() {
 	}
 
 	file, err := os.OpenFile(cfg.RootPath+"/"+DefaultFileName, os.O_RDONLY|os.O_SYNC, os.ModePerm)
-
 	CheckError(err)
+	defer file.Close()
 
 	dec := jsoniter.NewDecoder(file)
 
 	err = dec.Decode(cfg)
+
 	CheckError(err)
 }
 
@@ -102,6 +104,11 @@ func (cfg *Config) CheckExist() bool {
 	return true
 }
 
+// Marshal ...
+func (cfg *Config) Marshal() ([]byte, error) {
+	return jsoniter.Marshal(cfg)
+}
+
 // Make ...
 func (cfg *Config) Make() {
 	err := os.Chdir(cfg.RootPath)
@@ -112,6 +119,7 @@ func (cfg *Config) Make() {
 
 	file, err := os.OpenFile(cfg.RootPath+"/"+DefaultFileName, os.O_RDWR|os.O_CREATE|os.O_SYNC, os.ModePerm)
 	CheckError(err)
+	defer file.Close()
 
 	enc := jsoniter.NewEncoder(file)
 
