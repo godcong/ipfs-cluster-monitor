@@ -10,6 +10,7 @@ import (
 func main() {
 	engine := gin.Default()
 	engine.NoRoute(NoResponse)
+
 	api.Router(engine)
 	err := engine.Run(":7758")
 	if err != nil {

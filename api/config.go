@@ -32,11 +32,30 @@ type Config struct {
 	RemoteIP string
 }
 
+// Peer ...
+type Peer struct {
+	ID                    string   `json:"id"`
+	Addresses             []string `json:"addresses"`
+	ClusterPeers          []string `json:"cluster_peers"`
+	ClusterPeersAddresses []string `json:"cluster_peers_addresses"`
+	Version               string   `json:"version"`
+	Commit                string   `json:"commit"`
+	RPCProtocolVersion    string   `json:"rpc_protocol_version"`
+	Error                 string   `json:"error"`
+	IPFS                  struct {
+		ID        string   `json:"id"`
+		Addresses []string `json:"addresses"`
+		Error     string   `json:"error"`
+	} `json:"ipfs"`
+	PeerName string `json:"peername"`
+}
+
 var config *Config
 
 func init() {
 	log.SetFlags(log.Lshortfile | log.Ldate)
 	config = DefaultConfig()
+	config.InitLoader()
 }
 
 func defaultPath(name string) string {
@@ -79,8 +98,9 @@ func (cfg *Config) SetClient(remoteIP string) {
 // InitLoader ...
 func (cfg *Config) InitLoader() {
 	if !IsInitialized(cfg) {
-		cfg.Make()
-		isInitialized = true
+		//cfg.Make()
+		//isInitialized = true
+		return
 	}
 
 	file, err := os.OpenFile(cfg.RootPath+"/"+DefaultFileName, os.O_RDONLY|os.O_SYNC, os.ModePerm)
