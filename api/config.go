@@ -2,12 +2,12 @@ package api
 
 import (
 	"fmt"
-	"github.com/json-iterator/go"
 	"github.com/juju/errors"
 	"log"
 	"os"
 	"os/user"
 	"path/filepath"
+	"time"
 )
 
 // DefaultFileName ...
@@ -30,7 +30,7 @@ type Config struct {
 	Secret          string
 	HostType        HostType
 	RemoteIP        string
-	MonitorInterval int
+	MonitorInterval time.Duration
 }
 
 // Peer ...
@@ -84,9 +84,10 @@ func DefaultConfig() *Config {
 	}
 
 	return &Config{
-		RootPath: rootPath,
-		HostType: HostServer,
-		RemoteIP: "127.0.0.1",
+		RootPath:        rootPath,
+		HostType:        HostServer,
+		RemoteIP:        "127.0.0.1",
+		MonitorInterval: 5 * time.Second,
 	}
 }
 
