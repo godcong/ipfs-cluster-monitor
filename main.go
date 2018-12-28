@@ -20,9 +20,7 @@ func main() {
 	engine := gin.Default()
 	engine.NoRoute(NoResponse)
 
-	if api.IsInitialized() {
-
-	}
+	go cluster.Run(ctx)
 
 	api.Router(engine)
 	err := engine.Run(":7758")

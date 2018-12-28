@@ -1,10 +1,18 @@
 package cluster
 
-import "testing"
+import (
+	"golang.org/x/net/context"
+	"testing"
+)
 
 // TestFirstRun ...
 func TestFirstRunIPFS(t *testing.T) {
 
 	firstRunIPFS()
 
+}
+
+// TestRun ...
+func TestRun(t *testing.T) {
+	Run(context.Background())
 }

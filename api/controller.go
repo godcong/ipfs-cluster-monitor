@@ -2,9 +2,11 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/json-iterator/go"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 )
 
 // InitPost ...
@@ -23,19 +25,20 @@ func InitPost(s string) gin.HandlerFunc {
 				cfg.Secret = GenerateRandomString(64)
 			}
 			if ipfs != "" {
-				cfg.MonitorEnviron = append(cfg.MonitorEnviron, ipfs)
+				cfg.ClusterEnviron = append(cfg.ClusterEnviron, strings.Join([]string{"IPFS_PATH", ipfs}, "="))
 			}
 			if service != "" {
-				cfg.MonitorEnviron = append(cfg.MonitorEnviron, service)
+				cfg.ClusterEnviron = append(cfg.ClusterEnviron, strings.Join([]string{"IPFS_CLUSTER_PATH", service}, "="))
 			}
 			//if monitor != "" {
-			//	cfg.MonitorEnviron = append(cfg.MonitorEnviron, monitor)
+			//	cfg.ClusterEnviron = append(cfg.ClusterEnviron, monitor)
 			//}
 
 			cfg.Make()
 			log.Println("host initialized")
 
 			ctx.JSON(http.StatusOK, cfg)
+			return
 		}
 
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "host is initialized"})
@@ -65,11 +68,37 @@ func HeartBeatGet(s string) gin.HandlerFunc {
 // LogGet ...
 func LogGet(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		//bytes, err := ioutil.ReadAll(file)
-		//if err != nil {
-		//	ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
-		//	return
-		//}
-		//ctx.JSON(http.StatusOK, gin.H{"code": 0, "log": string(bytes)})
+
+	}
+}
+
+// BootstrapGet ...
+func BootstrapGet(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var err error
+		var s ServiceStatus
+		resp, err := http.Get("http://127.0.0.1:9094/id")
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+			return
+		}
+		bytes, err := ioutil.ReadAll(resp.Body)
+		err = jsoniter.Unmarshal(bytes, &s)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+			return
+		}
+		address := ""
+
+		for _, value := range s.Addresses {
+			if strings.Index(value, "/p2p-circuit") >= 0 {
+				continue
+			} else if strings.Index(value, "/ip4/127.0.0.1") >= 0 {
+				continue
+			}
+			address = value
+			break
+		}
+		ctx.JSON(http.StatusOK, gin.H{"bootstrap": address})
 	}
 }

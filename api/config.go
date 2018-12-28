@@ -14,6 +14,12 @@ import (
 // DefaultFileName ...
 const DefaultFileName = "monitor.json"
 
+// InitIPFS ...
+const InitIPFS = "ipfs"
+
+// InitService ...
+const InitService = "service"
+
 var isInitialized bool
 
 // HostType ...
@@ -27,30 +33,39 @@ var (
 
 // Configuration ...
 type Configuration struct {
+	Version         string
 	RootPath        string
 	Secret          string
 	HostType        HostType
 	RemoteIP        string
-	MonitorEnviron  []string
+	ClusterEnviron  []string
 	MonitorInterval time.Duration
 }
 
-// Peer ...
-type Peer struct {
-	ID                    string   `json:"id"`
-	Addresses             []string `json:"addresses"`
-	ClusterPeers          []string `json:"cluster_peers"`
-	ClusterPeersAddresses []string `json:"cluster_peers_addresses"`
-	Version               string   `json:"version"`
-	Commit                string   `json:"commit"`
-	RPCProtocolVersion    string   `json:"rpc_protocol_version"`
-	Error                 string   `json:"error"`
-	IPFS                  struct {
+// ServiceStatus ...
+type ServiceStatus struct {
+	ID                    string        `json:"id"`
+	Addresses             []string      `json:"addresses"`
+	ClusterPeers          []string      `json:"cluster_peers"`
+	ClusterPeersAddresses []interface{} `json:"cluster_peers_addresses"`
+	Version               string        `json:"version"`
+	Commit                string        `json:"commit"`
+	RPCProtocolVersion    string        `json:"rpc_protocol_version"`
+	Error                 string        `json:"error"`
+	Ipfs                  struct {
 		ID        string   `json:"id"`
 		Addresses []string `json:"addresses"`
 		Error     string   `json:"error"`
 	} `json:"ipfs"`
-	PeerName string `json:"peername"`
+	Peername string `json:"peername"`
+}
+
+type ipfsInfo struct {
+	ID              string   `json:"ID"`
+	PublicKey       string   `json:"PublicKey"`
+	Addresses       []string `json:"Addresses"`
+	AgentVersion    string   `json:"AgentVersion"`
+	ProtocolVersion string   `json:"ProtocolVersion"`
 }
 
 var cfg *Configuration
@@ -87,10 +102,11 @@ func Config() *Configuration {
 func DefaultConfig() *Configuration {
 	rootPath, b := os.LookupEnv("IPFS_CLUSTER_MONITOR")
 	if !b {
-		rootPath = defaultPath(".ipfs_cluster_monitor")
+		rootPath = defaultPath(".ipfs-cluster-monitor")
 	}
 
 	return &Configuration{
+		Version:         "v0",
 		RootPath:        rootPath,
 		HostType:        HostServer,
 		RemoteIP:        "127.0.0.1",
@@ -144,15 +160,22 @@ func (cfg *Configuration) Marshal() ([]byte, error) {
 
 // Make ...
 func (cfg *Configuration) Make() {
-
 	file, err := os.OpenFile(cfg.RootPath+"/"+DefaultFileName, os.O_RDWR|os.O_CREATE|os.O_SYNC, os.ModePerm)
 	CheckError(err)
 	defer file.Close()
 
 	enc := jsoniter.NewEncoder(file)
-
 	err = enc.Encode(*cfg)
 	CheckError(err)
+
+	cfile, err := os.Create(cfg.RootPath + "/" + InitIPFS)
+	CheckError(err)
+	defer cfile.Close()
+
+	sfile, err := os.Create(cfg.RootPath + "/" + InitService)
+	CheckError(err)
+	defer sfile.Close()
+
 }
 
 // IsInitialized ...
