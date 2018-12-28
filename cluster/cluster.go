@@ -3,6 +3,7 @@ package cluster
 import (
 	"context"
 	"github.com/godcong/ipfs-cluster-monitor/api"
+	"github.com/juju/errors"
 	"log"
 	"os"
 	"os/exec"
@@ -19,9 +20,18 @@ func init() {
 func firstRunIPFS() {
 	cmd := exec.Command("ipfs", "init")
 	cmd.Env = os.Environ()
-	log.Println(cmd.Env)
+	if monitorEnviron != nil {
+		cmd.Env = append(cmd.Env, monitorEnviron...)
+	}
+
 	bytes, err := cmd.CombinedOutput()
-	log.Println(string(bytes), err)
+	log.Println(string(bytes))
+	if err != nil {
+		errors.ErrorStack(err)
+		panic(err)
+	}
+
+	//log.Println(err)
 }
 
 func firstRunService() {

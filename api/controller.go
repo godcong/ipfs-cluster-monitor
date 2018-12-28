@@ -14,6 +14,7 @@ func InitPost(s string) gin.HandlerFunc {
 		secret := ctx.PostForm("Secret")
 		ipfs := ctx.PostForm("IPFS_PATH")
 		service := ctx.PostForm("IPFS_CLUSTER_PATH")
+		//monitor := ctx.PostForm("IPFS_CLUSTER_MONITOR")
 		if !IsInitialized() {
 			if remote != "" {
 				cfg.SetClient(remote)
@@ -27,9 +28,12 @@ func InitPost(s string) gin.HandlerFunc {
 			if service != "" {
 				cfg.MonitorEnviron = append(cfg.MonitorEnviron, service)
 			}
+			//if monitor != "" {
+			//	cfg.MonitorEnviron = append(cfg.MonitorEnviron, monitor)
+			//}
 
 			cfg.Make()
-			log.Println("initialized")
+			log.Println("host initialized")
 
 			ctx.JSON(http.StatusOK, cfg)
 		}
