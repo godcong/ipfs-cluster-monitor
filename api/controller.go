@@ -32,7 +32,6 @@ func InitPost(s string) gin.HandlerFunc {
 
 			log.Println("host initialized")
 
-			ctx.JSON(http.StatusOK, cfg)
 			return
 		}
 
@@ -96,4 +95,21 @@ func BootstrapGet(ver string) gin.HandlerFunc {
 		}
 		ctx.JSON(http.StatusOK, gin.H{"bootstrap": address})
 	}
+}
+
+func result(ctx *gin.Context, code int, message string, detail interface{}) {
+	h := gin.H{
+		"code":    code,
+		"message": message,
+		"detail":  detail,
+	}
+	ctx.JSON(http.StatusOK, h)
+}
+
+func success(ctx *gin.Context, detail interface{}) {
+	result(ctx, 0, "success", detail)
+}
+
+func failed(ctx *gin.Context, message string) {
+	result(ctx, -1, message, nil)
 }
