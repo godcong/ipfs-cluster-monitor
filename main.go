@@ -15,6 +15,8 @@ import (
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+	api.LogInit()
+
 	engine := gin.Default()
 	engine.NoRoute(NoResponse)
 
