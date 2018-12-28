@@ -9,6 +9,8 @@ import (
 	"strings"
 )
 
+const prefix = "ICM"
+
 // InitPost ...
 func InitPost(s string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -22,7 +24,7 @@ func InitPost(s string) gin.HandlerFunc {
 				cfg.SetClient(remote)
 				cfg.Secret = secret
 			} else {
-				cfg.Secret = GenerateRandomString(64)
+				cfg.Secret = prefix + GenerateRandomString(64)
 			}
 			cfg.SetEnv("IPFS_PATH", ipfs)
 			cfg.SetEnv("IPFS_CLUSTER_PATH", service)
