@@ -61,3 +61,15 @@ func HeartBeatGet(s string) gin.HandlerFunc {
 
 	}
 }
+
+// LogGet ...
+func LogGet(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		//bytes, err := ioutil.ReadAll(file)
+		//if err != nil {
+		//	ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		//	return
+		//}
+		//ctx.JSON(http.StatusOK, gin.H{"code": 0, "log": string(bytes)})
+	}
+}

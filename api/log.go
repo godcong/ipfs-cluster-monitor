@@ -13,12 +13,15 @@ var file *os.File
 
 // LogInit ...
 func LogInit() {
+	log.Println("log initialized")
 	var err error
 	once.Do(func() {
 		file, err = os.OpenFile(cfg.RootPath+"/monitor.log", os.O_RDWR|os.O_CREATE|os.O_APPEND|os.O_SYNC, os.ModePerm)
-		if err != nil {
+		if err == nil {
 			output := io.MultiWriter(os.Stdout, file)
 			log.SetOutput(output)
+		} else {
+			errors.ErrorStack(err)
 		}
 		log.SetFlags(log.Lshortfile | log.Ldate)
 	})

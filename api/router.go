@@ -1,6 +1,10 @@
 package api
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"io/ioutil"
+	"net/http"
+)
 
 // Router ...
 func Router(eng *gin.Engine) {
@@ -12,5 +16,7 @@ func Router(eng *gin.Engine) {
 	v0.POST("init", InitPost(ver))
 
 	v0.GET("heartbeat", HeartBeatGet(ver))
+
+	v0.GET("log", LogGet(ver))
 
 }
