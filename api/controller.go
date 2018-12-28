@@ -10,21 +10,31 @@ import (
 // InitPost ...
 func InitPost(s string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		remote := ctx.PostForm("remote")
-		secret := ctx.PostForm("secret")
-		if !IsInitialized(config) {
+		remote := ctx.PostForm("Remote")
+		secret := ctx.PostForm("Secret")
+		ipfs := ctx.PostForm("IPFS_PATH")
+		service := ctx.PostForm("IPFS_CLUSTER_PATH")
+		if !IsInitialized() {
 			if remote != "" {
-				config.SetClient(remote)
-				config.Secret = secret
+				cfg.SetClient(remote)
+				cfg.Secret = secret
 			} else {
-				config.Secret = GenerateRandomString(64)
+				cfg.Secret = GenerateRandomString(64)
+			}
+			if ipfs != "" {
+				cfg.MonitorEnviron = append(cfg.MonitorEnviron, ipfs)
+			}
+			if service != "" {
+				cfg.MonitorEnviron = append(cfg.MonitorEnviron, service)
 			}
 
-			config.Make()
+			cfg.Make()
 			log.Println("initialized")
+
+			ctx.JSON(http.StatusOK, cfg)
 		}
 
-		ctx.JSON(http.StatusOK, config)
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "host is initialized"})
 	}
 }
 

@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"github.com/json-iterator/go"
 	"github.com/juju/errors"
 	"log"
 	"os"
@@ -24,12 +25,13 @@ var (
 	HostClient HostType = "client"
 )
 
-// Config ...
-type Config struct {
+// Configuration ...
+type Configuration struct {
 	RootPath        string
 	Secret          string
 	HostType        HostType
 	RemoteIP        string
+	MonitorEnviron  []string
 	MonitorInterval time.Duration
 }
 
@@ -51,12 +53,12 @@ type Peer struct {
 	PeerName string `json:"peername"`
 }
 
-var config *Config
+var cfg *Configuration
 
 func init() {
 	log.SetFlags(log.Lshortfile | log.Ldate)
-	config = DefaultConfig()
-	config.InitLoader()
+	cfg = DefaultConfig()
+	cfg.InitLoader()
 }
 
 func defaultPath(name string) string {
@@ -76,14 +78,19 @@ func defaultPath(name string) string {
 	return filepath.Join(home, name)
 }
 
+// Config ...
+func Config() *Configuration {
+	return cfg
+}
+
 // DefaultConfig ...
-func DefaultConfig() *Config {
+func DefaultConfig() *Configuration {
 	rootPath, b := os.LookupEnv("IPFS_CLUSTER_MONITOR")
 	if !b {
 		rootPath = defaultPath(".ipfs_cluster_monitor")
 	}
 
-	return &Config{
+	return &Configuration{
 		RootPath:        rootPath,
 		HostType:        HostServer,
 		RemoteIP:        "127.0.0.1",
@@ -92,14 +99,14 @@ func DefaultConfig() *Config {
 }
 
 // SetClient ...
-func (cfg *Config) SetClient(remoteIP string) {
+func (cfg *Configuration) SetClient(remoteIP string) {
 	cfg.HostType = HostClient
 	cfg.RemoteIP = remoteIP
 }
 
 // InitLoader ...
-func (cfg *Config) InitLoader() {
-	if !IsInitialized(cfg) {
+func (cfg *Configuration) InitLoader() {
+	if !IsInitialized() {
 
 		//cfg.Make()
 		//isInitialized = true
@@ -118,7 +125,7 @@ func (cfg *Config) InitLoader() {
 }
 
 // CheckExist ...
-func (cfg *Config) CheckExist() bool {
+func (cfg *Configuration) CheckExist() bool {
 	_, err := os.Stat(cfg.RootPath + "/" + DefaultFileName)
 	if err != nil {
 		errors.ErrorStack(err)
@@ -128,12 +135,12 @@ func (cfg *Config) CheckExist() bool {
 }
 
 // Marshal ...
-func (cfg *Config) Marshal() ([]byte, error) {
+func (cfg *Configuration) Marshal() ([]byte, error) {
 	return jsoniter.Marshal(cfg)
 }
 
 // Make ...
-func (cfg *Config) Make() {
+func (cfg *Configuration) Make() {
 	err := os.Chdir(cfg.RootPath)
 	if err != nil {
 		err := os.MkdirAll(cfg.RootPath, os.ModePerm)
@@ -151,7 +158,7 @@ func (cfg *Config) Make() {
 }
 
 // IsInitialized ...
-func IsInitialized(cfg *Config) bool {
+func IsInitialized() bool {
 	if isInitialized == false {
 		isInitialized = cfg.CheckExist()
 	}
