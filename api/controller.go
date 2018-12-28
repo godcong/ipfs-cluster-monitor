@@ -39,7 +39,7 @@ func InitPost(s string) gin.HandlerFunc {
 }
 
 // HeartBeatGet ...
-func HeartBeatGet(s string) gin.HandlerFunc {
+func HeartBeatGet(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		response, err := http.Get("http://localhost:9094/peers")
 		if err != nil {

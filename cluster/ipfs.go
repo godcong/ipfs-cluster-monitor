@@ -12,7 +12,7 @@ import (
 )
 
 func firstRunIPFS() {
-	cmd := exec.Command("ipfs", "init")
+	cmd := exec.Command(api.Config().CommandName, "init")
 	cmd.Env = os.Environ()
 	if clusterEnviron != nil {
 		cmd.Env = append(cmd.Env, clusterEnviron...)
