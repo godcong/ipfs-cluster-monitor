@@ -16,21 +16,6 @@ import (
 
 var clusterEnviron []string
 
-func firstRunService() {
-	cmd := exec.Command("ipfs-cluster-service", "init")
-	cmd.Env = os.Environ()
-	if clusterEnviron != nil {
-		cmd.Env = append(cmd.Env, clusterEnviron...)
-	}
-
-	bytes, err := cmd.CombinedOutput()
-	log.Println(string(bytes))
-	if err != nil {
-		errors.ErrorStack(err)
-		panic(err)
-	}
-}
-
 // WaitingForInitialize ...
 func WaitingForInitialize(ctx context.Context) bool {
 	for {

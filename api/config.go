@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -160,6 +161,12 @@ func (cfg *Configuration) CheckExist() bool {
 // Marshal ...
 func (cfg *Configuration) Marshal() ([]byte, error) {
 	return jsoniter.Marshal(cfg)
+}
+
+func (cfg *Configuration) SetEnv(key, value string) {
+	if value != "" {
+		cfg.ClusterEnviron = append(cfg.ClusterEnviron, strings.Join([]string{key, value}, "="))
+	}
 }
 
 // Make ...

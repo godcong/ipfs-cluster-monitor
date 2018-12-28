@@ -24,17 +24,10 @@ func InitPost(s string) gin.HandlerFunc {
 			} else {
 				cfg.Secret = GenerateRandomString(64)
 			}
-			if ipfs != "" {
-				cfg.ClusterEnviron = append(cfg.ClusterEnviron, strings.Join([]string{"IPFS_PATH", ipfs}, "="))
-			}
-			if service != "" {
-				cfg.ClusterEnviron = append(cfg.ClusterEnviron, strings.Join([]string{"IPFS_CLUSTER_PATH", service}, "="))
-			}
-			//if monitor != "" {
-			//	cfg.ClusterEnviron = append(cfg.ClusterEnviron, monitor)
-			//}
-
+			cfg.SetEnv("IPFS_PATH", ipfs)
+			cfg.SetEnv("IPFS_CLUSTER_PATH", service)
 			cfg.Make()
+
 			log.Println("host initialized")
 
 			ctx.JSON(http.StatusOK, cfg)
