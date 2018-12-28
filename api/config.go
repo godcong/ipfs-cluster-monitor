@@ -33,13 +33,15 @@ var (
 
 // Configuration ...
 type Configuration struct {
-	Version         string
-	RootPath        string
-	Secret          string
-	HostType        HostType
-	RemoteIP        string
-	ClusterEnviron  []string
-	MonitorInterval time.Duration
+	Version            string
+	RootPath           string
+	CommandName        string
+	ServiceCommandName string
+	Secret             string
+	HostType           HostType
+	RemoteIP           string
+	ClusterEnviron     []string
+	MonitorInterval    time.Duration
 }
 
 // ServiceStatus ...
@@ -106,11 +108,13 @@ func DefaultConfig() *Configuration {
 	}
 
 	return &Configuration{
-		Version:         "v0",
-		RootPath:        rootPath,
-		HostType:        HostServer,
-		RemoteIP:        "127.0.0.1",
-		MonitorInterval: 5 * time.Second,
+		Version:            "v0",
+		CommandName:        "ipfs",
+		ServiceCommandName: "ipfs-cluster-service",
+		RootPath:           rootPath,
+		HostType:           HostServer,
+		RemoteIP:           "127.0.0.1",
+		MonitorInterval:    5 * time.Second,
 	}
 }
 

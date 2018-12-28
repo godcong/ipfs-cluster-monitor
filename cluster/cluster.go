@@ -16,21 +16,6 @@ import (
 
 var clusterEnviron []string
 
-func firstRunIPFS() {
-	cmd := exec.Command("ipfs", "init")
-	cmd.Env = os.Environ()
-	if clusterEnviron != nil {
-		cmd.Env = append(cmd.Env, clusterEnviron...)
-	}
-
-	bytes, err := cmd.CombinedOutput()
-	log.Println(string(bytes))
-	if err != nil {
-		errors.ErrorStack(err)
-		panic(err)
-	}
-}
-
 func firstRunService() {
 	cmd := exec.Command("ipfs-cluster-service", "init")
 	cmd.Env = os.Environ()
@@ -71,10 +56,10 @@ func Init() {
 func Run(ctx context.Context) {
 	if WaitingForInitialize(ctx) {
 		Init()
-		if NeedInit(api.InitIPFS) {
+		if initCheck(api.InitIPFS) {
 			firstRunIPFS()
 		}
-		if NeedInit(api.InitService) {
+		if initCheck(api.InitService) {
 			firstRunService()
 		}
 		StartIPFS(ctx)
@@ -83,8 +68,8 @@ func Run(ctx context.Context) {
 	}
 }
 
-// NeedInit ...
-func NeedInit(name string) bool {
+// initCheck ...
+func initCheck(name string) bool {
 	file := api.Config().RootPath + "/" + name
 	info, err := os.Stat(file)
 	log.Println(info)
