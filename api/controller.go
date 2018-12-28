@@ -32,10 +32,11 @@ func InitPost(s string) gin.HandlerFunc {
 
 			log.Println("host initialized")
 
+			success(ctx, cfg)
 			return
 		}
 
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": "host is initialized"})
+		failed(ctx, "host is initialized")
 	}
 }
 
@@ -44,13 +45,13 @@ func HeartBeatGet(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		response, err := http.Get("http://localhost:9094/peers")
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+			failed(ctx, err.Error())
 			return
 		}
 
 		bytes, err := ioutil.ReadAll(response.Body)
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+			failed(ctx, err.Error())
 			return
 		}
 
@@ -73,13 +74,13 @@ func BootstrapGet(ver string) gin.HandlerFunc {
 		var s ServiceStatus
 		resp, err := http.Get("http://127.0.0.1:9094/id")
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+			failed(ctx, err.Error())
 			return
 		}
 		bytes, err := ioutil.ReadAll(resp.Body)
 		err = jsoniter.Unmarshal(bytes, &s)
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+			failed(ctx, err.Error())
 			return
 		}
 		address := ""
@@ -93,7 +94,7 @@ func BootstrapGet(ver string) gin.HandlerFunc {
 			address = value
 			break
 		}
-		ctx.JSON(http.StatusOK, gin.H{"bootstrap": address})
+		success(ctx, gin.H{"bootstrap": address})
 	}
 }
 
