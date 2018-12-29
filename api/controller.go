@@ -45,10 +45,9 @@ func InitPost(s string) gin.HandlerFunc {
 			} else {
 				cluster.Config().Secret = prefix + cluster.GenerateRandomString(64)
 			}
-
-			cluster.Config().SetEnv("CLUSTER_SECRET", clusterSecret)
-			cluster.Config().SetEnv("IPFS_PATH", ipfs)
-			cluster.Config().SetEnv("IPFS_CLUSTER_PATH", service)
+			cluster.Config().SetEnv(cluster.EnvironSecret(clusterSecret))
+			cluster.Config().SetEnv(cluster.EnvironIPFS(ipfs))
+			cluster.Config().SetEnv(cluster.EnvironService(service))
 			cluster.Config().Make()
 
 			log.Println("host initialized")
@@ -80,6 +79,7 @@ func BootstrapGet(ver string) gin.HandlerFunc {
 		var err error
 		var s cluster.ServicePeer
 		resp, err := http.Get("http://127.0.0.1:9094/id")
+		log.Println(resp.Header.Get("secret"))
 		if err != nil {
 			failed(ctx, err.Error())
 			return

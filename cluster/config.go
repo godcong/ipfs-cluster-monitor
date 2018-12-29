@@ -32,6 +32,28 @@ var (
 	HostClient HostType = "client"
 )
 
+type EnvironIPFS string
+type EnvironSecret string
+type EnvironService string
+
+func (s EnvironIPFS) String() string {
+	return strings.Join([]string{"IPFS_PATH", string(s)}, "=")
+}
+
+func (s EnvironSecret) String() string {
+	return strings.Join([]string{"IPFS_CLUSTER_SECRET", string(s)}, "=")
+}
+
+func (s EnvironService) String() string {
+	return strings.Join([]string{"IPFS_CLUSTER_PATH", string(s)}, "=")
+}
+
+type Environ struct {
+	Ipfs    EnvironIPFS
+	Secret  EnvironSecret
+	Service EnvironService
+}
+
 // Configuration ...
 type Configuration struct {
 	Version             string
@@ -42,7 +64,7 @@ type Configuration struct {
 	HostType            HostType
 	RemoteIP            string
 	RemotePort          string
-	ClusterEnviron      []string
+	Environ             Environ
 	ServerCheckInterval time.Duration
 	MonitorInterval     time.Duration
 }
@@ -137,18 +159,32 @@ func (cfg *Configuration) Marshal() ([]byte, error) {
 }
 
 // SetEnv ...
-func (cfg *Configuration) SetEnv(key, value string) {
-	if value != "" {
-		cfg.ClusterEnviron = append(cfg.ClusterEnviron, strings.Join([]string{key, value}, "="))
+func (cfg *Configuration) SetEnv(value interface{}) {
+	if value != nil {
+		switch v := value.(type) {
+		case EnvironIPFS:
+			cfg.Environ.Ipfs = v
+		case EnvironSecret:
+			cfg.Environ.Secret = v
+		case EnvironService:
+			cfg.Environ.Service = v
+		}
 	}
 }
 
 // GetEnv ...
 func (cfg *Configuration) GetEnv() []string {
-	if cfg.ClusterEnviron != nil {
-		return append(os.Environ(), cfg.ClusterEnviron...)
+	env := os.Environ()
+	if cfg.Environ.Service != "" {
+		env = append(env, cfg.Environ.Service.String())
 	}
-	return os.Environ()
+	if cfg.Environ.Secret != "" {
+		env = append(env, cfg.Environ.Secret.String())
+	}
+	if cfg.Environ.Ipfs != "" {
+		env = append(env, cfg.Environ.Ipfs.String())
+	}
+	return env
 }
 
 // Make ...

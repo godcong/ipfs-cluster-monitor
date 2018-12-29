@@ -2,9 +2,13 @@ package cluster
 
 import (
 	"context"
+	"fmt"
 	"github.com/juju/errors"
 	"log"
+	"os"
 	"os/exec"
+	"os/user"
+	"path/filepath"
 )
 
 // IPFSInfo ...
@@ -38,4 +42,17 @@ func optimizationFirstRunIPFS(ctx context.Context) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func defaultIPFS() string {
+	home := os.Getenv("HOME")
+	if home == "" {
+		usr, err := user.Current()
+		if err != nil {
+			panic(fmt.Sprintf("cannot get current user: %s", err))
+		}
+		home = usr.HomeDir
+	}
+
+	return filepath.Join(home, ".ipfs")
 }

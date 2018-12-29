@@ -20,13 +20,12 @@ func Router(eng *gin.Engine) {
 
 	v0.GET("log", LogGet(ver))
 
-	v0.GET("bootstrap", BootstrapGet(ver))
-
 	v0.GET("reset", ResetGet(ver))
 
 	v0.GET("delete/:pn", DeleteGet(ver))
 	v0.POST("join", JoinPost(ver))
 
+	v0.GET("bootstrap", BootstrapGet(ver))
 	v0.GET("killyou/:id", KillGet(ver))
 
 	v0.Any("test", func(context *gin.Context) {

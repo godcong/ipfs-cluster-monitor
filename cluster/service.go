@@ -2,12 +2,16 @@ package cluster
 
 import (
 	"context"
+	"fmt"
 	"github.com/json-iterator/go"
 	"github.com/juju/errors"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"os/exec"
+	"os/user"
+	"path/filepath"
 )
 
 // ServicePeer ...
@@ -26,6 +30,102 @@ type ServicePeer struct {
 		Error     string   `json:"error"`
 	} `json:"ipfs"`
 	Peername string `json:"peername"`
+}
+
+type ServiceConfig struct {
+	Cluster struct {
+		ID                   string `json:"id"`
+		Peername             string `json:"peername"`
+		PrivateKey           string `json:"private_key"`
+		Secret               string `json:"secret"`
+		LeaveOnShutdown      bool   `json:"leave_on_shutdown"`
+		ListenMultiaddress   string `json:"listen_multiaddress"`
+		StateSyncInterval    string `json:"state_sync_interval"`
+		IpfsSyncInterval     string `json:"ipfs_sync_interval"`
+		ReplicationFactorMin int    `json:"replication_factor_min"`
+		ReplicationFactorMax int    `json:"replication_factor_max"`
+		MonitorPingInterval  string `json:"monitor_ping_interval"`
+		PeerWatchInterval    string `json:"peer_watch_interval"`
+		DisableRepinning     bool   `json:"disable_repinning"`
+	} `json:"cluster"`
+	Consensus struct {
+		Raft struct {
+			InitPeerset          []interface{} `json:"init_peerset"`
+			WaitForLeaderTimeout string        `json:"wait_for_leader_timeout"`
+			NetworkTimeout       string        `json:"network_timeout"`
+			CommitRetries        int           `json:"commit_retries"`
+			CommitRetryDelay     string        `json:"commit_retry_delay"`
+			BackupsRotate        int           `json:"backups_rotate"`
+			HeartbeatTimeout     string        `json:"heartbeat_timeout"`
+			ElectionTimeout      string        `json:"election_timeout"`
+			CommitTimeout        string        `json:"commit_timeout"`
+			MaxAppendEntries     int           `json:"max_append_entries"`
+			TrailingLogs         int           `json:"trailing_logs"`
+			SnapshotInterval     string        `json:"snapshot_interval"`
+			SnapshotThreshold    int           `json:"snapshot_threshold"`
+			LeaderLeaseTimeout   string        `json:"leader_lease_timeout"`
+		} `json:"raft"`
+	} `json:"consensus"`
+	API struct {
+		Ipfsproxy struct {
+			NodeMultiaddress   string `json:"node_multiaddress"`
+			ListenMultiaddress string `json:"listen_multiaddress"`
+			ReadTimeout        string `json:"read_timeout"`
+			ReadHeaderTimeout  string `json:"read_header_timeout"`
+			WriteTimeout       string `json:"write_timeout"`
+			IdleTimeout        string `json:"idle_timeout"`
+		} `json:"ipfsproxy"`
+		Restapi struct {
+			HTTPListenMultiaddress string      `json:"http_listen_multiaddress"`
+			ReadTimeout            string      `json:"read_timeout"`
+			ReadHeaderTimeout      string      `json:"read_header_timeout"`
+			WriteTimeout           string      `json:"write_timeout"`
+			IdleTimeout            string      `json:"idle_timeout"`
+			BasicAuthCredentials   interface{} `json:"basic_auth_credentials"`
+			Headers                struct {
+				AccessControlAllowHeaders []string `json:"Access-Control-Allow-Headers"`
+				AccessControlAllowMethods []string `json:"Access-Control-Allow-Methods"`
+				AccessControlAllowOrigin  []string `json:"Access-Control-Allow-Origin"`
+			} `json:"headers"`
+		} `json:"restapi"`
+	} `json:"api"`
+	IpfsConnector struct {
+		Ipfshttp struct {
+			NodeMultiaddress   string `json:"node_multiaddress"`
+			ConnectSwarmsDelay string `json:"connect_swarms_delay"`
+			PinMethod          string `json:"pin_method"`
+			IpfsRequestTimeout string `json:"ipfs_request_timeout"`
+			PinTimeout         string `json:"pin_timeout"`
+			UnpinTimeout       string `json:"unpin_timeout"`
+		} `json:"ipfshttp"`
+	} `json:"ipfs_connector"`
+	PinTracker struct {
+		Maptracker struct {
+			MaxPinQueueSize int `json:"max_pin_queue_size"`
+			ConcurrentPins  int `json:"concurrent_pins"`
+		} `json:"maptracker"`
+		Stateless struct {
+			MaxPinQueueSize int `json:"max_pin_queue_size"`
+			ConcurrentPins  int `json:"concurrent_pins"`
+		} `json:"stateless"`
+	} `json:"pin_tracker"`
+	Monitor struct {
+		Monbasic struct {
+			CheckInterval string `json:"check_interval"`
+		} `json:"monbasic"`
+		Pubsubmon struct {
+			CheckInterval string `json:"check_interval"`
+		} `json:"pubsubmon"`
+	} `json:"monitor"`
+	Informer struct {
+		Disk struct {
+			MetricTTL  string `json:"metric_ttl"`
+			MetricType string `json:"metric_type"`
+		} `json:"disk"`
+		Numpin struct {
+			MetricTTL string `json:"metric_ttl"`
+		} `json:"numpin"`
+	} `json:"informer"`
 }
 
 func firstRunService() {
@@ -110,4 +210,23 @@ func GetPeers() []ServicePeer {
 		return peers.([]ServicePeer)
 	}
 	return nil
+}
+
+func defaultService() string {
+	home := os.Getenv("HOME")
+	if home == "" {
+		usr, err := user.Current()
+		if err != nil {
+			panic(fmt.Sprintf("cannot get current user: %s", err))
+		}
+		home = usr.HomeDir
+	}
+
+	return filepath.Join(home, ".ipfs-cluster")
+}
+
+func GetServiceConfig() *ServiceConfig {
+	var serviceConfig ServiceConfig
+
+	return &serviceConfig
 }
