@@ -100,18 +100,21 @@ func Config() *Configuration {
 	return cfg
 }
 
-// DefaultConfig ...
-func DefaultConfig() *Configuration {
+func getClusterPath() string {
 	rootPath, b := os.LookupEnv("IPFS_CLUSTER_MONITOR")
 	if !b {
 		rootPath = defaultPath(".ipfs-cluster-monitor")
 	}
+	return rootPath
+}
 
+// DefaultConfig ...
+func DefaultConfig() *Configuration {
 	return &Configuration{
 		Version:             "v0",
 		CommandName:         "ipfs",
 		ServiceCommandName:  "ipfs-cluster-service",
-		RootPath:            rootPath,
+		RootPath:            getClusterPath(),
 		HostType:            HostServer,
 		RemoteIP:            "127.0.0.1",
 		RemotePort:          ":7758",
@@ -134,7 +137,7 @@ func (cfg *Configuration) InitLoader() {
 		return
 	}
 
-	file, err := os.OpenFile(cfg.RootPath+"/"+DefaultFileName, os.O_RDONLY|os.O_SYNC, os.ModePerm)
+	file, err := os.OpenFile(filepath.Join(cfg.RootPath, DefaultFileName), os.O_RDONLY|os.O_SYNC, os.ModePerm)
 	CheckError(err)
 	defer file.Close()
 
@@ -147,7 +150,7 @@ func (cfg *Configuration) InitLoader() {
 
 // CheckExist ...
 func (cfg *Configuration) CheckExist() bool {
-	_, err := os.Stat(cfg.RootPath + "/" + DefaultFileName)
+	_, err := os.Stat(filepath.Join(cfg.RootPath, DefaultFileName))
 	if err != nil {
 		errors.ErrorStack(err)
 		return false
@@ -197,7 +200,8 @@ func (cfg *Configuration) Make() {
 		CheckError(err)
 	}
 
-	file, err := os.OpenFile(cfg.RootPath+"/"+DefaultFileName, os.O_RDWR|os.O_CREATE|os.O_SYNC, os.ModePerm)
+	file, err := os.OpenFile(filepath.Join(cfg.RootPath, DefaultFileName), os.O_RDWR|os.O_CREATE|os.O_SYNC, os.ModePerm)
+	log.Println("created:", file.Name())
 	CheckError(err)
 	defer file.Close()
 
@@ -205,11 +209,13 @@ func (cfg *Configuration) Make() {
 	err = enc.Encode(*cfg)
 	CheckError(err)
 
-	cfile, err := os.Create(cfg.RootPath + "/" + InitIPFS)
+	cfile, err := os.Create(filepath.Join(cfg.RootPath, InitIPFS))
+	log.Println("created:", cfile.Name())
 	CheckError(err)
 	defer cfile.Close()
 
-	sfile, err := os.Create(cfg.RootPath + "/" + InitService)
+	sfile, err := os.Create(filepath.Join(cfg.RootPath, InitService))
+	log.Println("created:", sfile.Name())
 	CheckError(err)
 	defer sfile.Close()
 

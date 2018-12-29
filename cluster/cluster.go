@@ -45,9 +45,11 @@ func waitingForInitialize(ctx context.Context) bool {
 
 // Run ...
 func Run(ctx context.Context) {
-	globalContext, globalCancel = context.WithCancel(context.Background())
+	globalContext = ctx
+	cluster, cancel := context.WithCancel(context.Background())
+	globalCancel = cancel
 
-	if waitingForInitialize(ctx) {
+	if waitingForInitialize(globalContext) {
 		if initCheck(InitIPFS) {
 			log.Println("init ipfs")
 			firstRunIPFS()
@@ -58,16 +60,16 @@ func Run(ctx context.Context) {
 		}
 		//var ipfs context.Context
 		//ipfs, cancelIPFS = context.WithCancel(context.Background())
-		runIPFS(ctx)
+		runIPFS(globalContext)
 		//var service context.Context
 		//service, cancelService = context.WithCancel(context.Background())
-		runService(ctx)
+		runService(globalContext)
 
 		time.Sleep(cfg.Interval)
 		if isClient() {
-			runJoin(globalContext)
+			runJoin(cluster)
 		} else {
-			runMonitor(globalContext)
+			runMonitor(cluster)
 		}
 
 	}

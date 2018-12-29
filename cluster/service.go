@@ -237,7 +237,7 @@ func GetServiceConfig() (*ServiceConfig, error) {
 	var serviceConfig ServiceConfig
 
 	file := filepath.Join(servicePath(), "service.json")
-	openFile, err := os.OpenFile(file, os.O_RDONLY, os.ModePerm)
+	openFile, err := os.OpenFile(file, os.O_RDONLY|os.O_SYNC, os.ModePerm)
 	if err != nil {
 		return nil, err
 	}
