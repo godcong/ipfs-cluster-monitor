@@ -49,7 +49,6 @@ func InitPost(s string) gin.HandlerFunc {
 			cluster.Config().Make()
 
 			log.Println("host initialized")
-
 			success(ctx, cluster.Config())
 			return
 		}
@@ -76,7 +75,7 @@ func LogGet(ver string) gin.HandlerFunc {
 func BootstrapGet(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var err error
-		var s cluster.Peer
+		var s cluster.ServicePeer
 		resp, err := http.Get("http://127.0.0.1:9094/id")
 		if err != nil {
 			failed(ctx, err.Error())
@@ -120,20 +119,28 @@ func ResetGet(ver string) gin.HandlerFunc {
 // DeleteGet ...
 func DeleteGet(s string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		id := ctx.Param("id")
+		pn := ctx.Param("pn")
 		peers := cluster.GetPeers()
 		size := len(peers)
 		for i := 0; i < size; i++ {
-			if peers[0].ID == id {
-				err := cluster.DeletePeers(id)
+			if peers[0].Peername == pn {
+				err := cluster.DeletePeers(peers[0].ID)
 				if err != nil {
 					failed(ctx, err.Error())
 					return
 				}
 				success(ctx, nil)
+				return
 			}
 		}
 		failed(ctx, "peers not found")
 	}
 
+}
+
+// KillGet ...
+func KillGet(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		failed(ctx, "I will live forever")
+	}
 }

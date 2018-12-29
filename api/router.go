@@ -3,6 +3,8 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/ipfs-cluster-monitor/cluster"
+	"io/ioutil"
+	"net/http"
 )
 
 // Router ...
@@ -22,5 +24,34 @@ func Router(eng *gin.Engine) {
 
 	v0.GET("reset", ResetGet(ver))
 
-	v0.GET("delete/:id", DeleteGet(ver))
+	v0.GET("delete/:pn", DeleteGet(ver))
+	v0.POST("join", JoinPost(ver))
+
+	v0.GET("killyou/:id", KillGet(ver))
+
+	v0.Any("test", func(context *gin.Context) {
+		request, err := http.NewRequest(context.Request.Method, context.Query("url"), context.Request.Body)
+		if err != nil {
+			failed(context, err.Error())
+			return
+		}
+		response, err := http.DefaultClient.Do(request)
+		if err != nil {
+			failed(context, err.Error())
+			return
+		}
+		bytes, err := ioutil.ReadAll(response.Body)
+		if err != nil {
+			failed(context, err.Error())
+			return
+		}
+		context.String(http.StatusOK, string(bytes))
+	})
+}
+
+// JoinPost ...
+func JoinPost(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+	}
 }

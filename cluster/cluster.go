@@ -57,8 +57,12 @@ func Run(ctx context.Context) {
 		runService(ctx)
 
 		time.Sleep(5 * time.Second)
+		if isClient() {
+			runJoin(ctx)
+		} else {
+			runMonitor(ctx)
+		}
 
-		runMonitor(ctx)
 	}
 }
 
@@ -76,8 +80,8 @@ func initCheck(name string) bool {
 	return false
 }
 
-// useBootstrap ...
-func useBootstrap() bool {
+// isClient ...
+func isClient() bool {
 	if cfg.HostType == HostClient {
 		return true
 	}
