@@ -12,6 +12,7 @@ import (
 const MonitorPeers = "peers"
 
 var monitor sync.Map
+var clients sync.Map
 
 // runMonitor ...
 func runMonitor(ctx context.Context) {
@@ -32,5 +33,14 @@ func runMonitor(ctx context.Context) {
 			time.Sleep(cfg.MonitorInterval)
 		}
 		//get info
+	}
+}
+
+// ClientJoin ...
+func ClientJoin(key, val string) {
+	if _, loaded := clients.LoadOrStore(key, val); loaded {
+		log.Println(key, "is already joined")
+	} else {
+		log.Println(key, "is joined")
 	}
 }
