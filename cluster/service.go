@@ -1,24 +1,27 @@
 package cluster
 
 import (
-	"github.com/godcong/ipfs-cluster-monitor/api"
+	"context"
 	"github.com/juju/errors"
 	"log"
-	"os"
 	"os/exec"
 )
 
 func firstRunService() {
-	cmd := exec.Command(api.Config().ServiceCommandName, "init")
-	cmd.Env = os.Environ()
-	if clusterEnviron != nil {
-		cmd.Env = append(cmd.Env, clusterEnviron...)
-	}
+	cmd := exec.Command(cfg.ServiceCommandName, "init")
+	cmd.Env = cfg.GetEnv()
 
 	bytes, err := cmd.CombinedOutput()
 	log.Println(string(bytes))
 	if err != nil {
 		errors.ErrorStack(err)
+		panic(err)
+	}
+}
+
+func optimizationFirstRunService(ctx context.Context) {
+	err := opRun(ctx, cfg.ServiceCommandName, "init")
+	if err != nil {
 		panic(err)
 	}
 }

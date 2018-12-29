@@ -15,7 +15,7 @@ import (
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	api.LogInit()
+	cluster.LogInit()
 
 	engine := gin.Default()
 	engine.NoRoute(NoResponse)

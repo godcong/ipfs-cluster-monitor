@@ -1,4 +1,4 @@
-package api
+package cluster
 
 import (
 	"fmt"
@@ -163,10 +163,19 @@ func (cfg *Configuration) Marshal() ([]byte, error) {
 	return jsoniter.Marshal(cfg)
 }
 
+// SetEnv ...
 func (cfg *Configuration) SetEnv(key, value string) {
 	if value != "" {
 		cfg.ClusterEnviron = append(cfg.ClusterEnviron, strings.Join([]string{key, value}, "="))
 	}
+}
+
+// GetEnv ...
+func (cfg *Configuration) GetEnv() []string {
+	if cfg.ClusterEnviron != nil {
+		return append(os.Environ(), cfg.ClusterEnviron...)
+	}
+	return os.Environ()
 }
 
 // Make ...

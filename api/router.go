@@ -2,13 +2,13 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
-	"net/http"
+	"github.com/godcong/ipfs-cluster-monitor/cluster"
 )
 
 // Router ...
 func Router(eng *gin.Engine) {
 
-	ver := cfg.Version
+	ver := cluster.Config().Version
 
 	v0 := eng.Group(ver)
 
@@ -21,12 +21,4 @@ func Router(eng *gin.Engine) {
 	v0.GET("bootstrap", BootstrapGet(ver))
 
 	v0.GET("reset", ResetGet(ver))
-}
-
-func ResetGet(ver string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		h := gin.H{}
-
-		ctx.JSON(http.StatusOK)
-	}
 }

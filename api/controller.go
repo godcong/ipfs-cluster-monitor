@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/godcong/ipfs-cluster-monitor/cluster"
 	"github.com/json-iterator/go"
 	"io/ioutil"
 	"log"
@@ -11,6 +12,23 @@ import (
 
 const prefix = "ICM"
 
+func result(ctx *gin.Context, code int, message string, detail interface{}) {
+	h := gin.H{
+		"code":    code,
+		"message": message,
+		"detail":  detail,
+	}
+	ctx.JSON(http.StatusOK, h)
+}
+
+func success(ctx *gin.Context, detail interface{}) {
+	result(ctx, 0, "success", detail)
+}
+
+func failed(ctx *gin.Context, message string) {
+	result(ctx, -1, message, nil)
+}
+
 // InitPost ...
 func InitPost(s string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -19,20 +37,20 @@ func InitPost(s string) gin.HandlerFunc {
 		ipfs := ctx.PostForm("IPFS_PATH")
 		service := ctx.PostForm("IPFS_CLUSTER_PATH")
 		//monitor := ctx.PostForm("IPFS_CLUSTER_MONITOR")
-		if !IsInitialized() {
+		if !cluster.IsInitialized() {
 			if remote != "" {
-				cfg.SetClient(remote)
-				cfg.Secret = secret
+				cluster.Config().SetClient(remote)
+				cluster.Config().Secret = secret
 			} else {
-				cfg.Secret = prefix + GenerateRandomString(64)
+				cluster.Config().Secret = prefix + cluster.GenerateRandomString(64)
 			}
-			cfg.SetEnv("IPFS_PATH", ipfs)
-			cfg.SetEnv("IPFS_CLUSTER_PATH", service)
-			cfg.Make()
+			cluster.Config().SetEnv("IPFS_PATH", ipfs)
+			cluster.Config().SetEnv("IPFS_CLUSTER_PATH", service)
+			cluster.Config().Make()
 
 			log.Println("host initialized")
 
-			success(ctx, cfg)
+			success(ctx, cluster.Config())
 			return
 		}
 
@@ -71,7 +89,7 @@ func LogGet(ver string) gin.HandlerFunc {
 func BootstrapGet(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var err error
-		var s ServiceStatus
+		var s cluster.ServiceStatus
 		resp, err := http.Get("http://127.0.0.1:9094/id")
 		if err != nil {
 			failed(ctx, err.Error())
@@ -98,19 +116,14 @@ func BootstrapGet(ver string) gin.HandlerFunc {
 	}
 }
 
-func result(ctx *gin.Context, code int, message string, detail interface{}) {
-	h := gin.H{
-		"code":    code,
-		"message": message,
-		"detail":  detail,
+// ResetGet ...
+func ResetGet(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		err := cluster.Reset()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		success(ctx, nil)
 	}
-	ctx.JSON(http.StatusOK, h)
-}
-
-func success(ctx *gin.Context, detail interface{}) {
-	result(ctx, 0, "success", detail)
-}
-
-func failed(ctx *gin.Context, message string) {
-	result(ctx, -1, message, nil)
 }

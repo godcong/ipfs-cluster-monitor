@@ -1,4 +1,4 @@
-package api
+package cluster
 
 import (
 	"github.com/juju/errors"
