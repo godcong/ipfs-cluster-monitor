@@ -34,6 +34,7 @@ func InitPost(s string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		remote := ctx.PostForm("Remote")
 		secret := ctx.PostForm("Secret")
+		clusterSecret := ctx.PostForm("CLUSTER_SECRET")
 		ipfs := ctx.PostForm("IPFS_PATH")
 		service := ctx.PostForm("IPFS_CLUSTER_PATH")
 		//monitor := ctx.PostForm("IPFS_CLUSTER_MONITOR")
@@ -44,6 +45,8 @@ func InitPost(s string) gin.HandlerFunc {
 			} else {
 				cluster.Config().Secret = prefix + cluster.GenerateRandomString(64)
 			}
+
+			cluster.Config().SetEnv("CLUSTER_SECRET", clusterSecret)
 			cluster.Config().SetEnv("IPFS_PATH", ipfs)
 			cluster.Config().SetEnv("IPFS_CLUSTER_PATH", service)
 			cluster.Config().Make()

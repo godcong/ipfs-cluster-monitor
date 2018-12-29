@@ -41,6 +41,7 @@ type Configuration struct {
 	Secret              string
 	HostType            HostType
 	RemoteIP            string
+	RemotePort          string
 	ClusterEnviron      []string
 	ServerCheckInterval time.Duration
 	MonitorInterval     time.Duration
@@ -90,6 +91,7 @@ func DefaultConfig() *Configuration {
 		RootPath:            rootPath,
 		HostType:            HostServer,
 		RemoteIP:            "127.0.0.1",
+		RemotePort:          ":7758",
 		MonitorInterval:     5 * time.Second,
 		ServerCheckInterval: 60 * time.Second,
 	}

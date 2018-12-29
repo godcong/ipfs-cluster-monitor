@@ -23,7 +23,7 @@ func main() {
 	go cluster.Run(ctx)
 
 	api.Router(engine)
-	err := engine.Run(":7758")
+	err := engine.Run(cluster.Config().RemotePort)
 	if err != nil {
 		errors.ErrorStack(err)
 	}

@@ -25,29 +25,31 @@ func runJoin(ctx context.Context) {
 	}
 }
 
-func joinToServer() int {
+func joinToServer() error {
 	response, err := http.PostForm(webAddress("join"), url.Values{})
 	if err != nil {
 		errors.ErrorStack(err)
-		panic(err)
+		return err
 	}
 	bytes, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		errors.ErrorStack(err)
-		panic(err)
+		return err
 	}
 	var rm ResultMessage
 
 	err = jsoniter.Unmarshal(bytes, rm)
 	if err != nil {
 		errors.ErrorStack(err)
-		panic(err)
+		log.Println(err.Error())
+		return err
 	}
 	if rm.Code == 0 {
 		log.Println("join success")
+		return nil
 	}
 	log.Println("failed:", rm.Message)
-	return rm.Code
+	return errors.New(rm.Message)
 }
 
 // JoinFromClient ...

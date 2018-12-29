@@ -52,6 +52,7 @@ func runService(ctx context.Context) {
 	if isClient() {
 		boot := getServiceBootstrap()
 		if boot != "" {
+			log.Println("bootstrap")
 			go optimizeRunCMD(cfg.ServiceCommandName, "daemon", "--bootstrap", boot)
 			return
 		}

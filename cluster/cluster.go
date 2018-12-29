@@ -18,9 +18,9 @@ import (
 
 // ResultMessage ...
 type ResultMessage struct {
-	Code    int
-	Message string
-	Detail  interface{}
+	Code    int                    `json:"code"`
+	Detail  map[string]interface{} `json:"detail"`
+	Message string                 `json:"message"`
 }
 
 var commands sync.Map
@@ -102,14 +102,16 @@ func getServiceBootstrap() string {
 		return ""
 	}
 	bytes, err := ioutil.ReadAll(response.Body)
-	var m map[string]string
-	err = jsoniter.Unmarshal(bytes, &m)
+	var msg ResultMessage
+	err = jsoniter.Unmarshal(bytes, &msg)
 	if err != nil {
 		return ""
 	}
-	v, b := m["bootstrap"]
+	v, b := msg.Detail["bootstrap"]
 	if b {
-		return v
+		if v1, b := v.(string); b {
+			return v1
+		}
 	}
 	return ""
 }
@@ -202,7 +204,7 @@ func stopRunningCMD() {
 }
 
 func webAddress(api string) string {
-	url := strings.Join([]string{cfg.RemoteIP, cfg.Version, api}, "/")
+	url := strings.Join([]string{cfg.RemoteIP + cfg.RemotePort, cfg.Version, api}, "/")
 	return "http://" + url
 }
 
