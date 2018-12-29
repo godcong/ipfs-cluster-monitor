@@ -26,6 +26,7 @@ func Router(eng *gin.Engine) {
 	v0.POST("join", JoinPost(ver))
 
 	v0.GET("bootstrap", BootstrapGet(ver))
+	v0.GET("secret", SecretGet(ver))
 	v0.GET("killyou/:id", KillGet(ver))
 
 	v0.Any("test", func(context *gin.Context) {
@@ -46,18 +47,4 @@ func Router(eng *gin.Engine) {
 		}
 		context.String(http.StatusOK, string(bytes))
 	})
-}
-
-// JoinPost ...
-func JoinPost(ver string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-
-		name := ctx.PostForm("name")
-		address := ctx.PostForm("address")
-		if address == "" {
-			address = ctx.Request.RemoteAddr
-		}
-		cluster.JoinFromClient(name, address)
-		success(ctx, nil)
-	}
 }

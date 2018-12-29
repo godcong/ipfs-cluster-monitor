@@ -147,3 +147,28 @@ func KillGet(ver string) gin.HandlerFunc {
 		failed(ctx, "I will live forever")
 	}
 }
+
+func SecretGet(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		config, err := cluster.GetServiceConfig()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		success(ctx, gin.H{"secret": config.Cluster.Secret})
+	}
+}
+
+// JoinPost ...
+func JoinPost(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+		name := ctx.PostForm("name")
+		address := ctx.PostForm("address")
+		if address == "" {
+			address = ctx.Request.RemoteAddr
+		}
+		cluster.JoinFromClient(name, address)
+		success(ctx, nil)
+	}
+}

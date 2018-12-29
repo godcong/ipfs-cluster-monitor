@@ -225,7 +225,7 @@ func defaultService() string {
 	return filepath.Join(home, ".ipfs-cluster")
 }
 
-func GetServiceConfig() *ServiceConfig {
+func GetServiceConfig() (*ServiceConfig, error) {
 	var serviceConfig ServiceConfig
 	path := defaultService()
 	if cfg.Environ.Service != "" {
@@ -234,12 +234,12 @@ func GetServiceConfig() *ServiceConfig {
 	file := filepath.Join(path, "service.json")
 	openFile, err := os.OpenFile(file, os.O_RDONLY, os.ModePerm)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	dec := jsoniter.NewDecoder(openFile)
 	err = dec.Decode(&serviceConfig)
 	if err != nil {
-		return nil
+		return nil, err
 	}
-	return &serviceConfig
+	return &serviceConfig, nil
 }
