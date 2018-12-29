@@ -7,6 +7,11 @@ import (
 	"os/exec"
 )
 
+// runIPFS ...
+func runIPFS(ctx context.Context) {
+	go optimizeRunCMD("ipfs", "daemon")
+}
+
 func firstRunIPFS() {
 	cmd := exec.Command(cfg.CommandName, "init")
 	cmd.Env = cfg.GetEnv()

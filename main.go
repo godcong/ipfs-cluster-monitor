@@ -28,7 +28,7 @@ func main() {
 		errors.ErrorStack(err)
 	}
 
-	cluster.StartRun(ctx)
+	cluster.runMonitor(ctx)
 
 }
 

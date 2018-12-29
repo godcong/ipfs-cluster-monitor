@@ -19,8 +19,8 @@ import (
 var cluster sync.Map
 var globalContext context.Context
 
-// WaitingForInitialize ...
-func WaitingForInitialize(ctx context.Context) bool {
+// waitingForInitialize ...
+func waitingForInitialize(ctx context.Context) bool {
 	for {
 		if !IsInitialized() {
 			time.Sleep(time.Second * 5)
@@ -39,7 +39,7 @@ func WaitingForInitialize(ctx context.Context) bool {
 func Run(ctx context.Context) {
 	globalContext = ctx
 
-	if WaitingForInitialize(ctx) {
+	if waitingForInitialize(ctx) {
 		if initCheck(InitIPFS) {
 			log.Println("init ipfs")
 			firstRunIPFS()
@@ -50,11 +50,11 @@ func Run(ctx context.Context) {
 		}
 		//var ipfs context.Context
 		//ipfs, cancelIPFS = context.WithCancel(context.Background())
-		StartIPFS(ctx)
+		runIPFS(ctx)
 		time.Sleep(5 * time.Second)
 		//var service context.Context
 		//service, cancelService = context.WithCancel(context.Background())
-		StartService(ctx)
+		runService(ctx)
 	}
 }
 
@@ -72,25 +72,8 @@ func initCheck(name string) bool {
 	return false
 }
 
-// StartIPFS ...
-func StartIPFS(ctx context.Context) {
-	go optimizeRunCMD("ipfs", "daemon")
-}
-
-// StartService ...
-func StartService(ctx context.Context) {
-	if NeedBootstrap() {
-		boot := getServiceBootstrap()
-		if boot != "" {
-			go optimizeRunCMD(cfg.ServiceCommandName, "daemon", "--bootstrap", boot)
-			return
-		}
-	}
-	go optimizeRunCMD(cfg.ServiceCommandName, "daemon")
-}
-
-// NeedBootstrap ...
-func NeedBootstrap() bool {
+// useBootstrap ...
+func useBootstrap() bool {
 	if cfg.HostType == HostClient {
 		return true
 	}
@@ -183,9 +166,29 @@ func optimizeRunCMD(command string, options ...string) error {
 	return err
 }
 
+// stopRunningCMD ...
+func stopRunningCMD() {
+	cluster.Range(
+		func(key, value interface{}) bool {
+			if v, b := value.(*exec.Cmd); b {
+				log.Println("kill", key)
+				err := v.Process.Kill()
+				if err != nil {
+					errors.ErrorStack(err)
+					log.Println(err)
+					return true
+				}
+				cluster.Delete(key)
+				return true
+			}
+			log.Println(key, "not cmd continue")
+			return true
+		})
+}
+
 // Reset ...
 func Reset() error {
-	StopAll()
+	stopRunningCMD()
 	for _, v := range cfg.ClusterEnviron {
 		path := strings.Split(v, "=")[1]
 
@@ -210,18 +213,4 @@ func Reset() error {
 	isInitialized = false
 	go Run(globalContext)
 	return nil
-}
-
-// StopAll ...
-func StopAll() {
-	cluster.Range(
-		func(key, value interface{}) bool {
-			if v, b := value.(*exec.Cmd); b {
-				log.Println("kill", key)
-				v.Process.Kill()
-				return true
-			}
-			log.Println(key, "not cmd continue")
-			return true
-		})
 }

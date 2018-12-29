@@ -25,3 +25,15 @@ func optimizationFirstRunService(ctx context.Context) {
 		panic(err)
 	}
 }
+
+// runService ...
+func runService(ctx context.Context) {
+	if useBootstrap() {
+		boot := getServiceBootstrap()
+		if boot != "" {
+			go optimizeRunCMD(cfg.ServiceCommandName, "daemon", "--bootstrap", boot)
+			return
+		}
+	}
+	go optimizeRunCMD(cfg.ServiceCommandName, "daemon")
+}
