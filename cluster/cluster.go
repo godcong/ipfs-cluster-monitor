@@ -12,8 +12,12 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"sync"
 	"time"
 )
+
+var cluster sync.Map
+var globalContext context.Context
 
 // WaitingForInitialize ...
 func WaitingForInitialize(ctx context.Context) bool {
@@ -33,6 +37,8 @@ func WaitingForInitialize(ctx context.Context) bool {
 
 // Run ...
 func Run(ctx context.Context) {
+	globalContext = ctx
+
 	if WaitingForInitialize(ctx) {
 		if initCheck(InitIPFS) {
 			log.Println("init ipfs")
@@ -42,8 +48,12 @@ func Run(ctx context.Context) {
 			log.Println("init service")
 			firstRunService()
 		}
+		//var ipfs context.Context
+		//ipfs, cancelIPFS = context.WithCancel(context.Background())
 		StartIPFS(ctx)
 		time.Sleep(5 * time.Second)
+		//var service context.Context
+		//service, cancelService = context.WithCancel(context.Background())
 		StartService(ctx)
 	}
 }
@@ -64,7 +74,7 @@ func initCheck(name string) bool {
 
 // StartIPFS ...
 func StartIPFS(ctx context.Context) {
-	go optimizeRunCMD(ctx, "ipfs", "daemon")
+	go optimizeRunCMD("ipfs", "daemon")
 }
 
 // StartService ...
@@ -72,11 +82,11 @@ func StartService(ctx context.Context) {
 	if NeedBootstrap() {
 		boot := getServiceBootstrap()
 		if boot != "" {
-			go optimizeRunCMD(ctx, cfg.ServiceCommandName, "daemon", "--bootstrap", boot)
+			go optimizeRunCMD(cfg.ServiceCommandName, "daemon", "--bootstrap", boot)
 			return
 		}
 	}
-	go optimizeRunCMD(ctx, cfg.ServiceCommandName, "daemon")
+	go optimizeRunCMD(cfg.ServiceCommandName, "daemon")
 }
 
 // NeedBootstrap ...
@@ -110,8 +120,12 @@ func runCMD(command string, options ...string) error {
 	cmd := exec.Command(command, options...)
 
 	cmd.Env = cfg.GetEnv()
-	bytes, err := cmd.CombinedOutput()
-	log.Println(string(bytes))
+	_, err := cmd.CombinedOutput()
+	//if bts != nil {
+	//	bts = bytes.TrimSpace(bts)
+	//	log.Println(string(bts))
+	//}
+
 	if err != nil {
 		errors.ErrorStack(err)
 		log.Println(err)
@@ -119,8 +133,9 @@ func runCMD(command string, options ...string) error {
 	return err
 }
 
-func optimizeRunCMD(ctx context.Context, command string, options ...string) error {
+func optimizeRunCMD(command string, options ...string) error {
 	cmd := exec.Command(command, options...)
+	cluster.Store(command, cmd)
 
 	cmd.Env = cfg.GetEnv()
 
@@ -148,17 +163,16 @@ func optimizeRunCMD(ctx context.Context, command string, options ...string) erro
 	reader := bufio.NewReader(io.MultiReader(stdout, stderr))
 
 	//实时循环读取输出流中的一行内容
+
 	for {
-		select {
-		case <-ctx.Done():
-			break
-		}
 		line, e := reader.ReadString('\n')
 		if e != nil || io.EOF == e {
+			log.Println("end", cmd.Args, e)
+			errors.ErrorStack(err)
 			break
 		}
 
-		log.Println(line)
+		log.Print(line)
 	}
 
 	err = cmd.Wait()
@@ -171,6 +185,7 @@ func optimizeRunCMD(ctx context.Context, command string, options ...string) erro
 
 // Reset ...
 func Reset() error {
+	StopAll()
 	for _, v := range cfg.ClusterEnviron {
 		path := strings.Split(v, "=")[1]
 
@@ -182,17 +197,31 @@ func Reset() error {
 		err := runCMD("rm", "-R", path)
 		if err != nil {
 			errors.ErrorStack(err)
-			return err
+			continue
 		}
 	}
 
-	log.Println("clear /root/.ipfs-cluster-monitor")
-	err := runCMD("rm", "-R", "/root/.ipfs-cluster-monitor")
+	log.Println("clear", cfg.RootPath+"/")
+	err := runCMD("rm", "-R", cfg.RootPath+"/")
 	if err != nil {
 		errors.ErrorStack(err)
-		return err
 	}
-
+	cfg = DefaultConfig()
 	isInitialized = false
+	go Run(globalContext)
 	return nil
+}
+
+// StopAll ...
+func StopAll() {
+	cluster.Range(
+		func(key, value interface{}) bool {
+			if v, b := value.(*exec.Cmd); b {
+				log.Println("kill", key)
+				v.Process.Kill()
+				return true
+			}
+			log.Println(key, "not cmd continue")
+			return true
+		})
 }

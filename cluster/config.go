@@ -127,11 +127,6 @@ func (cfg *Configuration) SetClient(remoteIP string) {
 
 // InitLoader ...
 func (cfg *Configuration) InitLoader() {
-	err := os.Chdir(cfg.RootPath)
-	if err != nil {
-		err := os.MkdirAll(cfg.RootPath, os.ModePerm)
-		CheckError(err)
-	}
 
 	if !IsInitialized() {
 		return
@@ -180,6 +175,12 @@ func (cfg *Configuration) GetEnv() []string {
 
 // Make ...
 func (cfg *Configuration) Make() {
+	err := os.Chdir(cfg.RootPath)
+	if err != nil {
+		err := os.MkdirAll(cfg.RootPath, os.ModePerm)
+		CheckError(err)
+	}
+
 	file, err := os.OpenFile(cfg.RootPath+"/"+DefaultFileName, os.O_RDWR|os.O_CREATE|os.O_SYNC, os.ModePerm)
 	CheckError(err)
 	defer file.Close()

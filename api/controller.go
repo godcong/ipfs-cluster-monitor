@@ -124,6 +124,8 @@ func ResetGet(ver string) gin.HandlerFunc {
 			failed(ctx, err.Error())
 			return
 		}
+
+		//time.Sleep(5 * time.Second)
 		success(ctx, nil)
 	}
 }
