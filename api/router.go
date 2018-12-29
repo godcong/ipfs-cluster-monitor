@@ -53,5 +53,12 @@ func Router(eng *gin.Engine) {
 func JoinPost(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
+		name := ctx.PostForm("name")
+		address := ctx.PostForm("address")
+		if address == "" {
+			address = ctx.Request.RemoteAddr
+		}
+		cluster.JoinFromClient(name, address)
+		success(ctx, nil)
 	}
 }

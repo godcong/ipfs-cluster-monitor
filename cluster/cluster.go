@@ -16,6 +16,13 @@ import (
 	"time"
 )
 
+// ResultMessage ...
+type ResultMessage struct {
+	Code    int
+	Message string
+	Detail  interface{}
+}
+
 var commands sync.Map
 var globalContext context.Context
 
@@ -89,8 +96,8 @@ func isClient() bool {
 }
 
 func getServiceBootstrap() string {
-	url := strings.Join([]string{cfg.RemoteIP, "v0", "bootstrap"}, "/")
-	response, err := http.Get("http://" + url)
+
+	response, err := http.Get(webAddress("bootstrap"))
 	if err != nil {
 		return ""
 	}
@@ -192,6 +199,11 @@ func stopRunningCMD() {
 			log.Println(key, "not cmd continue")
 			return true
 		})
+}
+
+func webAddress(api string) string {
+	url := strings.Join([]string{cfg.RemoteIP, cfg.Version, api}, "/")
+	return "http://" + url
 }
 
 // Reset ...
