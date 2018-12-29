@@ -225,18 +225,8 @@ func Reset() error {
 	//stop running ipfs and service
 	stopRunningCMD()
 
-	ipfs := defaultIPFS()
-	if cfg.Environ.Ipfs != "" {
-		ipfs = string(cfg.Environ.Ipfs)
-	}
-	clear(ipfs)
-
-	service := defaultService()
-	if cfg.Environ.Service != "" {
-		service = string(cfg.Environ.Service)
-	}
-	clear(service)
-
+	clear(ipfsPath())
+	clear(servicePath())
 	clear(cfg.RootPath)
 
 	//reset config

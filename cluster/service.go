@@ -2,7 +2,6 @@ package cluster
 
 import (
 	"context"
-	"fmt"
 	"github.com/json-iterator/go"
 	"github.com/juju/errors"
 	"io/ioutil"
@@ -10,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"os/user"
 	"path/filepath"
 )
 
@@ -212,26 +210,17 @@ func GetPeers() []ServicePeer {
 	return nil
 }
 
-func defaultService() string {
-	home := os.Getenv("HOME")
-	if home == "" {
-		usr, err := user.Current()
-		if err != nil {
-			panic(fmt.Sprintf("cannot get current user: %s", err))
-		}
-		home = usr.HomeDir
+func servicePath() string {
+	if cfg.Environ.Service != "" {
+		return string(cfg.Environ.Service)
 	}
-
-	return filepath.Join(home, ".ipfs-cluster")
+	return defaultPath(".ipfs-cluster")
 }
 
 func GetServiceConfig() (*ServiceConfig, error) {
 	var serviceConfig ServiceConfig
-	path := defaultService()
-	if cfg.Environ.Service != "" {
-		path = string(cfg.Environ.Service)
-	}
-	file := filepath.Join(path, "service.json")
+
+	file := filepath.Join(servicePath(), "service.json")
 	openFile, err := os.OpenFile(file, os.O_RDONLY, os.ModePerm)
 	if err != nil {
 		return nil, err
