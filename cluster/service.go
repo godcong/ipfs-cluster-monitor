@@ -227,6 +227,19 @@ func defaultService() string {
 
 func GetServiceConfig() *ServiceConfig {
 	var serviceConfig ServiceConfig
-
+	path := defaultService()
+	if cfg.Environ.Service != "" {
+		path = string(cfg.Environ.Service)
+	}
+	file := filepath.Join(path, "service.json")
+	openFile, err := os.OpenFile(file, os.O_RDONLY, os.ModePerm)
+	if err != nil {
+		return nil
+	}
+	dec := jsoniter.NewDecoder(openFile)
+	err = dec.Decode(&serviceConfig)
+	if err != nil {
+		return nil
+	}
 	return &serviceConfig
 }
