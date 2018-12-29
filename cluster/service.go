@@ -3,7 +3,9 @@ package cluster
 import (
 	"context"
 	"github.com/juju/errors"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"os/exec"
 )
 
@@ -36,4 +38,25 @@ func runService(ctx context.Context) {
 		}
 	}
 	go optimizeRunCMD(cfg.ServiceCommandName, "daemon")
+}
+
+// DeletePeers ...
+func DeletePeers(peerID string) error {
+	request, err := http.NewRequest(http.MethodDelete, "http://localhost:9094/peers/"+peerID, nil)
+	if err != nil {
+		errors.ErrorStack(err)
+		return err
+	}
+	response, err := http.DefaultClient.Do(request)
+	if err != nil {
+		errors.ErrorStack(err)
+		return err
+	}
+	bytes, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		errors.ErrorStack(err)
+		return err
+	}
+	log.Println(string(bytes))
+	return nil
 }

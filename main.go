@@ -27,9 +27,6 @@ func main() {
 	if err != nil {
 		errors.ErrorStack(err)
 	}
-
-	cluster.runMonitor(ctx)
-
 }
 
 // NoResponse ...

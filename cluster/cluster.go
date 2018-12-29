@@ -16,7 +16,7 @@ import (
 	"time"
 )
 
-var cluster sync.Map
+var commands sync.Map
 var globalContext context.Context
 
 // waitingForInitialize ...
@@ -55,6 +55,10 @@ func Run(ctx context.Context) {
 		//var service context.Context
 		//service, cancelService = context.WithCancel(context.Background())
 		runService(ctx)
+
+		time.Sleep(5 * time.Second)
+
+		runMonitor(ctx)
 	}
 }
 
@@ -118,7 +122,7 @@ func runCMD(command string, options ...string) error {
 
 func optimizeRunCMD(command string, options ...string) error {
 	cmd := exec.Command(command, options...)
-	cluster.Store(command, cmd)
+	commands.Store(command, cmd)
 
 	cmd.Env = cfg.GetEnv()
 
@@ -168,7 +172,7 @@ func optimizeRunCMD(command string, options ...string) error {
 
 // stopRunningCMD ...
 func stopRunningCMD() {
-	cluster.Range(
+	commands.Range(
 		func(key, value interface{}) bool {
 			if v, b := value.(*exec.Cmd); b {
 				log.Println("kill", key)
@@ -178,7 +182,7 @@ func stopRunningCMD() {
 					log.Println(err)
 					return true
 				}
-				cluster.Delete(key)
+				commands.Delete(key)
 				return true
 			}
 			log.Println(key, "not cmd continue")

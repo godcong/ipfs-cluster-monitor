@@ -61,20 +61,7 @@ func InitPost(s string) gin.HandlerFunc {
 // HeartBeatGet ...
 func HeartBeatGet(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		response, err := http.Get("http://localhost:9094/peers")
-		if err != nil {
-			failed(ctx, err.Error())
-			return
-		}
-
-		bytes, err := ioutil.ReadAll(response.Body)
-		if err != nil {
-			failed(ctx, err.Error())
-			return
-		}
-
-		ctx.String(http.StatusOK, string(bytes))
-
+		success(ctx, cluster.GetPeers())
 	}
 }
 
@@ -89,7 +76,7 @@ func LogGet(ver string) gin.HandlerFunc {
 func BootstrapGet(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var err error
-		var s cluster.ServiceStatus
+		var s cluster.Peer
 		resp, err := http.Get("http://127.0.0.1:9094/id")
 		if err != nil {
 			failed(ctx, err.Error())
@@ -128,4 +115,25 @@ func ResetGet(ver string) gin.HandlerFunc {
 		//time.Sleep(5 * time.Second)
 		success(ctx, nil)
 	}
+}
+
+// DeleteGet ...
+func DeleteGet(s string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+		peers := cluster.GetPeers()
+		size := len(peers)
+		for i := 0; i < size; i++ {
+			if peers[0].ID == id {
+				err := cluster.DeletePeers(id)
+				if err != nil {
+					failed(ctx, err.Error())
+					return
+				}
+				success(ctx, nil)
+			}
+		}
+		failed(ctx, "peers not found")
+	}
+
 }

@@ -21,4 +21,6 @@ func Router(eng *gin.Engine) {
 	v0.GET("bootstrap", BootstrapGet(ver))
 
 	v0.GET("reset", ResetGet(ver))
+
+	v0.GET("delete/:id", DeleteGet(ver))
 }

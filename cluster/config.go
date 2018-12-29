@@ -45,32 +45,6 @@ type Configuration struct {
 	MonitorInterval    time.Duration
 }
 
-// ServiceStatus ...
-type ServiceStatus struct {
-	ID                    string        `json:"id"`
-	Addresses             []string      `json:"addresses"`
-	ClusterPeers          []string      `json:"cluster_peers"`
-	ClusterPeersAddresses []interface{} `json:"cluster_peers_addresses"`
-	Version               string        `json:"version"`
-	Commit                string        `json:"commit"`
-	RPCProtocolVersion    string        `json:"rpc_protocol_version"`
-	Error                 string        `json:"error"`
-	Ipfs                  struct {
-		ID        string   `json:"id"`
-		Addresses []string `json:"addresses"`
-		Error     string   `json:"error"`
-	} `json:"ipfs"`
-	Peername string `json:"peername"`
-}
-
-type ipfsInfo struct {
-	ID              string   `json:"ID"`
-	PublicKey       string   `json:"PublicKey"`
-	Addresses       []string `json:"Addresses"`
-	AgentVersion    string   `json:"AgentVersion"`
-	ProtocolVersion string   `json:"ProtocolVersion"`
-}
-
 var cfg *Configuration
 
 func init() {
