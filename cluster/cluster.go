@@ -64,7 +64,7 @@ func initCheck(name string) bool {
 
 // StartIPFS ...
 func StartIPFS(ctx context.Context) {
-	go opRun(ctx, "ipfs", "daemon")
+	go optimizeRunCmd(ctx, "ipfs", "daemon")
 }
 
 // StartService ...
@@ -72,11 +72,11 @@ func StartService(ctx context.Context) {
 	if NeedBootstrap() {
 		boot := getServiceBootstrap()
 		if boot != "" {
-			go opRun(ctx, cfg.ServiceCommandName, "daemon", "--bootstrap", boot)
+			go optimizeRunCmd(ctx, cfg.ServiceCommandName, "daemon", "--bootstrap", boot)
 			return
 		}
 	}
-	go opRun(ctx, cfg.ServiceCommandName, "daemon")
+	go optimizeRunCmd(ctx, cfg.ServiceCommandName, "daemon")
 }
 
 // NeedBootstrap ...
@@ -106,13 +106,25 @@ func getServiceBootstrap() string {
 	return ""
 }
 
-func opRun(ctx context.Context, command string, options ...string) error {
+func runCmd(command string, options ...string) error {
+	cmd := exec.Command(command, options...)
+
+	cmd.Env = cfg.GetEnv()
+	bytes, err := cmd.CombinedOutput()
+	log.Println(string(bytes))
+	if err != nil {
+		errors.ErrorStack(err)
+		log.Println(err)
+	}
+	return err
+}
+
+func optimizeRunCmd(ctx context.Context, command string, options ...string) error {
 	cmd := exec.Command(command, options...)
 
 	cmd.Env = cfg.GetEnv()
 
 	//显示运行的命令
-	log.Println(command, options)
 	log.Println("command:", cmd.Args)
 
 	stdout, err := cmd.StdoutPipe()
@@ -159,16 +171,15 @@ func opRun(ctx context.Context, command string, options ...string) error {
 
 // Reset ...
 func Reset() error {
-
 	for _, v := range cfg.ClusterEnviron {
 		path := strings.Split(v, "=")[1]
 
-		if strings.LastIndex(path, "/") == 0 {
+		if strings.LastIndex(path, "/") != 0 {
 			path = path + "/"
 		}
 
 		log.Println("clear", path)
-		err := opRun(context.Background(), "rm", "-R", path)
+		err := runCmd("rm", "-R", path)
 		if err != nil {
 			errors.ErrorStack(err)
 			return err
@@ -176,7 +187,7 @@ func Reset() error {
 	}
 
 	log.Println("clear /root/.ipfs-cluster-monitor")
-	err := opRun(context.Background(), "rm", "-R", "/root/.ipfs-cluster-monitor")
+	err := runCmd("rm", "-R", "/root/.ipfs-cluster-monitor")
 	if err != nil {
 		errors.ErrorStack(err)
 		return err
