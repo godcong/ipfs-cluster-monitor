@@ -64,7 +64,7 @@ func initCheck(name string) bool {
 
 // StartIPFS ...
 func StartIPFS(ctx context.Context) {
-	go optimizeRunCmd(ctx, "ipfs", "daemon")
+	go optimizeRunCMD(ctx, "ipfs", "daemon")
 }
 
 // StartService ...
@@ -72,11 +72,11 @@ func StartService(ctx context.Context) {
 	if NeedBootstrap() {
 		boot := getServiceBootstrap()
 		if boot != "" {
-			go optimizeRunCmd(ctx, cfg.ServiceCommandName, "daemon", "--bootstrap", boot)
+			go optimizeRunCMD(ctx, cfg.ServiceCommandName, "daemon", "--bootstrap", boot)
 			return
 		}
 	}
-	go optimizeRunCmd(ctx, cfg.ServiceCommandName, "daemon")
+	go optimizeRunCMD(ctx, cfg.ServiceCommandName, "daemon")
 }
 
 // NeedBootstrap ...
@@ -106,7 +106,7 @@ func getServiceBootstrap() string {
 	return ""
 }
 
-func runCmd(command string, options ...string) error {
+func runCMD(command string, options ...string) error {
 	cmd := exec.Command(command, options...)
 
 	cmd.Env = cfg.GetEnv()
@@ -119,7 +119,7 @@ func runCmd(command string, options ...string) error {
 	return err
 }
 
-func optimizeRunCmd(ctx context.Context, command string, options ...string) error {
+func optimizeRunCMD(ctx context.Context, command string, options ...string) error {
 	cmd := exec.Command(command, options...)
 
 	cmd.Env = cfg.GetEnv()
@@ -179,7 +179,7 @@ func Reset() error {
 		}
 
 		log.Println("clear", path)
-		err := runCmd("rm", "-R", path)
+		err := runCMD("rm", "-R", path)
 		if err != nil {
 			errors.ErrorStack(err)
 			return err
@@ -187,7 +187,7 @@ func Reset() error {
 	}
 
 	log.Println("clear /root/.ipfs-cluster-monitor")
-	err := runCmd("rm", "-R", "/root/.ipfs-cluster-monitor")
+	err := runCMD("rm", "-R", "/root/.ipfs-cluster-monitor")
 	if err != nil {
 		errors.ErrorStack(err)
 		return err

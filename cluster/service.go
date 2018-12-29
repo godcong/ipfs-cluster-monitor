@@ -20,7 +20,7 @@ func firstRunService() {
 }
 
 func optimizationFirstRunService(ctx context.Context) {
-	err := optimizeRunCmd(ctx, cfg.ServiceCommandName, "init")
+	err := optimizeRunCMD(ctx, cfg.ServiceCommandName, "init")
 	if err != nil {
 		panic(err)
 	}

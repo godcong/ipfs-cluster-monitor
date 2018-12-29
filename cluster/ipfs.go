@@ -20,7 +20,7 @@ func firstRunIPFS() {
 }
 
 func optimizationFirstRunIPFS(ctx context.Context) {
-	err := optimizeRunCmd(ctx, cfg.CommandName, "init")
+	err := optimizeRunCMD(ctx, cfg.CommandName, "init")
 	if err != nil {
 		panic(err)
 	}
