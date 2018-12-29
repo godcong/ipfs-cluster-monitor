@@ -208,31 +208,43 @@ func webAddress(api string) string {
 	return "http://" + url
 }
 
-// Reset ...
-func Reset() error {
-	stopRunningCMD()
-	for _, v := range cfg.ClusterEnviron {
-		path := strings.Split(v, "=")[1]
-
-		if strings.LastIndex(path, "/") != 0 {
-			path = path + "/"
-		}
-
-		log.Println("clear", path)
-		err := runCMD("rm", "-R", path)
-		if err != nil {
-			errors.ErrorStack(err)
-			continue
-		}
+func clear(path string) {
+	if strings.LastIndex(path, "/") != 0 {
+		path = path + "/"
 	}
-
-	log.Println("clear", cfg.RootPath+"/")
-	err := runCMD("rm", "-R", cfg.RootPath+"/")
+	log.Println("clear", path)
+	err := runCMD("rm", "-R", path)
 	if err != nil {
 		errors.ErrorStack(err)
 	}
+	return
+}
+
+// Reset ...
+func Reset() error {
+	//stop running ipfs and service
+	stopRunningCMD()
+
+	ipfs := defaultIPFS()
+	if cfg.Environ.Ipfs != "" {
+		ipfs = string(cfg.Environ.Ipfs)
+	}
+	clear(ipfs)
+
+	service := defaultService()
+	if cfg.Environ.Service != "" {
+		service = string(cfg.Environ.Service)
+	}
+	clear(service)
+
+	clear(cfg.RootPath)
+
+	//reset config
 	cfg = DefaultConfig()
+	//reset status
 	isInitialized = false
+
+	//rerun
 	go Run(globalContext)
 	return nil
 }

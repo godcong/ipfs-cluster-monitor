@@ -79,7 +79,7 @@ func BootstrapGet(ver string) gin.HandlerFunc {
 		var err error
 		var s cluster.ServicePeer
 		resp, err := http.Get("http://127.0.0.1:9094/id")
-		log.Println(resp.Header.Get("secret"))
+		log.Println(ctx.Request.Header.Get("secret"))
 		if err != nil {
 			failed(ctx, err.Error())
 			return
