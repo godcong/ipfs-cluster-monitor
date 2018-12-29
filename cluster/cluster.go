@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -23,6 +24,7 @@ type ResultMessage struct {
 	Message string                 `json:"message"`
 }
 
+var waiting = 0
 var commands sync.Map
 var globalContext context.Context
 var globalCancel context.CancelFunc
@@ -66,13 +68,15 @@ func Run(ctx context.Context) {
 		runService(globalContext)
 
 		time.Sleep(cfg.Interval)
-		if isClient() {
-			runJoin(cluster)
-		} else {
-			runMonitor(cluster)
-		}
 
+		if isClient() {
+			go runJoin(cluster)
+		} else {
+			go runMonitor(cluster)
+		}
+		waiting = -1
 	}
+
 }
 
 // initCheck ...
@@ -137,7 +141,8 @@ func runCMD(command string, options ...string) error {
 
 func optimizeRunCMD(command string, options ...string) error {
 	cmd := exec.Command(command, options...)
-	commands.Store(command, cmd)
+	end := strconv.FormatInt(time.Now().Unix(), 10)
+	commands.Store(command+"_"+end, cmd)
 
 	cmd.Env = cfg.GetEnv()
 
@@ -195,7 +200,6 @@ func stopRunningCMD() {
 				if err != nil {
 					errors.ErrorStack(err)
 					log.Println(err)
-					return true
 				}
 				commands.Delete(key)
 				return true
@@ -222,8 +226,13 @@ func clear(path string) {
 	return
 }
 
+func Waiting() int {
+	return waiting
+}
+
 // Reset ...
 func Reset() error {
+	waiting = cfg.ResetWaiting
 	//stop running ipfs and service
 	stopRunningCMD()
 
@@ -239,6 +248,11 @@ func Reset() error {
 	if globalCancel != nil {
 		globalCancel()
 		globalCancel = nil
+	}
+
+	//waiting 30 sec to restart
+	for ; waiting >= 0; waiting-- {
+		time.Sleep(time.Second)
 	}
 
 	//rerun

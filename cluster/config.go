@@ -68,6 +68,7 @@ type Configuration struct {
 	Interval            time.Duration
 	ServerCheckInterval time.Duration
 	MonitorInterval     time.Duration
+	ResetWaiting        int
 }
 
 var cfg *Configuration
@@ -121,6 +122,7 @@ func DefaultConfig() *Configuration {
 		Interval:            1 * time.Second,
 		MonitorInterval:     5 * time.Second,
 		ServerCheckInterval: 60 * time.Second,
+		ResetWaiting:        30,
 	}
 }
 

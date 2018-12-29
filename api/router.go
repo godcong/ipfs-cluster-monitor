@@ -21,7 +21,7 @@ func Router(eng *gin.Engine) {
 	v0.GET("log", LogGet(ver))
 
 	v0.GET("reset", ResetGet(ver))
-
+	v0.GET("waiting", WaitingGet(ver))
 	v0.GET("delete/:pn", DeleteGet(ver))
 	v0.POST("join", JoinPost(ver))
 

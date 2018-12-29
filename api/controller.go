@@ -105,17 +105,26 @@ func BootstrapGet(ver string) gin.HandlerFunc {
 	}
 }
 
+func WaitingGet(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		if cluster.Waiting() <= 0 {
+			success(ctx, "finished or not start")
+			return
+		}
+		success(ctx, gin.H{"waiting": cluster.Waiting()})
+	}
+}
+
 // ResetGet ...
 func ResetGet(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		err := cluster.Reset()
-		if err != nil {
-			failed(ctx, err.Error())
+		log.Println("waiting:", cluster.Waiting())
+		if cluster.Waiting() < 0 || ctx.Query("force") == "true" {
+			go cluster.Reset()
+			success(ctx, "resetting")
 			return
 		}
-
-		//time.Sleep(5 * time.Second)
-		success(ctx, nil)
+		failed(ctx, "can't reset now")
 	}
 }
 
