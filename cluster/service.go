@@ -10,10 +10,11 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"time"
 )
 
-// ServicePeer ...
-type ServicePeer struct {
+// ServiceInfo ...
+type ServiceInfo struct {
 	ID                    string        `json:"id"`
 	Addresses             []string      `json:"addresses"`
 	ClusterPeers          []string      `json:"cluster_peers"`
@@ -147,6 +148,21 @@ func optimizationFirstRunService(ctx context.Context) {
 
 // runService ...
 func runService(ctx context.Context) {
+	var err error
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+
+		}
+		_, err = getIpfsInfo()
+		if err == nil {
+			break
+		}
+		time.Sleep(cfg.Interval)
+
+	}
 	if isClient() {
 		boot := getServiceBootstrap()
 		if boot != "" {
@@ -158,7 +174,7 @@ func runService(ctx context.Context) {
 	go optimizeRunCMD(cfg.ServiceCommandName, "daemon")
 }
 
-func getPeers() ([]ServicePeer, error) {
+func getPeers() ([]ServiceInfo, error) {
 	response, err := http.Get("http://localhost:9094/peers")
 	if err != nil {
 		return nil, err
@@ -169,7 +185,7 @@ func getPeers() ([]ServicePeer, error) {
 		return nil, err
 	}
 
-	var peers []ServicePeer
+	var peers []ServiceInfo
 
 	err = jsoniter.Unmarshal(bytes, &peers)
 	if err != nil {
@@ -203,9 +219,9 @@ func DeletePeers(peerID string) error {
 }
 
 // GetPeers ...
-func GetPeers() []ServicePeer {
+func GetPeers() []ServiceInfo {
 	if peers, b := monitor.Load(MonitorPeers); b {
-		return peers.([]ServicePeer)
+		return peers.([]ServiceInfo)
 	}
 	return nil
 }

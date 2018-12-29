@@ -2,13 +2,16 @@ package cluster
 
 import (
 	"context"
+	"github.com/json-iterator/go"
 	"github.com/juju/errors"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"os/exec"
 )
 
-// IPFSInfo ...
-type IPFSInfo struct {
+// IpfsInfo ...
+type IpfsInfo struct {
 	ID              string   `json:"ID"`
 	PublicKey       string   `json:"PublicKey"`
 	Addresses       []string `json:"Addresses"`
@@ -38,6 +41,23 @@ func optimizationFirstRunIPFS(ctx context.Context) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func getIpfsInfo() (*IpfsInfo, error) {
+	var ipfs IpfsInfo
+	response, err := http.Get("http://localhost:5001/api/v0/id")
+	if err != nil {
+		return nil, err
+	}
+	bytes, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+	err = jsoniter.Unmarshal(bytes, &ipfs)
+	if err != nil {
+		return nil, err
+	}
+	return &ipfs, nil
 }
 
 func ipfsPath() string {

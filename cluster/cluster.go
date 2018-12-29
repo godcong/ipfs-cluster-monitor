@@ -25,12 +25,13 @@ type ResultMessage struct {
 
 var commands sync.Map
 var globalContext context.Context
+var globalCancel context.CancelFunc
 
 // waitingForInitialize ...
 func waitingForInitialize(ctx context.Context) bool {
 	for {
 		if !IsInitialized() {
-			time.Sleep(time.Second * 5)
+			time.Sleep(cfg.Interval)
 			select {
 			case <-ctx.Done():
 				return false
@@ -44,7 +45,7 @@ func waitingForInitialize(ctx context.Context) bool {
 
 // Run ...
 func Run(ctx context.Context) {
-	globalContext = ctx
+	globalContext, globalCancel = context.WithCancel(context.Background())
 
 	if waitingForInitialize(ctx) {
 		if initCheck(InitIPFS) {
@@ -58,16 +59,15 @@ func Run(ctx context.Context) {
 		//var ipfs context.Context
 		//ipfs, cancelIPFS = context.WithCancel(context.Background())
 		runIPFS(ctx)
-		time.Sleep(5 * time.Second)
 		//var service context.Context
 		//service, cancelService = context.WithCancel(context.Background())
 		runService(ctx)
 
-		time.Sleep(5 * time.Second)
+		time.Sleep(cfg.Interval)
 		if isClient() {
-			runJoin(ctx)
+			runJoin(globalContext)
 		} else {
-			runMonitor(ctx)
+			runMonitor(globalContext)
 		}
 
 	}
@@ -233,6 +233,11 @@ func Reset() error {
 	cfg = DefaultConfig()
 	//reset status
 	isInitialized = false
+
+	if globalCancel != nil {
+		globalCancel()
+		globalCancel = nil
+	}
 
 	//rerun
 	go Run(globalContext)

@@ -77,7 +77,7 @@ func LogGet(ver string) gin.HandlerFunc {
 func BootstrapGet(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var err error
-		var s cluster.ServicePeer
+		var s cluster.ServiceInfo
 		resp, err := http.Get("http://127.0.0.1:9094/id")
 		log.Println(ctx.Request.Header.Get("secret"))
 		if err != nil {
