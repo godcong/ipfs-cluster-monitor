@@ -29,8 +29,10 @@ func failed(ctx *gin.Context, message string) {
 	result(ctx, -1, message, nil)
 }
 
-func InitGet(s string) gin.HandlerFunc {
-
+func InitGet(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		success(ctx, cluster.Default().GetStatus("init"))
+	}
 }
 
 // InitPost ...
