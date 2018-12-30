@@ -19,6 +19,20 @@ import (
 	"time"
 )
 
+type StatusCode int
+
+const (
+	StatusFailed      StatusCode = -1
+	StatusSuccess     StatusCode = 0
+	StatusStart       StatusCode = iota
+	StatusCreated     StatusCode = iota
+	StatusProcessing  StatusCode = iota
+	StatusIpfsInit    StatusCode = iota
+	StatusServiceInit StatusCode = iota
+	StatusIpfsRun     StatusCode = iota
+	StatusServiceRun  StatusCode = iota
+)
+
 // ResultMessage ...
 type ResultMessage struct {
 	Code    int                    `json:"code"`
@@ -72,20 +86,27 @@ func (c *Cluster) Start() {
 	if waitingForInitialize(c.context) {
 		if initCheck(InitIPFS) {
 			log.Println("init ipfs")
+			c.SetStatus("init", StatusIpfsInit)
 			firstRunIPFS()
+
 		}
 		if initCheck(InitService) {
 			log.Println("init service")
+			c.SetStatus("init", StatusServiceInit)
 			firstRunService()
 		}
 		//var ipfs context.Context
 		//ipfs, cancelIPFS = context.WithCancel(context.Background())
+		c.SetStatus("init", StatusIpfsRun)
 		runIPFS(c.context)
+		waitingIpfs(c.context)
+
 		//var service context.Context
 		//service, cancelService = context.WithCancel(context.Background())
-		runService(c.context)
 
-		time.Sleep(cfg.Interval)
+		c.SetStatus("init", StatusServiceRun)
+		runService(c.context)
+		waitingService(c.context)
 
 		if isClient() {
 			runJoin(cluster.context)
@@ -279,14 +300,6 @@ func (c *Cluster) Reset() error {
 	go c.Start()
 	return nil
 }
-
-type StatusCode int
-
-const (
-	StatusFailed     StatusCode = -1
-	StautsSuccess    StatusCode = 0
-	StatusProcessing StatusCode = 1
-)
 
 func (c *Cluster) SetStatus(key string, value StatusCode) {
 	c.status.Store(key, value)

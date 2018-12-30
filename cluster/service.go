@@ -148,21 +148,7 @@ func optimizationFirstRunService(ctx context.Context) {
 
 // runService ...
 func runService(ctx context.Context) {
-	var err error
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		default:
 
-		}
-		_, err = getIpfsInfo()
-		if err == nil {
-			break
-		}
-		time.Sleep(cfg.Interval)
-
-	}
 	if isClient() {
 		boot := getServiceBootstrap()
 		if boot != "" {
@@ -231,6 +217,40 @@ func servicePath() string {
 		return string(cfg.Environ.Service)
 	}
 	return defaultPath(".ipfs-cluster")
+}
+
+func getServiceInfo() (*ServiceInfo, error) {
+	var service ServiceInfo
+	response, err := http.Get("http://localhost:9094/id")
+	if err != nil {
+		return nil, err
+	}
+	bytes, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+	err = jsoniter.Unmarshal(bytes, &service)
+	if err != nil {
+		return nil, err
+	}
+	return &service, nil
+}
+
+func waitingService(ctx context.Context) {
+	var err error
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+
+		}
+		_, err = getServiceInfo()
+		if err == nil {
+			break
+		}
+		time.Sleep(cfg.Interval)
+	}
 }
 
 func GetServiceConfig() (*ServiceConfig, error) {

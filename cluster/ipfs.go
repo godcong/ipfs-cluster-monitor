@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os/exec"
+	"time"
 )
 
 // IpfsInfo ...
@@ -65,4 +66,21 @@ func ipfsPath() string {
 		return string(cfg.Environ.Ipfs)
 	}
 	return defaultPath(".ipfs")
+}
+
+func waitingIpfs(ctx context.Context) {
+	var err error
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+
+		}
+		_, err = getIpfsInfo()
+		if err == nil {
+			break
+		}
+		time.Sleep(cfg.Interval)
+	}
 }

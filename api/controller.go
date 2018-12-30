@@ -29,6 +29,10 @@ func failed(ctx *gin.Context, message string) {
 	result(ctx, -1, message, nil)
 }
 
+func InitGet(s string) gin.HandlerFunc {
+
+}
+
 // InitPost ...
 func InitPost(s string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -53,7 +57,7 @@ func InitPost(s string) gin.HandlerFunc {
 			cluster.Config().SetEnv(cluster.EnvironIPFS(ipfs))
 			cluster.Config().SetEnv(cluster.EnvironService(service))
 			cluster.Config().Make()
-			cluster.Default().SetStatus("init", cluster.StautsSuccess)
+			cluster.Default().SetStatus("init", cluster.StatusCreated)
 
 			log.Println("host initialized")
 			success(ctx, cluster.Config())

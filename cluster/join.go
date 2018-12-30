@@ -19,7 +19,7 @@ func runJoin(ctx context.Context) {
 			case <-ctx.Done():
 				return
 			default:
-				joinToServer()
+				findMyFather()
 				time.Sleep(cfg.ServerCheckInterval)
 			}
 			//get info
@@ -27,7 +27,7 @@ func runJoin(ctx context.Context) {
 	}()
 }
 
-func joinToServer() error {
+func findMyFather() error {
 	response, err := http.PostForm(webAddress("join"), url.Values{})
 	if err != nil {
 		errors.ErrorStack(err)

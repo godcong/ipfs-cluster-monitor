@@ -15,7 +15,7 @@ func Router(eng *gin.Engine) {
 	v0 := eng.Group(ver)
 
 	v0.POST("init", InitPost(ver))
-
+	v0.GET("init", InitGet(ver))
 	v0.GET("heartbeat", HeartBeatGet(ver))
 
 	v0.GET("log", LogGet(ver))
