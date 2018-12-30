@@ -32,6 +32,7 @@ type Cluster struct {
 	cancelFunc    context.CancelFunc
 	commands      sync.Map
 	status        sync.Map
+	isInitialized bool
 	waiting       int32
 }
 
@@ -206,8 +207,8 @@ func (c *Cluster) optimizeRunCMD(command string, options ...string) error {
 }
 
 // stopRunningCMD ...
-func stopRunningCMD() {
-	commands.Range(
+func (c *Cluster) stopRunningCMD() {
+	c.commands.Range(
 		func(key, value interface{}) bool {
 			if v, b := value.(*exec.Cmd); b {
 				log.Println("kill", key)
@@ -216,7 +217,7 @@ func stopRunningCMD() {
 					errors.ErrorStack(err)
 					log.Println(err)
 				}
-				commands.Delete(key)
+				c.commands.Delete(key)
 				return true
 			}
 			log.Println(key, "not cmd continue")
@@ -241,15 +242,15 @@ func clear(path string) {
 	return
 }
 
-func Waiting() int {
-	return waiting
+func (c *Cluster) ResetWaiting() int {
+	return int(atomic.LoadInt32(&c.waiting))
 }
 
 // Reset ...
-func Reset() error {
-	waiting = cfg.ResetWaiting
+func (c *Cluster) Reset() error {
+	waiting := int32(cfg.ResetWaiting)
 	//stop running ipfs and service
-	stopRunningCMD()
+	c.stopRunningCMD()
 
 	clear(ipfsPath())
 	clear(servicePath())
@@ -258,22 +259,24 @@ func Reset() error {
 	//reset config
 	cfg = DefaultConfig()
 
-	if globalCancel != nil {
-		globalCancel()
-		globalCancel = nil
+	if c.cancelFunc != nil {
+		c.cancelFunc()
+		c.cancelFunc = nil
 	}
 
 	//reset status
-	isInitialized = false
+
+	c.isInitialized = false
 	SetStatus("init", StatusFailed)
 
 	//waiting 30 sec to restart
 	for ; waiting >= 0; waiting-- {
+		atomic.StoreInt32(&c.waiting, waiting)
 		time.Sleep(time.Second)
 	}
 
 	//rerun
-	go Run(globalContext)
+	go Run(nil)
 	return nil
 }
 

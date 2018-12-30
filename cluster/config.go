@@ -21,8 +21,6 @@ const InitIPFS = "ipfs"
 // InitService ...
 const InitService = "service"
 
-var isInitialized bool
-
 // HostType ...
 type HostType string
 
