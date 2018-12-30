@@ -29,7 +29,7 @@ func Router(eng *gin.Engine) {
 	v0.GET("secret", SecretGet(ver))
 	v0.GET("killyou/:id", KillGet(ver))
 
-	v0.Any("test", func(context *gin.Context) {
+	v0.Any("debug", func(context *gin.Context) {
 		request, err := http.NewRequest(context.Request.Method, context.Query("url"), context.Request.Body)
 		if err != nil {
 			failed(context, err.Error())

@@ -32,6 +32,7 @@ func failed(ctx *gin.Context, message string) {
 // InitPost ...
 func InitPost(s string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+
 		remote := ctx.PostForm("Remote")
 		secret := ctx.PostForm("Secret")
 		clusterSecret := ctx.PostForm("CLUSTER_SECRET")
@@ -56,6 +57,7 @@ func InitPost(s string) gin.HandlerFunc {
 		}
 
 		failed(ctx, "host is initialized")
+
 	}
 }
 
