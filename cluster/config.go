@@ -223,11 +223,11 @@ func (cfg *Configuration) Make() {
 
 // IsInitialized ...
 func IsInitialized() bool {
-	if isInitialized == false {
-		isInitialized = cfg.CheckExist()
+	if cluster.isInitialized == false {
+		cluster.isInitialized = cfg.CheckExist()
 	}
 
-	return isInitialized
+	return cluster.isInitialized
 }
 
 // CheckError ...
