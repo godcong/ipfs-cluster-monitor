@@ -60,7 +60,7 @@ type Configuration struct {
 	RootPath            string
 	CommandName         string
 	ServiceCommandName  string
-	Secret              string
+	MonitorSecret       string
 	HostType            HostType
 	RemoteIP            string
 	RemotePort          string

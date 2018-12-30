@@ -42,9 +42,9 @@ func InitPost(s string) gin.HandlerFunc {
 		if !cluster.IsInitialized() {
 			if remote != "" {
 				cluster.Config().SetClient(remote)
-				cluster.Config().Secret = secret
+				cluster.Config().MonitorSecret = secret
 			} else {
-				cluster.Config().Secret = prefix + cluster.GenerateRandomString(64)
+				cluster.Config().MonitorSecret = prefix + cluster.GenerateRandomString(64)
 			}
 			cluster.Config().SetEnv(cluster.EnvironSecret(clusterSecret))
 			cluster.Config().SetEnv(cluster.EnvironIPFS(ipfs))
