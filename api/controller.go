@@ -32,10 +32,10 @@ func failed(ctx *gin.Context, message string) {
 // InitPost ...
 func InitPost(s string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		if cluster.GetStatus("init") != cluster.StatusFailed {
+		if cluster.Default().GetStatus("init") != cluster.StatusFailed {
 			failed(ctx, "cant't run init")
 		}
-		cluster.SetStatus("init", cluster.StatusProcessing)
+		cluster.Default().SetStatus("init", cluster.StatusProcessing)
 		remote := ctx.PostForm("Remote")
 		secret := ctx.PostForm("Secret")
 		clusterSecret := ctx.PostForm("CLUSTER_SECRET")
@@ -53,7 +53,7 @@ func InitPost(s string) gin.HandlerFunc {
 			cluster.Config().SetEnv(cluster.EnvironIPFS(ipfs))
 			cluster.Config().SetEnv(cluster.EnvironService(service))
 			cluster.Config().Make()
-			cluster.SetStatus("init", cluster.StautsSuccess)
+			cluster.Default().SetStatus("init", cluster.StautsSuccess)
 
 			log.Println("host initialized")
 			success(ctx, cluster.Config())
@@ -113,20 +113,20 @@ func BootstrapGet(ver string) gin.HandlerFunc {
 
 func WaitingGet(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		if cluster.Waiting() <= 0 {
+		if cluster.Default().ResetWaiting() <= 0 {
 			success(ctx, "finished or not start")
 			return
 		}
-		success(ctx, gin.H{"waiting": cluster.Waiting()})
+		success(ctx, gin.H{"waiting": cluster.Default().ResetWaiting()})
 	}
 }
 
 // ResetGet ...
 func ResetGet(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		log.Println("waiting:", cluster.Waiting())
-		if cluster.Waiting() < 0 || ctx.Query("force") == "true" {
-			go cluster.Reset()
+		log.Println("waiting:", cluster.Default().ResetWaiting())
+		if cluster.Default().ResetWaiting() < 0 || ctx.Query("force") == "true" {
+			go cluster.Default().Reset()
 			success(ctx, "resetting")
 			return
 		}
