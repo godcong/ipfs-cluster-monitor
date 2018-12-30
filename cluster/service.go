@@ -219,6 +219,10 @@ func servicePath() string {
 	return defaultPath(".ipfs-cluster")
 }
 
+func GetServiceInfo() (*ServiceInfo, error) {
+	return getServiceInfo()
+}
+
 func getServiceInfo() (*ServiceInfo, error) {
 	var service ServiceInfo
 	response, err := http.Get("http://localhost:9094/id")

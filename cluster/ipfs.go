@@ -44,6 +44,10 @@ func optimizationFirstRunIPFS(ctx context.Context) {
 	}
 }
 
+func GetIpfsInfo() (*IpfsInfo, error) {
+	return getIpfsInfo()
+}
+
 func getIpfsInfo() (*IpfsInfo, error) {
 	var ipfs IpfsInfo
 	response, err := http.Get("http://localhost:5001/api/v0/id")

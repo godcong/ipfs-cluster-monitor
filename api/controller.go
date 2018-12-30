@@ -72,7 +72,21 @@ func InitPost(s string) gin.HandlerFunc {
 // HeartBeatGet ...
 func HeartBeatGet(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		success(ctx, cluster.GetPeers())
+		detail := gin.H{
+			"ipfs_status":    "failed",
+			"service_status": "failed",
+		}
+		ipfs, err := cluster.GetIpfsInfo()
+		if err != nil {
+			detail["ipfs_status"] = "success"
+			detail["ipfs"] = ipfs
+		}
+		service, err := cluster.GetServiceInfo()
+		if err != nil {
+			detail["service_status"] = "success"
+			detail["service"] = service
+		}
+		success(ctx, detail)
 	}
 }
 
