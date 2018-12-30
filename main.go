@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/ipfs-cluster-monitor/api"
 	"github.com/godcong/ipfs-cluster-monitor/cluster"
@@ -13,14 +12,14 @@ import (
 )
 
 func main() {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 	cluster.LogInit()
 
 	engine := gin.Default()
 	engine.NoRoute(NoResponse)
 
-	go cluster.Start(ctx)
+	c := cluster.Default()
+	go c.Start()
+	defer c.Stop()
 
 	api.Router(engine)
 	err := engine.Run(cluster.Config().RemotePort)

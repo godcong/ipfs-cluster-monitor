@@ -45,7 +45,7 @@ func newCluster() *Cluster {
 	return &Cluster{}
 }
 
-func DefaultCluster() *Cluster {
+func Default() *Cluster {
 	return cluster
 }
 
@@ -98,6 +98,7 @@ func (c *Cluster) Start() {
 }
 
 func (c *Cluster) Stop() {
+	c.stopRunningCMD()
 	if c.cancelFunc != nil {
 		c.cancelFunc()
 		c.cancelFunc = nil
@@ -253,8 +254,8 @@ func (c *Cluster) ResetWaiting() int {
 // Reset ...
 func (c *Cluster) Reset() error {
 	waiting := int32(cfg.ResetWaiting)
+
 	//stop running ipfs and service
-	c.stopRunningCMD()
 	c.Stop()
 
 	clear(ipfsPath())
