@@ -27,7 +27,6 @@ type ResultMessage struct {
 }
 
 type Cluster struct {
-	GlobalContext context.Context
 	context       context.Context
 	cancelFunc    context.CancelFunc
 	commands      sync.Map
@@ -37,7 +36,6 @@ type Cluster struct {
 }
 
 var cluster *Cluster
-var globalContext context.Context
 
 func init() {
 	cluster = newCluster()
@@ -67,12 +65,11 @@ func waitingForInitialize(ctx context.Context) bool {
 	}
 }
 
-// Run ...
-func Run(ctx context.Context) {
-	cluster.GlobalContext = ctx
-	cluster.context, cluster.cancelFunc = context.WithCancel(context.Background())
+// Start ...
+func (c *Cluster) Start() {
+	c.context, c.cancelFunc = context.WithCancel(context.Background())
 
-	if waitingForInitialize(cluster.context) {
+	if waitingForInitialize(c.context) {
 		if initCheck(InitIPFS) {
 			log.Println("init ipfs")
 			firstRunIPFS()
@@ -83,10 +80,10 @@ func Run(ctx context.Context) {
 		}
 		//var ipfs context.Context
 		//ipfs, cancelIPFS = context.WithCancel(context.Background())
-		runIPFS(globalContext)
+		runIPFS(c.context)
 		//var service context.Context
 		//service, cancelService = context.WithCancel(context.Background())
-		runService(globalContext)
+		runService(c.context)
 
 		time.Sleep(cfg.Interval)
 
@@ -98,6 +95,13 @@ func Run(ctx context.Context) {
 		atomic.StoreInt32(&cluster.waiting, -1)
 	}
 
+}
+
+func (c *Cluster) Stop() {
+	if c.cancelFunc != nil {
+		c.cancelFunc()
+		c.cancelFunc = nil
+	}
 }
 
 // initCheck ...
@@ -251,6 +255,7 @@ func (c *Cluster) Reset() error {
 	waiting := int32(cfg.ResetWaiting)
 	//stop running ipfs and service
 	c.stopRunningCMD()
+	c.Stop()
 
 	clear(ipfsPath())
 	clear(servicePath())
@@ -259,15 +264,9 @@ func (c *Cluster) Reset() error {
 	//reset config
 	cfg = DefaultConfig()
 
-	if c.cancelFunc != nil {
-		c.cancelFunc()
-		c.cancelFunc = nil
-	}
-
 	//reset status
-
 	c.isInitialized = false
-	SetStatus("init", StatusFailed)
+	c.SetStatus("init", StatusFailed)
 
 	//waiting 30 sec to restart
 	for ; waiting >= 0; waiting-- {
@@ -276,7 +275,7 @@ func (c *Cluster) Reset() error {
 	}
 
 	//rerun
-	go Run(nil)
+	go c.Start()
 	return nil
 }
 
@@ -288,12 +287,12 @@ const (
 	StatusProcessing StatusCode = 1
 )
 
-func SetStatus(key string, value StatusCode) {
-	status.Store(key, value)
+func (c *Cluster) SetStatus(key string, value StatusCode) {
+	c.status.Store(key, value)
 }
 
-func GetStatus(key string) StatusCode {
-	value, ok := status.Load(key)
+func (c *Cluster) GetStatus(key string) StatusCode {
+	value, ok := c.status.Load(key)
 	if !ok {
 		return StatusFailed
 	}

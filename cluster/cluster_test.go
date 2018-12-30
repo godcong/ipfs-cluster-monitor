@@ -14,5 +14,5 @@ func TestFirstRunIPFS(t *testing.T) {
 
 // TestRun ...
 func TestRun(t *testing.T) {
-	Run(context.Background())
+	Start(context.Background())
 }

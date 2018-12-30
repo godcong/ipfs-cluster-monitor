@@ -20,7 +20,7 @@ func main() {
 	engine := gin.Default()
 	engine.NoRoute(NoResponse)
 
-	go cluster.Run(ctx)
+	go cluster.Start(ctx)
 
 	api.Router(engine)
 	err := engine.Run(cluster.Config().RemotePort)
