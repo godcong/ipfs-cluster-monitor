@@ -14,6 +14,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -24,10 +25,29 @@ type ResultMessage struct {
 	Message string                 `json:"message"`
 }
 
-var waiting = 0
-var commands sync.Map
+type Cluster struct {
+	GlobalContext context.Context
+	context       context.Context
+	cancelFunc    context.CancelFunc
+	commands      sync.Map
+	status        sync.Map
+	waiting       int32
+}
+
+var cluster *Cluster
 var globalContext context.Context
-var globalCancel context.CancelFunc
+
+func init() {
+	cluster = newCluster()
+}
+
+func newCluster() *Cluster {
+	return &Cluster{}
+}
+
+func DefaultCluster() *Cluster {
+	return cluster
+}
 
 // waitingForInitialize ...
 func waitingForInitialize(ctx context.Context) bool {
@@ -47,11 +67,10 @@ func waitingForInitialize(ctx context.Context) bool {
 
 // Run ...
 func Run(ctx context.Context) {
-	globalContext = ctx
-	cluster, cancel := context.WithCancel(context.Background())
-	globalCancel = cancel
+	cluster.GlobalContext = ctx
+	cluster.context, cluster.cancelFunc = context.WithCancel(context.Background())
 
-	if waitingForInitialize(globalContext) {
+	if waitingForInitialize(cluster.context) {
 		if initCheck(InitIPFS) {
 			log.Println("init ipfs")
 			firstRunIPFS()
@@ -70,11 +89,11 @@ func Run(ctx context.Context) {
 		time.Sleep(cfg.Interval)
 
 		if isClient() {
-			go runJoin(cluster)
+			runJoin(cluster.context)
 		} else {
-			go runMonitor(cluster)
+			runMonitor(cluster.context)
 		}
-		waiting = -1
+		atomic.StoreInt32(&cluster.waiting, -1)
 	}
 
 }
@@ -242,13 +261,15 @@ func Reset() error {
 
 	//reset config
 	cfg = DefaultConfig()
-	//reset status
-	isInitialized = false
 
 	if globalCancel != nil {
 		globalCancel()
 		globalCancel = nil
 	}
+
+	//reset status
+	isInitialized = false
+	SetStatus("init", StatusFailed)
 
 	//waiting 30 sec to restart
 	for ; waiting >= 0; waiting-- {
@@ -258,4 +279,24 @@ func Reset() error {
 	//rerun
 	go Run(globalContext)
 	return nil
+}
+
+type StatusCode int
+
+const (
+	StatusFailed     StatusCode = -1
+	StautsSuccess    StatusCode = 0
+	StatusProcessing StatusCode = 1
+)
+
+func SetStatus(key string, value StatusCode) {
+	status.Store(key, value)
+}
+
+func GetStatus(key string) StatusCode {
+	value, ok := status.Load(key)
+	if !ok {
+		return StatusFailed
+	}
+	return value.(StatusCode)
 }

@@ -13,16 +13,18 @@ import (
 
 //runJoin join remote server
 func runJoin(ctx context.Context) {
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		default:
-			joinToServer()
-			time.Sleep(cfg.ServerCheckInterval)
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				joinToServer()
+				time.Sleep(cfg.ServerCheckInterval)
+			}
+			//get info
 		}
-		//get info
-	}
+	}()
 }
 
 func joinToServer() error {

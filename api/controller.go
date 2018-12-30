@@ -32,7 +32,10 @@ func failed(ctx *gin.Context, message string) {
 // InitPost ...
 func InitPost(s string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-
+		if cluster.GetStatus("init") != cluster.StatusFailed {
+			failed(ctx, "cant't run init")
+		}
+		cluster.SetStatus("init", cluster.StatusProcessing)
 		remote := ctx.PostForm("Remote")
 		secret := ctx.PostForm("Secret")
 		clusterSecret := ctx.PostForm("CLUSTER_SECRET")
@@ -50,6 +53,7 @@ func InitPost(s string) gin.HandlerFunc {
 			cluster.Config().SetEnv(cluster.EnvironIPFS(ipfs))
 			cluster.Config().SetEnv(cluster.EnvironService(service))
 			cluster.Config().Make()
+			cluster.SetStatus("init", cluster.StautsSuccess)
 
 			log.Println("host initialized")
 			success(ctx, cluster.Config())
