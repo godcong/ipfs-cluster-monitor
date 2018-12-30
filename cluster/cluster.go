@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
@@ -100,11 +101,11 @@ func Run(ctx context.Context) {
 
 // initCheck ...
 func initCheck(name string) bool {
-	file := cfg.RootPath + "/" + name
-	info, err := os.Stat(file)
-	log.Println(info)
+	path := filepath.Join(cfg.RootPath, name)
+	info, err := os.Stat(path)
+	log.Println(info.Name())
 	if err == nil {
-		err := os.Remove(cfg.RootPath + "/" + name)
+		err := os.Remove(path)
 		if err == nil {
 			return true
 		}
@@ -121,7 +122,6 @@ func isClient() bool {
 }
 
 func getServiceBootstrap() string {
-
 	response, err := http.Get(webAddress("bootstrap"))
 	if err != nil {
 		return ""
@@ -146,10 +146,6 @@ func runCMD(command string, options ...string) error {
 
 	cmd.Env = cfg.GetEnv()
 	_, err := cmd.CombinedOutput()
-	//if bts != nil {
-	//	bts = bytes.TrimSpace(bts)
-	//	log.Println(string(bts))
-	//}
 
 	if err != nil {
 		errors.ErrorStack(err)
@@ -158,10 +154,10 @@ func runCMD(command string, options ...string) error {
 	return err
 }
 
-func optimizeRunCMD(command string, options ...string) error {
+func (c *Cluster) optimizeRunCMD(command string, options ...string) error {
 	cmd := exec.Command(command, options...)
 	end := strconv.FormatInt(time.Now().Unix(), 10)
-	commands.Store(command+"_"+end, cmd)
+	c.commands.Store(command+"_"+end, cmd)
 
 	cmd.Env = cfg.GetEnv()
 
