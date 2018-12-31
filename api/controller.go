@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/ipfs-cluster-monitor/cluster"
 	"github.com/json-iterator/go"
@@ -31,15 +32,22 @@ func failed(ctx *gin.Context, message string) {
 
 func InitGet(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		success(ctx, cluster.Default().GetStatus("init"))
+		if cluster.Default().GetStatus("init") > cluster.StatusCreated {
+			success(ctx, cluster.Config())
+			return
+		}
+		message := fmt.Sprintf("result with code: %d", int(cluster.Default().GetStatus("init")))
+		failed(ctx, message)
+		return
 	}
 }
 
 // InitPost ...
-func InitPost(s string) gin.HandlerFunc {
+func InitPost(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		if cluster.Default().GetStatus("init") != cluster.StatusFailed {
-			failed(ctx, "cant't run init")
+			failed(ctx, "cant't run init, you can use reset or get init")
+			return
 		}
 		cluster.Default().SetStatus("init", cluster.StatusProcessing)
 		remote := ctx.PostForm("Remote")
@@ -79,12 +87,12 @@ func HeartBeatGet(ver string) gin.HandlerFunc {
 			"service_status": "failed",
 		}
 		ipfs, err := cluster.GetIpfsInfo()
-		if err != nil {
+		if err == nil {
 			detail["ipfs_status"] = "success"
 			detail["ipfs"] = ipfs
 		}
 		service, err := cluster.GetServiceInfo()
-		if err != nil {
+		if err == nil {
 			detail["service_status"] = "success"
 			detail["service"] = service
 		}
