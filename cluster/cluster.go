@@ -130,7 +130,7 @@ func (c *Cluster) Stop() {
 func initCheck(name string) bool {
 	path := filepath.Join(cfg.RootPath, name)
 	info, err := os.Stat(path)
-	log.Println(info)
+	log.Println(info) //has nil
 	if err == nil {
 		err := os.Remove(path)
 		if err == nil {
