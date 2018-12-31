@@ -75,6 +75,7 @@ func waitingForInitialize(ctx context.Context) bool {
 				continue
 			}
 		}
+
 		return true
 	}
 }
@@ -84,6 +85,11 @@ func (c *Cluster) Start() {
 	c.context, c.cancelFunc = context.WithCancel(context.Background())
 
 	if waitingForInitialize(c.context) {
+		if cluster.GetStatus("init") != StatusCreated {
+			//wait for make end
+			time.Sleep(cfg.MonitorInterval)
+		}
+
 		if initCheck(InitIPFS) {
 			log.Println("init ipfs")
 			c.SetStatus("init", StatusIpfsInit)
@@ -95,14 +101,10 @@ func (c *Cluster) Start() {
 			c.SetStatus("init", StatusServiceInit)
 			firstRunService()
 		}
-		//var ipfs context.Context
-		//ipfs, cancelIPFS = context.WithCancel(context.Background())
+
 		c.SetStatus("init", StatusIpfsRun)
 		runIPFS(c.context)
 		waitingIpfs(c.context)
-
-		//var service context.Context
-		//service, cancelService = context.WithCancel(context.Background())
 
 		c.SetStatus("init", StatusServiceRun)
 		runService(c.context)
@@ -129,8 +131,9 @@ func (c *Cluster) Stop() {
 // initCheck ...
 func initCheck(name string) bool {
 	path := filepath.Join(cfg.RootPath, name)
+	log.Println(path)
 	info, err := os.Stat(path)
-	log.Println(info) //has nil
+	log.Println(info, err) //has nil
 	if err == nil {
 		err := os.Remove(path)
 		if err == nil {

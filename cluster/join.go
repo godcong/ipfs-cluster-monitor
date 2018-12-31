@@ -29,20 +29,24 @@ func runJoin(ctx context.Context) {
 
 func findMyFather() error {
 	q := url.Values{}
-	q.Set("name", "son")
+
+	service, err := getServiceInfo()
+	if err != nil {
+		return err
+	}
+	q.Set("name", service.Peername)
 	response, err := http.PostForm(webAddress("join"), q)
 	if err != nil {
 		errors.ErrorStack(err)
 		return err
 	}
 	bytes, err := ioutil.ReadAll(response.Body)
-	log.Println(string(bytes))
+	log.Println("join", string(bytes))
 	if err != nil {
 		errors.ErrorStack(err)
 		return err
 	}
 	var rm ResultMessage
-
 	err = jsoniter.Unmarshal(bytes, &rm)
 	if err != nil {
 		errors.ErrorStack(err)
@@ -50,18 +54,16 @@ func findMyFather() error {
 		return err
 	}
 	if rm.Code == 0 {
-		log.Println("join success")
 		return nil
 	}
-	log.Println("failed:", rm.Message)
 	return errors.New(rm.Message)
 }
 
 // AddMySon ...
 func AddMySon(key, val string) {
-	if _, loaded := clients.LoadOrStore(key, val); loaded {
-		log.Println(key, "is already joined")
+	if val, loaded := clients.LoadOrStore(key, val); loaded {
+		log.Println(key, "joined:", val)
 	} else {
-		log.Println(key, "is joined")
+		log.Println(key, "is joining")
 	}
 }
