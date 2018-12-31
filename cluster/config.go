@@ -39,7 +39,7 @@ func (s EnvironIPFS) String() string {
 }
 
 func (s EnvironSecret) String() string {
-	return strings.Join([]string{"IPFS_CLUSTER_SECRET", string(s)}, "=")
+	return strings.Join([]string{"CLUSTER_SECRET", string(s)}, "=")
 }
 
 func (s EnvironService) String() string {
