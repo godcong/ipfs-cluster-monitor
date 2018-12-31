@@ -211,7 +211,7 @@ func JoinPost(ver string) gin.HandlerFunc {
 		if address == "" {
 			address = ctx.Request.RemoteAddr
 		}
-		cluster.JoinFromClient(name, address)
-		success(ctx, nil)
+		cluster.AddMySon(name, address)
+		success(ctx, gin.H{})
 	}
 }
