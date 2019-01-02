@@ -19,8 +19,10 @@ import (
 	"time"
 )
 
+// StatusCode ...
 type StatusCode int
 
+// StatusFailed ...
 const (
 	StatusFailed      StatusCode = -1
 	StatusSuccess     StatusCode = 0
@@ -40,6 +42,7 @@ type ResultMessage struct {
 	Message string                 `json:"message"`
 }
 
+// Cluster ...
 type Cluster struct {
 	context       context.Context
 	cancelFunc    context.CancelFunc
@@ -59,6 +62,7 @@ func newCluster() *Cluster {
 	return &Cluster{}
 }
 
+// Default ...
 func Default() *Cluster {
 	return cluster
 }
@@ -120,6 +124,7 @@ func (c *Cluster) Start() {
 
 }
 
+// Stop ...
 func (c *Cluster) Stop() {
 	c.stopRunningCMD()
 	if c.cancelFunc != nil {
@@ -271,6 +276,7 @@ func clear(path string) {
 	return
 }
 
+// ResetWaiting ...
 func (c *Cluster) ResetWaiting() int {
 	return int(atomic.LoadInt32(&c.waiting))
 }
@@ -304,10 +310,12 @@ func (c *Cluster) Reset() error {
 	return nil
 }
 
+// SetStatus ...
 func (c *Cluster) SetStatus(key string, value StatusCode) {
 	c.status.Store(key, value)
 }
 
+// GetStatus ...
 func (c *Cluster) GetStatus(key string) StatusCode {
 	value, ok := c.status.Load(key)
 	if !ok {

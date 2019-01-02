@@ -31,6 +31,7 @@ type ServiceInfo struct {
 	Peername string `json:"peername"`
 }
 
+// ServiceConfig ...
 type ServiceConfig struct {
 	Cluster struct {
 		ID                   string `json:"id"`
@@ -219,6 +220,7 @@ func servicePath() string {
 	return defaultPath(".ipfs-cluster")
 }
 
+// GetServiceInfo ...
 func GetServiceInfo() (*ServiceInfo, error) {
 	return getServiceInfo()
 }
@@ -257,6 +259,7 @@ func waitingService(ctx context.Context) {
 	}
 }
 
+// GetServiceConfig ...
 func GetServiceConfig() (*ServiceConfig, error) {
 	var serviceConfig ServiceConfig
 

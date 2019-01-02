@@ -30,6 +30,7 @@ func failed(ctx *gin.Context, message string) {
 	result(ctx, -1, message, nil)
 }
 
+// InitGet ...
 func InitGet(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		if cluster.Default().GetStatus("init") > cluster.StatusCreated {
@@ -139,6 +140,7 @@ func BootstrapGet(ver string) gin.HandlerFunc {
 	}
 }
 
+// WaitingGet ...
 func WaitingGet(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		if cluster.Default().ResetWaiting() <= 0 {
@@ -191,6 +193,7 @@ func KillGet(ver string) gin.HandlerFunc {
 	}
 }
 
+// SecretGet ...
 func SecretGet(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		config, err := cluster.GetServiceConfig()

@@ -2,6 +2,7 @@ package api
 
 import "github.com/gin-gonic/gin"
 
+// AccessControlAllow ...
 func AccessControlAllow(ctx *gin.Context) {
 	origin := ctx.Request.Header.Get("origin")
 	ctx.Writer.Header().Set("Access-Control-Allow-Origin", origin)

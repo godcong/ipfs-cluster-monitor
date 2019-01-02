@@ -30,22 +30,31 @@ var (
 	HostClient HostType = "client"
 )
 
+// EnvironIPFS ...
 type EnvironIPFS string
+
+// EnvironSecret ...
 type EnvironSecret string
+
+// EnvironService ...
 type EnvironService string
 
+// String ...
 func (s EnvironIPFS) String() string {
 	return strings.Join([]string{"IPFS_PATH", string(s)}, "=")
 }
 
+// String ...
 func (s EnvironSecret) String() string {
 	return strings.Join([]string{"CLUSTER_SECRET", string(s)}, "=")
 }
 
+// String ...
 func (s EnvironService) String() string {
 	return strings.Join([]string{"IPFS_CLUSTER_PATH", string(s)}, "=")
 }
 
+// Environ ...
 type Environ struct {
 	Ipfs    EnvironIPFS
 	Secret  EnvironSecret

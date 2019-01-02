@@ -44,6 +44,7 @@ func optimizationFirstRunIPFS(ctx context.Context) {
 	}
 }
 
+// GetIpfsInfo ...
 func GetIpfsInfo() (*IpfsInfo, error) {
 	return getIpfsInfo()
 }
