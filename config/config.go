@@ -19,8 +19,8 @@ const DefaultFileName = "monitor.json"
 // InitIPFS ...
 const InitIPFS = "ipfs"
 
-// InitCluster ...
-const InitCluster = "cluster"
+// InitIPFSCluster ...
+const InitIPFSCluster = "ipfscluster"
 
 // Database ...
 type Database struct {
@@ -103,8 +103,19 @@ type Monitor struct {
 	ClusterPath string `toml:"cluster_path"`
 }
 
+// MustMonitor ...
+func MustMonitor(secret, boot, ipfs, ipfscluster string) *Monitor {
+	return &Monitor{
+		Secret:      DefaultString(secret, "27b3f5c4e330c069cc045307152345cc391cb40e6dcabf01f98ae9cdc9dabb34"),
+		Bootstrap:   DefaultString(boot, "/ip4/47.101.169.94/tcp/9096/ipfs/QmU58AYMghsHEMq6gSrLNT1kVPigG3gpvfaifeUuXKXeLs"),
+		Path:        DefaultString(ipfs, HomePath(".ipfs")),
+		ClusterPath: DefaultString(ipfscluster, HomePath(".ipfs-cluster")),
+	}
+}
+
 // Env ...
 func (m *Monitor) Env() (env []string) {
+	env = os.Environ()
 	env = append(env, strings.Join([]string{"IPFS_PATH", string(m.Path)}, "="))
 	env = append(env, strings.Join([]string{"CLUSTER_SECRET", string(m.Secret)}, "="))
 	env = append(env, strings.Join([]string{"IPFS_CLUSTER_PATH", string(m.ClusterPath)}, "="))
@@ -122,11 +133,11 @@ var (
 
 // MonitorProperty ...
 type MonitorProperty struct {
-	Version             string
-	RootPath            string
-	CommandName         string
-	ServiceCommandName  string
-	HostType            HostType
+	Version            string
+	RootPath           string
+	CommandName        string
+	ServiceCommandName string
+	//HostType            HostType
 	RemoteIP            string
 	RemotePort          string
 	Interval            time.Duration
@@ -140,14 +151,14 @@ type Configure struct {
 	Root            string          `toml:"root"`
 	Monitor         Monitor         `toml:"monitor"`
 	MonitorProperty MonitorProperty `toml:"monitor_property"`
-	Database        Database        `toml:"database"`
-	Censor          HostInfo        `toml:"censor"`
-	Node            HostInfo        `toml:"node"`
-	Media           Media           `toml:"media"`
-	Queue           Queue           `toml:"queue"`
-	GRPC            GRPC            `toml:"grpc"`
-	REST            REST            `toml:"rest"`
-	IPFS            IPFS            `toml:"ipfs"`
+	//Database        Database        `toml:"database"`
+	//Censor          HostInfo        `toml:"censor"`
+	//Node            HostInfo        `toml:"node"`
+	//Media           Media           `toml:"media"`
+	//Queue           Queue           `toml:"queue"`
+	GRPC GRPC `toml:"grpc"`
+	//REST            REST            `toml:"rest"`
+	IPFS IPFS `toml:"ipfs"`
 
 	Requester Requester `toml:"requester"`
 	Callback  Callback  `toml:"callback"`

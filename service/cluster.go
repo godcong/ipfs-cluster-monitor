@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"github.com/godcong/ipfs-cluster-monitor/cluster"
 	"github.com/godcong/ipfs-cluster-monitor/config"
 	"log"
 	"sync/atomic"
@@ -47,6 +48,14 @@ func (m *ClusterMonitor) waitingForInitialize(ctx context.Context) bool {
 		}
 
 		return true
+	}
+}
+
+// InitMaker ...
+func (m *ClusterMonitor) InitMaker(monitor *config.Monitor) {
+	err := cluster.InitMaker(m.config, m.config.Root)
+	if err == nil {
+		m.Initialized()
 	}
 }
 

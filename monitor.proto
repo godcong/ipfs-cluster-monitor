@@ -23,12 +23,12 @@ message MonitorInitRequest {
     string cluster_path =4;
 }
 
-enum monitor_type {
-   Init = 0;
+enum MonitorType {
+   init_status = 0;
 }
 
 message MonitorProcRequest {
-    monitor_type type = 1;
+    MonitorType type = 1;
     string boot_strap = 2;
     string secret = 3;
     string ipfs_path =4;

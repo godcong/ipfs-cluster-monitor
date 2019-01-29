@@ -190,22 +190,25 @@ func Reset() error {
 	return nil
 }
 
-// Make ...
-func Make(cfg *config.Configure, configPath string) error {
+// InitMaker ...
+func InitMaker(cfg *config.Configure, configPath string) error {
 	dir, _ := filepath.Split(configPath)
 	file, err := os.OpenFile(configPath, os.O_RDWR|os.O_CREATE|os.O_SYNC, os.ModePerm)
 	if os.IsNotExist(err) {
+		log.Println("not exist ", err)
 		_ = os.MkdirAll(dir, os.ModePerm)
 		file, err = os.OpenFile(configPath, os.O_RDWR|os.O_CREATE|os.O_SYNC, os.ModePerm)
 		if err != nil {
 			return xerrors.Errorf("make file:%w", err)
 		}
+	} else {
+
 	}
 
 	defer file.Close()
-
 	enc := toml.NewEncoder(file)
 	err = enc.Encode(*cfg)
+	log.Println("created:", file.Name())
 	if err != nil {
 		return xerrors.Errorf("encode file:%w", err)
 	}
@@ -217,7 +220,7 @@ func Make(cfg *config.Configure, configPath string) error {
 	}
 	defer cfile.Close()
 
-	sfile, err := os.Create(filepath.Join(dir, config.InitCluster))
+	sfile, err := os.Create(filepath.Join(dir, config.InitIPFSCluster))
 	log.Println("created:", sfile.Name())
 	if err != nil {
 		return xerrors.Errorf("cluster file:%w", err)

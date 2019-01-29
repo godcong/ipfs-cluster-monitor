@@ -25,12 +25,13 @@ type GRPCServer struct {
 
 // MonitorInit ...
 func (s *GRPCServer) MonitorInit(ctx context.Context, req *proto.MonitorInitRequest) (*proto.MonitorReply, error) {
-	panic("implement me")
+	monitor := config.MustMonitor(req.Secret, req.Bootstrap, req.Path, req.ClusterPath)
+	server.cluster.InitMaker(monitor)
 }
 
 // MonitorProc ...
 func (s *GRPCServer) MonitorProc(ctx context.Context, req *proto.MonitorProcRequest) (*proto.MonitorReply, error) {
-	if req.Type == proto.Type_Init {
+	if req.Type == proto.MonitorType_Init {
 		return &proto.MonitorReply{}, nil
 	}
 	return nil, xerrors.New("monitor proc error")

@@ -14,6 +14,6 @@ func TestFirstRunIPFS(t *testing.T) {
 
 // TestRun ...
 func TestRun(t *testing.T) {
-	err := Make(config.DefaultConfig(), "config/root/toml/config.toml")
+	err := InitMaker(config.DefaultConfig(), "config.toml")
 	t.Log(err)
 }
