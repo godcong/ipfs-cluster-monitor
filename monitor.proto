@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.github.godcong.monitor.proto";
+option java_outer_classname = "ClusterMonitorProto";
+
+package proto;
+
+service ClusterMonitor {
+    rpc MonitorInit (MonitorInitRequest) returns (MonitorReply) {
+    }
+
+    rpc MonitorProc (MonitorProcRequest) returns (MonitorReply) {
+    }
+
+}
+
+message MonitorInitRequest {
+    string bootstrap = 1;
+    string secret = 2;
+    string path =3;
+    string cluster_path =4;
+}
+
+message MonitorProcRequest {
+    string boot_strap = 1;
+    string secret = 2;
+    string ipfs_path =3;
+    string ipfs_cluster_path =4;
+}
+
+message MonitorCensorRequest {
+    string ID = 1;
+    string detail =2;
+}
+
+message MonitorReply {
+    int32 code = 1;
+    string message = 2;
+    string detail =3;
+}
+
