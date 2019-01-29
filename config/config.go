@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"github.com/json-iterator/go"
 	"github.com/juju/errors"
 	"github.com/pelletier/go-toml"
 	"golang.org/x/exp/xerrors"
@@ -20,8 +19,8 @@ const DefaultFileName = "monitor.json"
 // InitIPFS ...
 const InitIPFS = "ipfs"
 
-// InitService ...
-const InitService = "service"
+// InitCluster ...
+const InitCluster = "cluster"
 
 // Database ...
 type Database struct {
@@ -240,35 +239,6 @@ func (cfg *MonitorProperty) CheckExist() bool {
 		return false
 	}
 	return true
-}
-
-// Make ...
-func (cfg *MonitorProperty) Make() {
-	err := os.Chdir(cfg.RootPath)
-	if err != nil {
-		err := os.MkdirAll(cfg.RootPath, os.ModePerm)
-		CheckError(err)
-	}
-
-	file, err := os.OpenFile(filepath.Join(cfg.RootPath, DefaultFileName), os.O_RDWR|os.O_CREATE|os.O_SYNC, os.ModePerm)
-	log.Println("created:", file.Name())
-	CheckError(err)
-	defer file.Close()
-
-	enc := jsoniter.NewEncoder(file)
-	err = enc.Encode(*cfg)
-	CheckError(err)
-
-	cfile, err := os.Create(filepath.Join(cfg.RootPath, InitIPFS))
-	log.Println("created:", cfile.Name())
-	CheckError(err)
-	defer cfile.Close()
-
-	sfile, err := os.Create(filepath.Join(cfg.RootPath, InitService))
-	log.Println("created:", sfile.Name())
-	CheckError(err)
-	defer sfile.Close()
-
 }
 
 // DefaultMonitorProperty ...

@@ -3,8 +3,10 @@ package cluster
 import (
 	"bufio"
 	"context"
+	"github.com/godcong/ipfs-cluster-monitor/config"
 	"github.com/json-iterator/go"
 	"github.com/juju/errors"
+	"golang.org/x/exp/xerrors"
 	"io"
 	"io/ioutil"
 	"log"
@@ -14,7 +16,6 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-	"sync"
 	"sync/atomic"
 	"time"
 )
@@ -42,120 +43,6 @@ type ResultMessage struct {
 	Message string                 `json:"message"`
 }
 
-// Cluster ...
-type Cluster struct {
-	context       context.Context
-	cancelFunc    context.CancelFunc
-	commands      sync.Map
-	status        sync.Map
-	isInitialized bool
-	waiting       int32
-}
-
-var cluster *Cluster
-
-func init() {
-	cluster = newCluster()
-}
-
-func newCluster() *Cluster {
-	return &Cluster{}
-}
-
-// Default ...
-func Default() *Cluster {
-	return cluster
-}
-
-// waitingForInitialize ...
-func waitingForInitialize(ctx context.Context) bool {
-	for {
-		if !IsInitialized() {
-			time.Sleep(cfg.Interval)
-			select {
-			case <-ctx.Done():
-				return false
-			default:
-				continue
-			}
-		}
-
-		return true
-	}
-}
-
-// Start ...
-func (c *Cluster) Start() {
-	c.context, c.cancelFunc = context.WithCancel(context.Background())
-
-	if waitingForInitialize(c.context) {
-		if cluster.GetStatus("init") != StatusCreated {
-			//wait for make end
-			time.Sleep(cfg.MonitorInterval)
-		}
-
-		if initCheck(InitIPFS) {
-			log.Println("init ipfs")
-			c.SetStatus("init", StatusIpfsInit)
-			firstRunIPFS()
-
-		}
-		if initCheck(InitService) {
-			log.Println("init service")
-			c.SetStatus("init", StatusServiceInit)
-			firstRunService()
-		}
-
-		c.SetStatus("init", StatusIpfsRun)
-		runIPFS(c.context)
-		waitingIpfs(c.context)
-
-		c.SetStatus("init", StatusServiceRun)
-		runService(c.context)
-		waitingService(c.context)
-
-		if isClient() {
-			runJoin(cluster.context)
-		} else {
-			runMonitor(cluster.context)
-		}
-		atomic.StoreInt32(&cluster.waiting, -1)
-	}
-
-}
-
-// Stop ...
-func (c *Cluster) Stop() {
-	c.stopRunningCMD()
-	if c.cancelFunc != nil {
-		c.cancelFunc()
-		c.cancelFunc = nil
-	}
-}
-
-// initCheck ...
-func initCheck(name string) bool {
-	path := filepath.Join(cfg.RootPath, name)
-	log.Println(path)
-	info, err := os.Stat(path)
-	log.Println(info, err) //has nil
-	if err == nil {
-		err := os.Remove(path)
-		if err == nil {
-			return true
-		}
-	}
-	return false
-}
-
-// isClient ...
-func isClient() bool {
-	if cfg.HostType == HostClient {
-		return true
-	}
-	return false
-}
-
 func getServiceBootstrap() string {
 	response, err := http.Get(webAddress("bootstrap"))
 	if err != nil {
@@ -179,7 +66,7 @@ func getServiceBootstrap() string {
 func runCMD(command string, options ...string) error {
 	cmd := exec.Command(command, options...)
 
-	cmd.Env = cfg.GetEnv()
+	cmd.Env = append(cmd.Env, env)
 	_, err := cmd.CombinedOutput()
 
 	if err != nil {
@@ -322,4 +209,40 @@ func (c *Cluster) GetStatus(key string) StatusCode {
 		return StatusFailed
 	}
 	return value.(StatusCode)
+}
+
+// Make ...
+func Make(cfg *config.MonitorProperty, configPath string) error {
+	dir, fname := filepath.Split(configPath)
+	file, err := os.OpenFile(configPath, os.O_RDWR|os.O_CREATE|os.O_SYNC, os.ModePerm)
+	if os.IsNotExist(err) {
+		_ = os.MkdirAll(dir, os.ModePerm)
+		file, err = os.OpenFile(configPath, os.O_RDWR|os.O_CREATE|os.O_SYNC, os.ModePerm)
+		if err != nil {
+			return xerrors.Errorf("make file:%w", err)
+		}
+	}
+
+	defer file.Close()
+
+	enc := jsoniter.NewEncoder(file)
+	err = enc.Encode(*cfg)
+	if err != nil {
+		return xerrors.Errorf("encode file:%w", err)
+	}
+
+	cfile, err := os.Create(filepath.Join(dir, config.InitIPFS))
+	log.Println("created:", cfile.Name())
+	if err != nil {
+		return xerrors.Errorf("ipfs file:%w", err)
+	}
+	defer cfile.Close()
+
+	sfile, err := os.Create(filepath.Join(dir, config.InitCluster))
+	log.Println("created:", sfile.Name())
+	if err != nil {
+		return xerrors.Errorf("cluster file:%w", err)
+	}
+	defer sfile.Close()
+	return nil
 }

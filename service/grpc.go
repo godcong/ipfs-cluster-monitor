@@ -6,6 +6,7 @@ import (
 	"github.com/godcong/ipfs-cluster-monitor/config"
 	"github.com/godcong/ipfs-cluster-monitor/proto"
 	"github.com/json-iterator/go"
+	"golang.org/x/exp/xerrors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"log"
@@ -29,7 +30,10 @@ func (s *GRPCServer) MonitorInit(ctx context.Context, req *proto.MonitorInitRequ
 
 // MonitorProc ...
 func (s *GRPCServer) MonitorProc(ctx context.Context, req *proto.MonitorProcRequest) (*proto.MonitorReply, error) {
-	panic("implement me")
+	if req.Type == proto.Type_Init {
+		return &proto.MonitorReply{}, nil
+	}
+	return nil, xerrors.New("monitor proc error")
 }
 
 // Result ...
@@ -39,7 +43,7 @@ func Result(v interface{}) *proto.MonitorReply {
 		return &proto.MonitorReply{
 			Code:    -1,
 			Message: err.Error(),
-			Detail:  "",
+			Detail:  detail,
 		}
 	}
 	return &proto.MonitorReply{

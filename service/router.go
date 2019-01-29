@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/godcong/ipfs-cluster-monitor/cluster"
+	"github.com/godcong/ipfs-cluster-monitor/config"
 	"io/ioutil"
 	"net/http"
 )
@@ -10,7 +10,7 @@ import (
 // Router ...
 func Router(eng *gin.Engine) {
 
-	ver := cluster.Config().Version
+	ver := config.Config().MonitorProperty.Version
 
 	v0 := eng.Group(ver)
 	v0.Use(AccessControlAllow)
