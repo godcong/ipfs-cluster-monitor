@@ -1,10 +1,27 @@
 package config
 
 import (
+	"fmt"
+	"github.com/json-iterator/go"
+	"github.com/juju/errors"
 	"github.com/pelletier/go-toml"
+	"golang.org/x/exp/xerrors"
 	"log"
 	"os"
+	"os/user"
+	"path/filepath"
+	"strings"
+	"time"
 )
+
+// DefaultFileName ...
+const DefaultFileName = "monitor.json"
+
+// InitIPFS ...
+const InitIPFS = "ipfs"
+
+// InitService ...
+const InitService = "service"
 
 // Database ...
 type Database struct {
@@ -87,17 +104,51 @@ type Monitor struct {
 	ClusterPath string `toml:"cluster_path"`
 }
 
+// Env ...
+func (m *Monitor) Env() (env []string) {
+	env = append(env, strings.Join([]string{"IPFS_PATH", string(m.Path)}, "="))
+	env = append(env, strings.Join([]string{"CLUSTER_SECRET", string(m.Secret)}, "="))
+	env = append(env, strings.Join([]string{"IPFS_CLUSTER_PATH", string(m.ClusterPath)}, "="))
+	return
+}
+
+// HostType ...
+type HostType string
+
+// ClassHost ...
+var (
+	HostServer HostType = "server"
+	HostClient HostType = "client"
+)
+
+// MonitorProperty ...
+type MonitorProperty struct {
+	Version             string
+	RootPath            string
+	CommandName         string
+	ServiceCommandName  string
+	HostType            HostType
+	RemoteIP            string
+	RemotePort          string
+	Interval            time.Duration
+	ServerCheckInterval time.Duration
+	MonitorInterval     time.Duration
+	ResetWaiting        int
+}
+
 // Configure ...
 type Configure struct {
-	Monitor  Monitor  `toml:"monitor"`
-	Database Database `toml:"database"`
-	Censor   HostInfo `toml:"censor"`
-	Node     HostInfo `toml:"node"`
-	Media    Media    `toml:"media"`
-	Queue    Queue    `toml:"queue"`
-	GRPC     GRPC     `toml:"grpc"`
-	REST     REST     `toml:"rest"`
-	IPFS     IPFS     `toml:"ipfs"`
+	Root            string          `toml:"root"`
+	Monitor         Monitor         `toml:"monitor"`
+	MonitorProperty MonitorProperty `toml:"monitor_property"`
+	Database        Database        `toml:"database"`
+	Censor          HostInfo        `toml:"censor"`
+	Node            HostInfo        `toml:"node"`
+	Media           Media           `toml:"media"`
+	Queue           Queue           `toml:"queue"`
+	GRPC            GRPC            `toml:"grpc"`
+	REST            REST            `toml:"rest"`
+	IPFS            IPFS            `toml:"ipfs"`
 
 	Requester Requester `toml:"requester"`
 	Callback  Callback  `toml:"callback"`
@@ -110,10 +161,8 @@ func Initialize(filePath ...string) error {
 	if filePath == nil {
 		filePath = []string{"config.toml"}
 	}
-	cfg := LoadConfig(filePath[0])
-
-	config = cfg
-
+	config = LoadConfig(filePath[0])
+	config.Root = filePath[0]
 	return nil
 }
 
@@ -131,6 +180,7 @@ func IsExists(name string) bool {
 // LoadConfig ...
 func LoadConfig(filePath string) *Configure {
 	var cfg Configure
+
 	openFile, err := os.OpenFile(filePath, os.O_RDONLY|os.O_SYNC, os.ModePerm)
 	if err != nil {
 		return DefaultConfig()
@@ -138,10 +188,27 @@ func LoadConfig(filePath string) *Configure {
 	decoder := toml.NewDecoder(openFile)
 	err = decoder.Decode(&cfg)
 	if err != nil {
-		panic(err.Error())
+		return DefaultConfig()
 	}
 	log.Printf("config: %+v", cfg)
 	return &cfg
+}
+
+func homePath(name string) string {
+	// We try guessing user's home from the HOME variable. This
+	// allows HOME hacks for things like Snapcraft builds. HOME
+	// should be set in all UNIX by the OS. Alternatively, we fall back to
+	// usr.HomeDir (which should work on Windows etc.).
+	home := os.Getenv("HOME")
+	if home == "" {
+		usr, err := user.Current()
+		if err != nil {
+			panic(fmt.Sprintf("cannot get current user: %s", err))
+		}
+		home = usr.HomeDir
+	}
+
+	return filepath.Join(home, name)
 }
 
 // DefaultConfig ...
@@ -163,4 +230,65 @@ func DefaultString(v, def string) string {
 		return def
 	}
 	return v
+}
+
+// CheckExist ...
+func (cfg *MonitorProperty) CheckExist() bool {
+	_, err := os.Stat(filepath.Join(cfg.RootPath, DefaultFileName))
+	if err != nil {
+		errors.ErrorStack(err)
+		return false
+	}
+	return true
+}
+
+// Make ...
+func (cfg *MonitorProperty) Make() {
+	err := os.Chdir(cfg.RootPath)
+	if err != nil {
+		err := os.MkdirAll(cfg.RootPath, os.ModePerm)
+		CheckError(err)
+	}
+
+	file, err := os.OpenFile(filepath.Join(cfg.RootPath, DefaultFileName), os.O_RDWR|os.O_CREATE|os.O_SYNC, os.ModePerm)
+	log.Println("created:", file.Name())
+	CheckError(err)
+	defer file.Close()
+
+	enc := jsoniter.NewEncoder(file)
+	err = enc.Encode(*cfg)
+	CheckError(err)
+
+	cfile, err := os.Create(filepath.Join(cfg.RootPath, InitIPFS))
+	log.Println("created:", cfile.Name())
+	CheckError(err)
+	defer cfile.Close()
+
+	sfile, err := os.Create(filepath.Join(cfg.RootPath, InitService))
+	log.Println("created:", sfile.Name())
+	CheckError(err)
+	defer sfile.Close()
+
+}
+
+// DefaultMonitorProperty ...
+func DefaultMonitorProperty() *MonitorProperty {
+	return &MonitorProperty{
+		Version:             "v0",
+		CommandName:         "ipfs",
+		ServiceCommandName:  "ipfs-cluster-service",
+		RootPath:            "",
+		HostType:            "",
+		RemoteIP:            "127.0.0.1",
+		RemotePort:          ":7758",
+		Interval:            1 * time.Second,
+		MonitorInterval:     5 * time.Second,
+		ServerCheckInterval: 60 * time.Second,
+		ResetWaiting:        30,
+	}
+}
+
+// CheckError ...
+func CheckError(err error) error {
+	return xerrors.Errorf("check err:%w", err)
 }
