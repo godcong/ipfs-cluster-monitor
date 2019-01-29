@@ -26,7 +26,11 @@ type GRPCServer struct {
 // MonitorInit ...
 func (s *GRPCServer) MonitorInit(ctx context.Context, req *proto.MonitorInitRequest) (*proto.MonitorReply, error) {
 	monitor := config.MustMonitor(req.Secret, req.Bootstrap, req.Path, req.ClusterPath)
-	server.cluster.InitMaker(monitor)
+	err := server.cluster.InitMaker(monitor)
+	if err != nil {
+		return &proto.MonitorReply{}, err
+	}
+	return Result("")
 }
 
 // MonitorProc ...
@@ -38,20 +42,20 @@ func (s *GRPCServer) MonitorProc(ctx context.Context, req *proto.MonitorProcRequ
 }
 
 // Result ...
-func Result(v interface{}) *proto.MonitorReply {
+func Result(v interface{}) (*proto.MonitorReply, error) {
 	detail, err := jsoniter.MarshalToString(v)
 	if err != nil {
 		return &proto.MonitorReply{
 			Code:    -1,
 			Message: err.Error(),
 			Detail:  detail,
-		}
+		}, err
 	}
 	return &proto.MonitorReply{
 		Code:    0,
 		Message: "success",
 		Detail:  detail,
-	}
+	}, nil
 }
 
 // NewGRPCServer ...

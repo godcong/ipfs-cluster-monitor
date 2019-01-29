@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/godcong/ipfs-cluster-monitor/cluster"
 	"github.com/godcong/ipfs-cluster-monitor/config"
+	"golang.org/x/exp/xerrors"
 	"log"
 	"sync/atomic"
 	"time"
@@ -52,11 +53,13 @@ func (m *ClusterMonitor) waitingForInitialize(ctx context.Context) bool {
 }
 
 // InitMaker ...
-func (m *ClusterMonitor) InitMaker(monitor *config.Monitor) {
+func (m *ClusterMonitor) InitMaker(monitor *config.Monitor) error {
 	err := cluster.InitMaker(m.config, m.config.Root)
 	if err == nil {
 		m.Initialized()
+		return nil
 	}
+	return xerrors.Errorf("init maker:%w", err)
 }
 
 // Start ...
