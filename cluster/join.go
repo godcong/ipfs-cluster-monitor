@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"time"
 )
 
 //runJoin join remote server
@@ -20,7 +19,7 @@ func runJoin(ctx context.Context) {
 				return
 			default:
 				findMyFather()
-				time.Sleep(cfg.ServerCheckInterval)
+				//time.Sleep(cfg.ServerCheckInterval)
 			}
 			//get info
 		}

@@ -6,6 +6,7 @@ import (
 	"github.com/godcong/ipfs-cluster-monitor/config"
 	"github.com/json-iterator/go"
 	"github.com/juju/errors"
+	"github.com/pelletier/go-toml"
 	"golang.org/x/exp/xerrors"
 	"io"
 	"io/ioutil"
@@ -14,10 +15,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strconv"
 	"strings"
-	"sync/atomic"
-	"time"
 )
 
 // StatusCode ...
@@ -149,6 +147,7 @@ func stopRunningCMD() {
 func webAddress(api string) string {
 	//url := strings.Join([]string{cfg.RemoteIP + cfg.RemotePort, cfg.Version, api}, "/")
 	//return "http://" + url
+	return ""
 }
 
 func clear(path string) {
@@ -169,8 +168,8 @@ func Reset() error {
 	//stop running ipfs and service
 	//c.Stop()
 
-	clear(ipfsPath())
-	clear(servicePath())
+	clear(config.IpfsPath())
+	clear(config.IpfsClusterPath())
 	//clear(cfg.RootPath)
 
 	//reset config
@@ -204,7 +203,8 @@ func Make(cfg *config.Configure, configPath string) error {
 	}
 
 	defer file.Close()
-	enc := jsoniter.NewEncoder(file)
+
+	enc := toml.NewEncoder(file)
 	err = enc.Encode(*cfg)
 	if err != nil {
 		return xerrors.Errorf("encode file:%w", err)

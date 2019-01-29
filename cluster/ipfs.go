@@ -3,12 +3,8 @@ package cluster
 import (
 	"context"
 	"github.com/json-iterator/go"
-	"github.com/juju/errors"
 	"io/ioutil"
-	"log"
 	"net/http"
-	"os/exec"
-	"time"
 )
 
 // IpfsInfo ...
@@ -22,23 +18,24 @@ type IpfsInfo struct {
 
 // runIPFS ...
 func runIPFS(ctx context.Context) {
-	go cluster.optimizeRunCMD(ctx, "ipfs", "daemon")
+	go optimizeRunCMD(ctx, "ipfs", "daemon")
 }
 
 func firstRunIPFS() {
-	cmd := exec.Command(cfg.CommandName, "init")
-	cmd.Env = cfg.GetEnv()
+	//cmd := exec.Command(cfg.CommandName, "init")
+	//cmd.Env = cfg.GetEnv()
 
-	bytes, err := cmd.CombinedOutput()
-	log.Println(string(bytes))
-	if err != nil {
-		errors.ErrorStack(err)
-		panic(err)
-	}
+	//bytes, err := cmd.CombinedOutput()
+	//log.Println(string(bytes))
+	//if err != nil {
+	//	errors.ErrorStack(err)
+	//	panic(err)
+	//}
+	return
 }
 
 func optimizationFirstRunIPFS(ctx context.Context) {
-	err := cluster.optimizeRunCMD(ctx, cfg.CommandName, "init")
+	err := optimizeRunCMD(ctx, "ipfs", "init")
 	if err != nil {
 		panic(err)
 	}
@@ -66,13 +63,6 @@ func getIpfsInfo() (*IpfsInfo, error) {
 	return &ipfs, nil
 }
 
-func ipfsPath() string {
-	if cfg.Environ.Ipfs != "" {
-		return string(cfg.Environ.Ipfs)
-	}
-	return defaultPath(".ipfs")
-}
-
 func waitingIpfs(ctx context.Context) {
 	var err error
 	for {
@@ -86,6 +76,6 @@ func waitingIpfs(ctx context.Context) {
 		if err == nil {
 			break
 		}
-		time.Sleep(cfg.Interval)
+		//time.Sleep(cfg.Interval)
 	}
 }

@@ -2,6 +2,7 @@ package cluster
 
 import (
 	"context"
+	"github.com/godcong/ipfs-cluster-monitor/config"
 	"github.com/json-iterator/go"
 	"github.com/juju/errors"
 	"io/ioutil"
@@ -10,7 +11,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"time"
 )
 
 // ServiceInfo ...
@@ -129,8 +129,8 @@ type ServiceConfig struct {
 }
 
 func firstRunService() {
-	cmd := exec.Command(cfg.ServiceCommandName, "init")
-	cmd.Env = cfg.GetEnv()
+	cmd := exec.Command("service", "init")
+	//cmd.Env = cfg.GetEnv()
 
 	bytes, err := cmd.CombinedOutput()
 	log.Println(string(bytes))
@@ -141,7 +141,7 @@ func firstRunService() {
 }
 
 func optimizationFirstRunService(ctx context.Context) {
-	err := cluster.optimizeRunCMD(ctx, cfg.ServiceCommandName, "init")
+	err := optimizeRunCMD(ctx, "service", "init")
 	if err != nil {
 		panic(err)
 	}
@@ -150,15 +150,13 @@ func optimizationFirstRunService(ctx context.Context) {
 // runService ...
 func runService(ctx context.Context) {
 
-	if isClient() {
-		boot := getServiceBootstrap()
-		if boot != "" {
-			log.Println("bootstrap")
-			go cluster.optimizeRunCMD(ctx, cfg.ServiceCommandName, "daemon", "--bootstrap", boot)
-			return
-		}
+	boot := getServiceBootstrap()
+	if boot != "" {
+		log.Println("bootstrap")
+		go optimizeRunCMD(ctx, "service", "daemon", "--bootstrap", boot)
+		return
 	}
-	go cluster.optimizeRunCMD(ctx, cfg.ServiceCommandName, "daemon")
+
 }
 
 func getPeers() ([]ServiceInfo, error) {
@@ -213,13 +211,6 @@ func GetPeers() []ServiceInfo {
 	return nil
 }
 
-func servicePath() string {
-	if cfg.Environ.Service != "" {
-		return string(cfg.Environ.Service)
-	}
-	return defaultPath(".ipfs-cluster")
-}
-
 // GetServiceInfo ...
 func GetServiceInfo() (*ServiceInfo, error) {
 	return getServiceInfo()
@@ -255,7 +246,7 @@ func waitingService(ctx context.Context) {
 		if err == nil {
 			break
 		}
-		time.Sleep(cfg.Interval)
+
 	}
 }
 
@@ -263,7 +254,7 @@ func waitingService(ctx context.Context) {
 func GetServiceConfig() (*ServiceConfig, error) {
 	var serviceConfig ServiceConfig
 
-	file := filepath.Join(servicePath(), "service.json")
+	file := filepath.Join(config.Config().Root, "config.toml")
 	openFile, err := os.OpenFile(file, os.O_RDONLY|os.O_SYNC, os.ModePerm)
 	if err != nil {
 		return nil, err

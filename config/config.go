@@ -193,7 +193,8 @@ func LoadConfig(filePath string) *Configure {
 	return &cfg
 }
 
-func homePath(name string) string {
+// HomePath ...
+func HomePath(name string) string {
 	// We try guessing user's home from the HOME variable. This
 	// allows HOME hacks for things like Snapcraft builds. HOME
 	// should be set in all UNIX by the OS. Alternatively, we fall back to
@@ -208,6 +209,22 @@ func homePath(name string) string {
 	}
 
 	return filepath.Join(home, name)
+}
+
+// IpfsPath ...
+func IpfsPath() string {
+	if config.Monitor.Path != "" {
+		return string(config.Monitor.Path)
+	}
+	return HomePath(".ipfs")
+}
+
+// IpfsClusterPath ...
+func IpfsClusterPath() string {
+	if config.Monitor.ClusterPath != "" {
+		return string(config.Monitor.ClusterPath)
+	}
+	return HomePath(".ipfs-cluster")
 }
 
 // DefaultConfig ...

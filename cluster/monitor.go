@@ -5,7 +5,6 @@ import (
 	"github.com/juju/errors"
 	"log"
 	"sync"
-	"time"
 )
 
 // MonitorPeers ...
@@ -25,13 +24,13 @@ func runMonitor(ctx context.Context) {
 				peers, err := getPeers()
 				if err != nil {
 					monitor.Delete(MonitorPeers)
-					time.Sleep(cfg.MonitorInterval)
+
 					errors.ErrorStack(err)
 					log.Println(err)
 					continue
 				}
 				monitor.Store(MonitorPeers, peers)
-				time.Sleep(cfg.MonitorInterval)
+
 			}
 			//get info
 		}
