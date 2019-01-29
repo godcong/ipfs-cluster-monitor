@@ -189,8 +189,8 @@ func runCMD(command string, options ...string) error {
 	return err
 }
 
-func (c *Cluster) optimizeRunCMD(command string, options ...string) error {
-	cmd := exec.Command(command, options...)
+func (c *Cluster) optimizeRunCMD(ctx context.Context, command string, options ...string) error {
+	cmd := exec.CommandContext(ctx, command, options...)
 	end := strconv.FormatInt(time.Now().Unix(), 10)
 	c.commands.Store(command+"_"+end, cmd)
 

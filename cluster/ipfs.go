@@ -22,7 +22,7 @@ type IpfsInfo struct {
 
 // runIPFS ...
 func runIPFS(ctx context.Context) {
-	go cluster.optimizeRunCMD("ipfs", "daemon")
+	go cluster.optimizeRunCMD(ctx, "ipfs", "daemon")
 }
 
 func firstRunIPFS() {
@@ -38,7 +38,7 @@ func firstRunIPFS() {
 }
 
 func optimizationFirstRunIPFS(ctx context.Context) {
-	err := cluster.optimizeRunCMD(cfg.CommandName, "init")
+	err := cluster.optimizeRunCMD(ctx, cfg.CommandName, "init")
 	if err != nil {
 		panic(err)
 	}

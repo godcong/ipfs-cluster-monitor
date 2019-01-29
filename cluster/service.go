@@ -141,7 +141,7 @@ func firstRunService() {
 }
 
 func optimizationFirstRunService(ctx context.Context) {
-	err := cluster.optimizeRunCMD(cfg.ServiceCommandName, "init")
+	err := cluster.optimizeRunCMD(ctx, cfg.ServiceCommandName, "init")
 	if err != nil {
 		panic(err)
 	}
@@ -154,11 +154,11 @@ func runService(ctx context.Context) {
 		boot := getServiceBootstrap()
 		if boot != "" {
 			log.Println("bootstrap")
-			go cluster.optimizeRunCMD(cfg.ServiceCommandName, "daemon", "--bootstrap", boot)
+			go cluster.optimizeRunCMD(ctx, cfg.ServiceCommandName, "daemon", "--bootstrap", boot)
 			return
 		}
 	}
-	go cluster.optimizeRunCMD(cfg.ServiceCommandName, "daemon")
+	go cluster.optimizeRunCMD(ctx, cfg.ServiceCommandName, "daemon")
 }
 
 func getPeers() ([]ServiceInfo, error) {
