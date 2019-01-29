@@ -58,11 +58,6 @@ func (m *ClusterMonitor) Start() {
 	go func() {
 		if m.waitingForInitialize(ctx) {
 
-			if m.GetStatus("init") != StatusCreated {
-				//wait for make end
-				time.Sleep(cfg.MonitorInterval)
-			}
-
 			if initCheck(InitIPFS) {
 				log.Println("init ipfs")
 				m.SetStatus("init", StatusIpfsInit)

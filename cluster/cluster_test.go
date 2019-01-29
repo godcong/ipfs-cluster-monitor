@@ -1,7 +1,7 @@
 package cluster
 
 import (
-	"golang.org/x/net/context"
+	"github.com/godcong/ipfs-cluster-monitor/config"
 	"testing"
 )
 
@@ -14,5 +14,6 @@ func TestFirstRunIPFS(t *testing.T) {
 
 // TestRun ...
 func TestRun(t *testing.T) {
-	Start(context.Background())
+	err := Make(config.DefaultConfig(), "config/root/toml/config.toml")
+	t.Log(err)
 }

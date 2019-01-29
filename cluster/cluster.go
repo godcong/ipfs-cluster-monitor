@@ -66,7 +66,7 @@ func getServiceBootstrap() string {
 func runCMD(command string, options ...string) error {
 	cmd := exec.Command(command, options...)
 
-	cmd.Env = append(cmd.Env, env)
+	//cmd.Env = append(cmd.Env)
 	_, err := cmd.CombinedOutput()
 
 	if err != nil {
@@ -76,12 +76,12 @@ func runCMD(command string, options ...string) error {
 	return err
 }
 
-func (c *Cluster) optimizeRunCMD(ctx context.Context, command string, options ...string) error {
+func optimizeRunCMD(ctx context.Context, command string, options ...string) error {
 	cmd := exec.CommandContext(ctx, command, options...)
-	end := strconv.FormatInt(time.Now().Unix(), 10)
-	c.commands.Store(command+"_"+end, cmd)
+	//end := strconv.FormatInt(time.Now().Unix(), 10)
+	//c.commands.Store(command+"_"+end, cmd)
 
-	cmd.Env = cfg.GetEnv()
+	//cmd.Env = cfg.GetEnv()
 
 	//显示运行的命令
 	log.Println("command:", cmd.Args)
@@ -128,27 +128,27 @@ func (c *Cluster) optimizeRunCMD(ctx context.Context, command string, options ..
 }
 
 // stopRunningCMD ...
-func (c *Cluster) stopRunningCMD() {
-	c.commands.Range(
-		func(key, value interface{}) bool {
-			if v, b := value.(*exec.Cmd); b {
-				log.Println("kill", key)
-				err := v.Process.Kill()
-				if err != nil {
-					errors.ErrorStack(err)
-					log.Println(err)
-				}
-				c.commands.Delete(key)
-				return true
-			}
-			log.Println(key, "not cmd continue")
-			return true
-		})
+func stopRunningCMD() {
+	//c.commands.Range(
+	//	func(key, value interface{}) bool {
+	//		if v, b := value.(*exec.Cmd); b {
+	//			log.Println("kill", key)
+	//			err := v.Process.Kill()
+	//			if err != nil {
+	//				errors.ErrorStack(err)
+	//				log.Println(err)
+	//			}
+	//			c.commands.Delete(key)
+	//			return true
+	//		}
+	//		log.Println(key, "not cmd continue")
+	//		return true
+	//	})
 }
 
 func webAddress(api string) string {
-	url := strings.Join([]string{cfg.RemoteIP + cfg.RemotePort, cfg.Version, api}, "/")
-	return "http://" + url
+	//url := strings.Join([]string{cfg.RemoteIP + cfg.RemotePort, cfg.Version, api}, "/")
+	//return "http://" + url
 }
 
 func clear(path string) {
@@ -163,57 +163,37 @@ func clear(path string) {
 	return
 }
 
-// ResetWaiting ...
-func (c *Cluster) ResetWaiting() int {
-	return int(atomic.LoadInt32(&c.waiting))
-}
-
 // Reset ...
-func (c *Cluster) Reset() error {
-	waiting := int32(cfg.ResetWaiting)
+func Reset() error {
 
 	//stop running ipfs and service
-	c.Stop()
+	//c.Stop()
 
 	clear(ipfsPath())
 	clear(servicePath())
-	clear(cfg.RootPath)
+	//clear(cfg.RootPath)
 
 	//reset config
-	cfg = DefaultConfig()
+	//cfg = DefaultConfig()
 
 	//reset status
-	c.isInitialized = false
-	c.SetStatus("init", StatusFailed)
+	//c.isInitialized = false
+	//c.SetStatus("init", StatusFailed)
 
 	//waiting 30 sec to restart
-	for ; waiting >= 0; waiting-- {
-		atomic.StoreInt32(&c.waiting, waiting)
-		time.Sleep(time.Second)
-	}
-
+	//for ; waiting >= 0; waiting-- {
+	//	atomic.StoreInt32(&c.waiting, waiting)
+	//	time.Sleep(time.Second)
+	//}
+	//
 	//rerun
-	go c.Start()
+	//go c.Start()
 	return nil
 }
 
-// SetStatus ...
-func (c *Cluster) SetStatus(key string, value StatusCode) {
-	c.status.Store(key, value)
-}
-
-// GetStatus ...
-func (c *Cluster) GetStatus(key string) StatusCode {
-	value, ok := c.status.Load(key)
-	if !ok {
-		return StatusFailed
-	}
-	return value.(StatusCode)
-}
-
 // Make ...
-func Make(cfg *config.MonitorProperty, configPath string) error {
-	dir, fname := filepath.Split(configPath)
+func Make(cfg *config.Configure, configPath string) error {
+	dir, _ := filepath.Split(configPath)
 	file, err := os.OpenFile(configPath, os.O_RDWR|os.O_CREATE|os.O_SYNC, os.ModePerm)
 	if os.IsNotExist(err) {
 		_ = os.MkdirAll(dir, os.ModePerm)
@@ -224,7 +204,6 @@ func Make(cfg *config.MonitorProperty, configPath string) error {
 	}
 
 	defer file.Close()
-
 	enc := jsoniter.NewEncoder(file)
 	err = enc.Encode(*cfg)
 	if err != nil {
