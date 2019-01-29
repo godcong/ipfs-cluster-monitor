@@ -19,7 +19,6 @@ import (
 var configPath = flag.String("config", "config.toml", "config path")
 
 func main() {
-	flag.Parse()
 
 	flag.Parse()
 	file, err := os.OpenFile("monitor.log", os.O_SYNC|os.O_RDWR|os.O_CREATE|os.O_APPEND, os.ModePerm)

@@ -76,7 +76,6 @@ func (m *ClusterMonitor) Start() {
 				if err != nil {
 					panic(err)
 				}
-
 			}
 			if initCheck(InitService) {
 				log.Println("init service")
