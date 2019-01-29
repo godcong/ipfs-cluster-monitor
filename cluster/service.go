@@ -5,6 +5,7 @@ import (
 	"github.com/godcong/ipfs-cluster-monitor/config"
 	"github.com/json-iterator/go"
 	"github.com/juju/errors"
+	"golang.org/x/exp/xerrors"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -128,16 +129,17 @@ type ServiceConfig struct {
 	} `json:"informer"`
 }
 
-func firstRunService() {
-	cmd := exec.Command("service", "init")
-	//cmd.Env = cfg.GetEnv()
+// RunClusterInit ...
+func RunClusterInit(ctx context.Context, cfg *config.Configure) error {
+	cmd := exec.CommandContext(ctx, cfg.MonitorProperty.ServiceCommandName, "init")
+	cmd.Env = cfg.Monitor.Env()
 
 	bytes, err := cmd.CombinedOutput()
 	log.Println(string(bytes))
 	if err != nil {
-		errors.ErrorStack(err)
-		panic(err)
+		return xerrors.Errorf("first run ipfs:%w", err)
 	}
+	return nil
 }
 
 func optimizationFirstRunService(ctx context.Context) {

@@ -70,10 +70,12 @@ func (m *ClusterMonitor) Start() {
 	go func() {
 		if m.waitingForInitialize(ctx) {
 
-			if initCheck(InitIPFS) {
-				log.Println("init ipfs")
-				m.SetStatus("init", StatusIpfsInit)
-				firstRunIPFS()
+			if cluster.InitRunning(config.IpfsPath()) {
+
+				err := cluster.RunIPFSInit(ctx, m.config)
+				if err != nil {
+					panic(err)
+				}
 
 			}
 			if initCheck(InitService) {

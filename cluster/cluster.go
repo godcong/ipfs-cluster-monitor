@@ -228,3 +228,16 @@ func InitMaker(cfg *config.Configure, configPath string) error {
 	defer sfile.Close()
 	return nil
 }
+
+// InitRunning ...
+func InitRunning(path string) bool {
+	info, err := os.Stat(path)
+	log.Println(info, err) //has nil
+	if err == nil {
+		err := os.Remove(path)
+		if err == nil {
+			return true
+		}
+	}
+	return false
+}
