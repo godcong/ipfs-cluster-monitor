@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/ipfs-cluster-monitor/cluster"
 	"github.com/json-iterator/go"
@@ -30,50 +29,32 @@ func failed(ctx *gin.Context, message string) {
 	result(ctx, -1, message, nil)
 }
 
-// InitGet ...
-func InitGet(ver string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		if cluster.Default().GetStatus("init") > cluster.StatusCreated {
-			success(ctx, cluster.Config())
-			return
-		}
-		message := fmt.Sprintf("result with code: %d", int(cluster.Default().GetStatus("init")))
-		failed(ctx, message)
-		return
-	}
-}
-
 // InitPost ...
 func InitPost(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		if cluster.Default().GetStatus("init") != cluster.StatusFailed {
-			failed(ctx, "cant't run init, you can use reset or get init")
-			return
-		}
-		cluster.Default().SetStatus("init", cluster.StatusProcessing)
-		remote := ctx.PostForm("Remote")
-		secret := ctx.PostForm("Secret")
-		clusterSecret := ctx.PostForm("CLUSTER_SECRET")
-		ipfs := ctx.PostForm("IPFS_PATH")
-		service := ctx.PostForm("IPFS_CLUSTER_PATH")
-		//monitor := ctx.PostForm("IPFS_CLUSTER_MONITOR")
-		if !cluster.IsInitialized() {
-			if remote != "" {
-				cluster.Config().SetClient(remote)
-				cluster.Config().MonitorSecret = secret
-			} else {
-				cluster.Config().MonitorSecret = prefix + cluster.GenerateRandomString(64)
-			}
-			cluster.Config().SetEnv(cluster.EnvironSecret(clusterSecret))
-			cluster.Config().SetEnv(cluster.EnvironIPFS(ipfs))
-			cluster.Config().SetEnv(cluster.EnvironService(service))
-			cluster.Config().Make()
-			cluster.Default().SetStatus("init", cluster.StatusCreated)
-
-			log.Println("host initialized")
-			success(ctx, cluster.Config())
-			return
-		}
+		//remote := ctx.PostForm("Remote")
+		//secret := ctx.PostForm("Secret")
+		//clusterSecret := ctx.PostForm("CLUSTER_SECRET")
+		//ipfs := ctx.PostForm("IPFS_PATH")
+		//service := ctx.PostForm("IPFS_CLUSTER_PATH")
+		////monitor := ctx.PostForm("IPFS_CLUSTER_MONITOR")
+		//if !cluster {
+		//	if remote != "" {
+		//		cluster.Config().SetClient(remote)
+		//		cluster.Config().MonitorSecret = secret
+		//	} else {
+		//		cluster.Config().MonitorSecret = prefix + cluster.GenerateRandomString(64)
+		//	}
+		//	cluster.Config().SetEnv(cluster.EnvironSecret(clusterSecret))
+		//	cluster.Config().SetEnv(cluster.EnvironIPFS(ipfs))
+		//	cluster.Config().SetEnv(cluster.EnvironService(service))
+		//	cluster.Config().Make()
+		//	cluster.Default().SetStatus("init", cluster.StatusCreated)
+		//
+		//	log.Println("host initialized")
+		//	success(ctx, cluster.Config())
+		//	return
+		//}
 
 		failed(ctx, "host is initialized")
 
@@ -143,23 +124,19 @@ func BootstrapGet(ver string) gin.HandlerFunc {
 // WaitingGet ...
 func WaitingGet(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		if cluster.Default().ResetWaiting() <= 0 {
-			success(ctx, "finished or not start")
-			return
-		}
-		success(ctx, gin.H{"waiting": cluster.Default().ResetWaiting()})
+
 	}
 }
 
 // ResetGet ...
 func ResetGet(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		log.Println("waiting:", cluster.Default().ResetWaiting())
-		if cluster.Default().ResetWaiting() < 0 || ctx.Query("force") == "true" {
-			go cluster.Default().Reset()
-			success(ctx, "resetting")
-			return
-		}
+		//log.Println("waiting:", cluster.Default().ResetWaiting())
+		//if cluster.Default().ResetWaiting() < 0 || ctx.Query("force") == "true" {
+		//	go cluster.Default().Reset()
+		//	success(ctx, "resetting")
+		//	return
+		//}
 		failed(ctx, "can't reset now")
 	}
 }

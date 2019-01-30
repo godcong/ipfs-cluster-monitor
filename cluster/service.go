@@ -129,8 +129,8 @@ type ServiceConfig struct {
 	} `json:"informer"`
 }
 
-// RunClusterInit ...
-func RunClusterInit(ctx context.Context, cfg *config.Configure) error {
+// RunServiceInit ...
+func RunServiceInit(ctx context.Context, cfg *config.Configure) error {
 	cmd := exec.CommandContext(ctx, cfg.MonitorProperty.ServiceCommandName, "init")
 	cmd.Env = cfg.Monitor.Env()
 
@@ -142,20 +142,20 @@ func RunClusterInit(ctx context.Context, cfg *config.Configure) error {
 	return nil
 }
 
-func optimizationFirstRunService(ctx context.Context) {
-	err := optimizeRunCMD(ctx, "service", "init")
+func optimizationFirstRunService(ctx context.Context, env []string) {
+	err := optimizeRunCMD(ctx, env, "service", "init")
 	if err != nil {
 		panic(err)
 	}
 }
 
-// runService ...
-func runService(ctx context.Context) {
+// RunService ...
+func RunService(ctx context.Context, env []string) {
 
 	boot := getServiceBootstrap()
 	if boot != "" {
 		log.Println("bootstrap")
-		go optimizeRunCMD(ctx, "service", "daemon", "--bootstrap", boot)
+		go optimizeRunCMD(ctx, env, "service", "daemon", "--bootstrap", boot)
 		return
 	}
 
@@ -235,7 +235,8 @@ func getServiceInfo() (*ServiceInfo, error) {
 	return &service, nil
 }
 
-func waitingService(ctx context.Context) {
+// WaitingService ...
+func WaitingService(ctx context.Context) {
 	var err error
 	for {
 		select {

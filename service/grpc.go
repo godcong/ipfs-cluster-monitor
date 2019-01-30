@@ -94,9 +94,9 @@ func (c *GRPCClient) Conn() (*grpc.ClientConn, error) {
 func NewNodeGRPC(cfg *config.Configure) *GRPCClient {
 	return &GRPCClient{
 		config: cfg,
-		Type:   config.DefaultString(cfg.Node.Type, Type),
-		Port:   config.DefaultString(cfg.Node.Port, ":7787"),
-		Addr:   config.DefaultString(cfg.Node.Addr, "/tmp/node.sock"),
+		Type:   config.DefaultString("", Type),
+		Port:   config.DefaultString("", ":7787"),
+		Addr:   config.DefaultString("", "/tmp/node.sock"),
 	}
 }
 
@@ -114,9 +114,9 @@ func NewManagerGRPC(cfg *config.Configure) *GRPCClient {
 func NewCensorGRPC(cfg *config.Configure) *GRPCClient {
 	return &GRPCClient{
 		config: cfg,
-		Type:   config.DefaultString(cfg.Censor.Type, Type),
-		Port:   config.DefaultString(cfg.Censor.Port, ":7785"),
-		Addr:   config.DefaultString(cfg.Censor.Addr, "/tmp/censor.sock"),
+		Type:   config.DefaultString("", Type),
+		Port:   config.DefaultString("", ":7785"),
+		Addr:   config.DefaultString("", "/tmp/censor.sock"),
 	}
 }
 

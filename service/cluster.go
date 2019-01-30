@@ -6,7 +6,6 @@ import (
 	"github.com/godcong/ipfs-cluster-monitor/config"
 	"golang.org/x/exp/xerrors"
 	"log"
-	"sync/atomic"
 	"time"
 )
 
@@ -79,7 +78,7 @@ func (m *ClusterMonitor) Start() {
 			}
 			if cluster.InitRunning(config.IpfsClusterPath()) {
 				log.Println("init ipfs cluster")
-				err := cluster.RunClusterInit(ctx, m.config)
+				err := cluster.RunServiceInit(ctx, m.config)
 				if err != nil {
 					panic(err)
 				}
@@ -88,16 +87,9 @@ func (m *ClusterMonitor) Start() {
 			cluster.RunIPFS(m.context, m.config.Monitor.Env())
 			cluster.WaitingIPFS(m.context)
 
-			m.SetStatus("init", StatusServiceRun)
-			runService(m.context)
-			waitingService(m.context)
+			cluster.RunService(m.context, m.config.Monitor.Env())
+			cluster.WaitingService(m.context)
 
-			if isClient() {
-				runJoin(cluster.context)
-			} else {
-				runMonitor(cluster.context)
-			}
-			atomic.StoreInt32(&cluster.waiting, -1)
 		}
 	}()
 
@@ -105,7 +97,7 @@ func (m *ClusterMonitor) Start() {
 
 // Stop ...
 func (m *ClusterMonitor) Stop() {
-	m.stopRunningCMD()
+	//m.stopRunningCMD()
 	if m.cancelFunc != nil {
 		m.cancelFunc()
 		m.cancelFunc = nil

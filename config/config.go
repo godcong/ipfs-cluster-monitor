@@ -272,11 +272,11 @@ func (cfg *MonitorProperty) CheckExist() bool {
 // DefaultMonitorProperty ...
 func DefaultMonitorProperty() *MonitorProperty {
 	return &MonitorProperty{
-		Version:             "v0",
-		CommandName:         "ipfs",
-		ServiceCommandName:  "ipfs-cluster-service",
-		RootPath:            "",
-		HostType:            "",
+		Version:            "v0",
+		CommandName:        "ipfs",
+		ServiceCommandName: "ipfs-cluster-service",
+		RootPath:           "",
+		//HostType:            "",
 		RemoteIP:            "127.0.0.1",
 		RemotePort:          ":7758",
 		Interval:            1 * time.Second,

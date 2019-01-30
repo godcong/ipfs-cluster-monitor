@@ -24,7 +24,9 @@ message MonitorInitRequest {
 }
 
 enum MonitorType {
-   init_status = 0;
+   Init = 0;
+   Reset = 1;
+   Info = 2;
 }
 
 message MonitorProcRequest {
