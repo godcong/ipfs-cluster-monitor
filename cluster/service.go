@@ -12,6 +12,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"time"
 )
 
 // ServiceInfo ...
@@ -150,14 +151,9 @@ func optimizationFirstRunService(ctx context.Context, env []string) {
 }
 
 // RunService ...
-func RunService(ctx context.Context, env []string) {
-
-	boot := getServiceBootstrap()
-	if boot != "" {
-		log.Println("bootstrap")
-		go optimizeRunCMD(ctx, env, "service", "daemon", "--bootstrap", boot)
-		return
-	}
+func RunService(ctx context.Context, cfg *config.Configure) {
+	log.Println("bootstrap", cfg.Monitor.Bootstrap)
+	go optimizeRunCMD(ctx, cfg.Monitor.Env(), "service", "daemon", "--bootstrap", cfg.Monitor.Bootstrap)
 
 }
 
@@ -243,13 +239,13 @@ func WaitingService(ctx context.Context) {
 		case <-ctx.Done():
 			return
 		default:
-
+			log.Println("waiting service")
+			time.Sleep(1 * time.Second)
+			_, err = getServiceInfo()
+			if err == nil {
+				return
+			}
 		}
-		_, err = getServiceInfo()
-		if err == nil {
-			break
-		}
-
 	}
 }
 

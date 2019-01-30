@@ -97,6 +97,10 @@ type Requester struct {
 
 // Monitor ...
 type Monitor struct {
+	Enable      bool   `toml:"enable"`
+	Type        string `toml:"type"`
+	Addr        string `toml:"addr"`
+	Port        string `toml:"port"`
 	Secret      string `toml:"secret"`
 	Bootstrap   string `toml:"bootstrap"`
 	Path        string `toml:"path"`
@@ -240,7 +244,35 @@ func IpfsClusterPath() string {
 
 // DefaultConfig ...
 func DefaultConfig() *Configure {
-	return &Configure{}
+	return &Configure{
+		Root: "",
+		Monitor: Monitor{
+			Enable:      false,
+			Type:        "tcp",
+			Addr:        "localhost",
+			Port:        ":7784",
+			Secret:      "",
+			Bootstrap:   "/ip4/47.101.169.94/tcp/9096/ipfs/QmU58AYMghsHEMq6gSrLNT1kVPigG3gpvfaifeUuXKXeLs",
+			Path:        "27b3f5c4e330c069cc045307152345cc391cb40e6dcabf01f98ae9cdc9dabb34",
+			ClusterPath: "",
+		},
+		MonitorProperty: MonitorProperty{
+			Version:             "",
+			RootPath:            "",
+			CommandName:         "ipfs",
+			ServiceCommandName:  "ipfs-cluster-service",
+			RemoteIP:            "",
+			RemotePort:          "",
+			Interval:            3 * time.Second,
+			ServerCheckInterval: 3 * time.Second,
+			MonitorInterval:     3 * time.Second,
+			ResetWaiting:        0,
+		},
+		GRPC:      GRPC{},
+		IPFS:      IPFS{},
+		Requester: Requester{},
+		Callback:  Callback{},
+	}
 }
 
 // Config ...

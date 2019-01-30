@@ -20,8 +20,9 @@ type ClusterMonitor struct {
 // NewClusterMonitor ...
 func NewClusterMonitor(cfg *config.Configure) *ClusterMonitor {
 	return &ClusterMonitor{
-		config:  cfg,
-		context: context.Background(),
+		isInitialized: false,
+		config:        cfg,
+		context:       context.Background(),
 	}
 }
 
@@ -44,6 +45,8 @@ func (m *ClusterMonitor) waitingForInitialize(ctx context.Context) bool {
 				return false
 			default:
 				time.Sleep(m.config.MonitorProperty.Interval)
+				log.Println("waiting for init")
+				continue
 			}
 		}
 
@@ -87,7 +90,7 @@ func (m *ClusterMonitor) Start() {
 			cluster.RunIPFS(m.context, m.config.Monitor.Env())
 			cluster.WaitingIPFS(m.context)
 
-			cluster.RunService(m.context, m.config.Monitor.Env())
+			cluster.RunService(m.context, m.config)
 			cluster.WaitingService(m.context)
 
 		}

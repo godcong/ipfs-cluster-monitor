@@ -27,6 +27,7 @@ func Start() {
 	//server.rest.Start()
 	server.grpc.Start()
 	server.cluster.Start()
+
 }
 
 // Stop ...

@@ -80,7 +80,7 @@ func WaitingIPFS(ctx context.Context) {
 			time.Sleep(1 * time.Second)
 			_, err = getIpfsInfo()
 			if err == nil {
-				break
+				return
 			}
 		}
 

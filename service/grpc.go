@@ -25,9 +25,11 @@ type GRPCServer struct {
 
 // MonitorInit ...
 func (s *GRPCServer) MonitorInit(ctx context.Context, req *proto.MonitorInitRequest) (*proto.MonitorReply, error) {
+	log.Println("monitor init call")
 	monitor := config.MustMonitor(req.Secret, req.Bootstrap, req.Path, req.ClusterPath)
 	err := server.cluster.InitMaker(monitor)
 	if err != nil {
+		log.Println(err)
 		return &proto.MonitorReply{}, err
 	}
 	return Result("")
@@ -84,10 +86,30 @@ func (c *GRPCClient) Conn() (*grpc.ClientConn, error) {
 	if c.Type == "unix" {
 		conn, err = grpc.Dial("passthrough:///unix://"+c.Addr, grpc.WithInsecure())
 	} else {
-		conn, err = grpc.Dial(c.Addr, grpc.WithInsecure())
+		conn, err = grpc.Dial(c.Addr+c.Port, grpc.WithInsecure())
 	}
 
 	return conn, err
+}
+
+// MonitorClient ...
+func MonitorClient(g *GRPCClient) proto.ClusterMonitorClient {
+	clientConn, err := g.Conn()
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+	return proto.NewClusterMonitorClient(clientConn)
+}
+
+// NewMonitorGRPC ...
+func NewMonitorGRPC(cfg *config.Configure) *GRPCClient {
+	return &GRPCClient{
+		config: cfg,
+		Type:   config.DefaultString(cfg.Monitor.Type, Type),
+		Port:   config.DefaultString(cfg.Monitor.Port, ":7784"),
+		Addr:   config.DefaultString(cfg.Monitor.Addr, "/tmp/monitor.sock"),
+	}
 }
 
 // NewNodeGRPC ...
