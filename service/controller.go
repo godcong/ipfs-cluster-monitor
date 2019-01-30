@@ -131,12 +131,7 @@ func WaitingGet(ver string) gin.HandlerFunc {
 // ResetGet ...
 func ResetGet(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		//log.Println("waiting:", cluster.Default().ResetWaiting())
-		//if cluster.Default().ResetWaiting() < 0 || ctx.Query("force") == "true" {
-		//	go cluster.Default().Reset()
-		//	success(ctx, "resetting")
-		//	return
-		//}
+
 		failed(ctx, "can't reset now")
 	}
 }
@@ -144,20 +139,20 @@ func ResetGet(ver string) gin.HandlerFunc {
 // DeleteGet ...
 func DeleteGet(s string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		pn := ctx.Param("pn")
-		peers := cluster.GetPeers()
-		size := len(peers)
-		for i := 0; i < size; i++ {
-			if peers[0].Peername == pn {
-				err := cluster.DeletePeers(peers[0].ID)
-				if err != nil {
-					failed(ctx, err.Error())
-					return
-				}
-				success(ctx, nil)
-				return
-			}
-		}
+		//pn := ctx.Param("pn")
+		//peers := cluster.GetPeers()
+		//size := len(peers)
+		//for i := 0; i < size; i++ {
+		//	if peers[0].Peername == pn {
+		//		err := cluster.DeletePeers(peers[0].ID)
+		//		if err != nil {
+		//			failed(ctx, err.Error())
+		//			return
+		//		}
+		//		success(ctx, nil)
+		//		return
+		//	}
+		//}
 		failed(ctx, "peers not found")
 	}
 
@@ -186,12 +181,12 @@ func SecretGet(ver string) gin.HandlerFunc {
 func JoinPost(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
-		name := ctx.PostForm("name")
+		//name := ctx.PostForm("name")
 		address := ctx.PostForm("address")
 		if address == "" {
 			address = ctx.Request.RemoteAddr
 		}
-		cluster.AddMySon(name, address)
+		//cluster.AddMySon(name, address)
 		success(ctx, gin.H{})
 	}
 }

@@ -201,14 +201,6 @@ func DeletePeers(peerID string) error {
 	return nil
 }
 
-// GetPeers ...
-func GetPeers() []ServiceInfo {
-	if peers, b := monitor.Load(MonitorPeers); b {
-		return peers.([]ServiceInfo)
-	}
-	return nil
-}
-
 // GetServiceInfo ...
 func GetServiceInfo() (*ServiceInfo, error) {
 	return getServiceInfo()

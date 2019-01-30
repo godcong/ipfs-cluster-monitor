@@ -96,11 +96,11 @@ func (m *Monitor) Start() {
 				}
 			}
 
-			cluster.RunIPFS(m.context, m.config.Monitor.Env())
-			cluster.WaitingIPFS(m.context)
+			cluster.RunIPFS(ctx, m.config.Monitor.Env())
+			cluster.WaitingIPFS(ctx)
 
-			cluster.RunService(m.context, m.config)
-			cluster.WaitingService(m.context)
+			cluster.RunService(ctx, m.config)
+			cluster.WaitingService(ctx)
 
 		}
 	}()

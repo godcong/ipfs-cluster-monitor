@@ -57,12 +57,3 @@ func findMyFather() error {
 	}
 	return errors.New(rm.Message)
 }
-
-// AddMySon ...
-func AddMySon(key, val string) {
-	if val, loaded := clients.LoadOrStore(key, val); loaded {
-		log.Println(key, "joined:", val)
-	} else {
-		log.Println(key, "is joining")
-	}
-}
