@@ -15,7 +15,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strings"
 )
 
 // StatusCode ...
@@ -61,10 +60,11 @@ func getServiceBootstrap() string {
 	return ""
 }
 
-func runCMD(command string, options ...string) error {
+// RunCMD ...
+func RunCMD(command string, env []string, options ...string) error {
 	cmd := exec.Command(command, options...)
 
-	//cmd.Env = append(cmd.Env)
+	cmd.Env = env
 	_, err := cmd.CombinedOutput()
 
 	if err != nil {
@@ -116,69 +116,10 @@ func optimizeRunCMD(ctx context.Context, env []string, command string, options .
 	return nil
 }
 
-// stopRunningCMD ...
-func stopRunningCMD() {
-	//c.commands.Range(
-	//	func(key, value interface{}) bool {
-	//		if v, b := value.(*exec.Cmd); b {
-	//			log.Println("kill", key)
-	//			err := v.Process.Kill()
-	//			if err != nil {
-	//				errors.ErrorStack(err)
-	//				log.Println(err)
-	//			}
-	//			c.commands.Delete(key)
-	//			return true
-	//		}
-	//		log.Println(key, "not cmd continue")
-	//		return true
-	//	})
-}
-
 func webAddress(api string) string {
 	//url := strings.Join([]string{cfg.RemoteIP + cfg.RemotePort, cfg.Version, api}, "/")
 	//return "http://" + url
 	return ""
-}
-
-func clear(path string) {
-	if strings.LastIndex(path, "/") != 0 {
-		path = path + "/"
-	}
-	log.Println("clear", path)
-	err := runCMD("rm", "-R", path)
-	if err != nil {
-		errors.ErrorStack(err)
-	}
-	return
-}
-
-// Reset ...
-func Reset() error {
-
-	//stop running ipfs and service
-	//c.Stop()
-
-	clear(config.IpfsPath())
-	clear(config.IpfsClusterPath())
-	//clear(cfg.RootPath)
-
-	//reset config
-	//cfg = DefaultConfig()
-
-	//reset status
-	//c.isInitialized = false
-	//c.SetStatus("init", StatusFailed)
-
-	//waiting 30 sec to restart
-	//for ; waiting >= 0; waiting-- {
-	//	atomic.StoreInt32(&c.waiting, waiting)
-	//	time.Sleep(time.Second)
-	//}
-	//
-	//rerun
-	//go c.Start()
-	return nil
 }
 
 // InitMaker ...

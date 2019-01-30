@@ -143,8 +143,8 @@ func RunServiceInit(ctx context.Context, cfg *config.Configure) error {
 	return nil
 }
 
-func optimizationFirstRunService(ctx context.Context, env []string) {
-	err := optimizeRunCMD(ctx, env, "service", "init")
+func optimizationFirstRunService(ctx context.Context, cfg *config.Configure) {
+	err := optimizeRunCMD(ctx, cfg.Monitor.Env(), cfg.MonitorProperty.ServiceCommandName, "init")
 	if err != nil {
 		panic(err)
 	}
@@ -153,7 +153,7 @@ func optimizationFirstRunService(ctx context.Context, env []string) {
 // RunService ...
 func RunService(ctx context.Context, cfg *config.Configure) {
 	log.Println("bootstrap", cfg.Monitor.Bootstrap)
-	go optimizeRunCMD(ctx, cfg.Monitor.Env(), "service", "daemon", "--bootstrap", cfg.Monitor.Bootstrap)
+	go optimizeRunCMD(ctx, cfg.Monitor.Env(), cfg.MonitorProperty.ServiceCommandName, "daemon", "--bootstrap", cfg.Monitor.Bootstrap)
 
 }
 

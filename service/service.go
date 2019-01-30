@@ -7,7 +7,7 @@ type service struct {
 	config *config.Configure
 	grpc   *GRPCServer
 	//rest    *RestServer
-	cluster *ClusterMonitor
+	cluster *Monitor
 }
 
 var server *service
@@ -18,7 +18,7 @@ func Start() {
 
 	server = &service{
 		config:  cfg,
-		cluster: NewClusterMonitor(cfg),
+		cluster: NewMonitor(cfg),
 		grpc:    NewGRPCServer(cfg),
 		//rest:    NewRestServer(cfg),
 		//queue: NewQueueServer(cfg),

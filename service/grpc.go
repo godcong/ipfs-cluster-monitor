@@ -30,7 +30,7 @@ func (s *GRPCServer) MonitorInit(ctx context.Context, req *proto.MonitorInitRequ
 	err := server.cluster.InitMaker(monitor)
 	if err != nil {
 		log.Println(err)
-		return &proto.MonitorReply{}, err
+		return nil, xerrors.Errorf("monitor init %w", err)
 	}
 	return Result("")
 }
@@ -39,8 +39,14 @@ func (s *GRPCServer) MonitorInit(ctx context.Context, req *proto.MonitorInitRequ
 func (s *GRPCServer) MonitorProc(ctx context.Context, req *proto.MonitorProcRequest) (*proto.MonitorReply, error) {
 	if req.Type == proto.MonitorType_Init {
 		return &proto.MonitorReply{}, nil
+	} else if req.Type == proto.MonitorType_Reset {
+		err := server.cluster.Reset()
+		if err != nil {
+			log.Println(err)
+			return nil, xerrors.Errorf("monitor proc %w", err)
+		}
 	}
-	return nil, xerrors.New("monitor proc error")
+	return Result("")
 }
 
 // Result ...

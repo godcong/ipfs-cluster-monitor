@@ -251,9 +251,9 @@ func DefaultConfig() *Configure {
 			Type:        "tcp",
 			Addr:        "localhost",
 			Port:        ":7784",
-			Secret:      "",
+			Secret:      "27b3f5c4e330c069cc045307152345cc391cb40e6dcabf01f98ae9cdc9dabb34",
 			Bootstrap:   "/ip4/47.101.169.94/tcp/9096/ipfs/QmU58AYMghsHEMq6gSrLNT1kVPigG3gpvfaifeUuXKXeLs",
-			Path:        "27b3f5c4e330c069cc045307152345cc391cb40e6dcabf01f98ae9cdc9dabb34",
+			Path:        "",
 			ClusterPath: "",
 		},
 		MonitorProperty: MonitorProperty{
