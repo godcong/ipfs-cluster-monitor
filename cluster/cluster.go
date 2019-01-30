@@ -74,43 +74,35 @@ func runCMD(command string, options ...string) error {
 	return err
 }
 
-func optimizeRunCMD(ctx context.Context, command string, options ...string) error {
+func optimizeRunCMD(ctx context.Context, env []string, command string, options ...string) error {
 	cmd := exec.CommandContext(ctx, command, options...)
-	//end := strconv.FormatInt(time.Now().Unix(), 10)
-	//c.commands.Store(command+"_"+end, cmd)
-
-	//cmd.Env = cfg.GetEnv()
+	cmd.Env = env
 
 	//显示运行的命令
 	log.Println("command:", cmd.Args)
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		errors.ErrorStack(err)
-		return err
+		return xerrors.Errorf("out pipe:%w", err)
 	}
 
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
-		errors.ErrorStack(err)
-		return err
+		return xerrors.Errorf("err pipe:%w", err)
 	}
 
 	err = cmd.Start()
 	if err != nil {
-		errors.ErrorStack(err)
-		return err
+		return xerrors.Errorf("start:%w", err)
 	}
 
 	reader := bufio.NewReader(io.MultiReader(stdout, stderr))
 
 	//实时循环读取输出流中的一行内容
-
 	for {
 		line, e := reader.ReadString('\n')
 		if e != nil || io.EOF == e {
 			log.Println("end", cmd.Args, e)
-			errors.ErrorStack(err)
 			break
 		}
 
@@ -119,10 +111,9 @@ func optimizeRunCMD(ctx context.Context, command string, options ...string) erro
 
 	err = cmd.Wait()
 	if err != nil {
-		errors.ErrorStack(err)
-		return err
+		return xerrors.Errorf("wait:%w", err)
 	}
-	return err
+	return nil
 }
 
 // stopRunningCMD ...

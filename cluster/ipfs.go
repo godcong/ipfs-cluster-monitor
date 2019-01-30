@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os/exec"
+	"time"
 )
 
 // IpfsInfo ...
@@ -20,9 +21,9 @@ type IpfsInfo struct {
 	ProtocolVersion string   `json:"ProtocolVersion"`
 }
 
-// runIPFS ...
-func runIPFS(ctx context.Context) {
-	go optimizeRunCMD(ctx, "ipfs", "daemon")
+// RunIPFS ...
+func RunIPFS(ctx context.Context, env []string) {
+	go optimizeRunCMD(ctx, env, "ipfs", "daemon")
 }
 
 // RunIPFSInit ...
@@ -38,8 +39,8 @@ func RunIPFSInit(ctx context.Context, cfg *config.Configure) error {
 	return nil
 }
 
-func optimizationFirstRunIPFS(ctx context.Context) {
-	err := optimizeRunCMD(ctx, "ipfs", "init")
+func optimizationFirstRunIPFS(ctx context.Context, env []string) {
+	err := optimizeRunCMD(ctx, env, "ipfs", "init")
 	if err != nil {
 		panic(err)
 	}
@@ -67,19 +68,21 @@ func getIpfsInfo() (*IpfsInfo, error) {
 	return &ipfs, nil
 }
 
-func waitingIpfs(ctx context.Context) {
+// WaitingIPFS ...
+func WaitingIPFS(ctx context.Context) {
 	var err error
 	for {
 		select {
 		case <-ctx.Done():
 			return
 		default:
+			log.Println("waiting ipfs")
+			time.Sleep(1 * time.Second)
+			_, err = getIpfsInfo()
+			if err == nil {
+				break
+			}
+		}
 
-		}
-		_, err = getIpfsInfo()
-		if err == nil {
-			break
-		}
-		//time.Sleep(cfg.Interval)
 	}
 }
