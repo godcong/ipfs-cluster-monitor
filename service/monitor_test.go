@@ -13,11 +13,16 @@ func TestClusterMonitor_Initialized(t *testing.T) {
 
 	client := MonitorClient(grpc)
 
-	reply, err := client.MonitorProc(context.Background(), &proto.MonitorProcRequest{
-		Type: proto.MonitorType_Reset,
-	})
+	//reply, err := client.MonitorProc(context.Background(), &proto.MonitorProcRequest{
+	//	Type:            proto.MonitorType_Reset,
+	//	IpfsPath:        "d:\\workspace\\ipfs",
+	//	IpfsClusterPath: "d:\\workspace\\ipfs-cluster",
+	//})
 
-	//reply, err := client.MonitorInit(context.Background(), &proto.MonitorInitRequest{})
+	reply, err := client.MonitorInit(context.Background(), &proto.MonitorInitRequest{
+		Path:        "d:\\workspace\\ipfs",
+		ClusterPath: "d:\\workspace\\ipfs-cluster",
+	})
 	//BootStrap:            "",
 	//Secret:               "",
 	//IpfsPath:             "",

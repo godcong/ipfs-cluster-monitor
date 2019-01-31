@@ -122,6 +122,8 @@ func (m *Monitor) Env() (env []string) {
 	env = append(env, strings.Join([]string{"IPFS_PATH", string(m.Path)}, "="))
 	env = append(env, strings.Join([]string{"CLUSTER_SECRET", string(m.Secret)}, "="))
 	env = append(env, strings.Join([]string{"IPFS_CLUSTER_PATH", string(m.ClusterPath)}, "="))
+
+	log.Println(env)
 	return
 }
 
@@ -231,7 +233,7 @@ func HomePath(name string) string {
 // IpfsPath ...
 func IpfsPath() string {
 	if config.Monitor.Path != "" {
-		return string(config.Monitor.Path)
+		return config.Monitor.Path
 	}
 	return HomePath(".ipfs")
 }
@@ -239,7 +241,7 @@ func IpfsPath() string {
 // IpfsClusterPath ...
 func IpfsClusterPath() string {
 	if config.Monitor.ClusterPath != "" {
-		return string(config.Monitor.ClusterPath)
+		return config.Monitor.ClusterPath
 	}
 	return HomePath(".ipfs-cluster")
 }
@@ -256,8 +258,8 @@ func DefaultConfig() *Configure {
 			Port:        ":7784",
 			Secret:      "27b3f5c4e330c069cc045307152345cc391cb40e6dcabf01f98ae9cdc9dabb34",
 			Bootstrap:   "/ip4/47.101.169.94/tcp/9096/ipfs/QmU58AYMghsHEMq6gSrLNT1kVPigG3gpvfaifeUuXKXeLs",
-			Path:        "",
-			ClusterPath: "",
+			Path:        HomePath(".ipfs"),
+			ClusterPath: HomePath(".ipfs-cluster"),
 		},
 		MonitorProperty: MonitorProperty{
 			Version:             "",
