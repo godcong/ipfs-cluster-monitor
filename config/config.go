@@ -127,15 +127,6 @@ func (m *Monitor) Env() (env []string) {
 	return
 }
 
-// HostType ...
-type HostType string
-
-// ClassHost ...
-var (
-	HostServer HostType = "server"
-	HostClient HostType = "client"
-)
-
 // MonitorProperty ...
 type MonitorProperty struct {
 	Version             string        `toml:"version"`
