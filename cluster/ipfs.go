@@ -22,8 +22,8 @@ type IpfsInfo struct {
 }
 
 // RunIPFS ...
-func RunIPFS(ctx context.Context, env []string) {
-	go optimizeRunCMD(ctx, env, "ipfs", "daemon")
+func RunIPFS(ctx context.Context, cfg *config.Configure) {
+	go optimizeRunCMD(ctx, cfg.MonitorProperty.CommandName, cfg.Monitor.Env(), "daemon")
 }
 
 // RunIPFSInit ...
@@ -39,8 +39,8 @@ func RunIPFSInit(ctx context.Context, cfg *config.Configure) error {
 	return nil
 }
 
-func optimizationFirstRunIPFS(ctx context.Context, env []string) {
-	err := optimizeRunCMD(ctx, env, "ipfs", "init")
+func optimizationFirstRunIPFS(ctx context.Context, cfg *config.Configure) {
+	err := optimizeRunCMD(ctx, cfg.MonitorProperty.CommandName, cfg.Monitor.Env(), "init")
 	if err != nil {
 		panic(err)
 	}

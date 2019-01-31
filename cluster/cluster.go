@@ -74,7 +74,7 @@ func RunCMD(command string, env []string, options ...string) error {
 	return err
 }
 
-func optimizeRunCMD(ctx context.Context, env []string, command string, options ...string) error {
+func optimizeRunCMD(ctx context.Context, command string, env []string, options ...string) error {
 	cmd := exec.CommandContext(ctx, command, options...)
 	cmd.Env = env
 
@@ -164,7 +164,7 @@ func InitMaker(cfg *config.Configure) error {
 // InitRunning ...
 func InitRunning(path string) bool {
 	info, err := os.Stat(path)
-	log.Println(info, err) //has nil
+	log.Printf("%+v,%+v\n", info, err) //has nil
 	if err == nil {
 		err := os.Remove(path)
 		if err == nil {
