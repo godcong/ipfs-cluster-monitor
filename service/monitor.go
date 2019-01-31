@@ -8,7 +8,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 )
 
@@ -23,7 +22,7 @@ type Monitor struct {
 // NewMonitor ...
 func NewMonitor(cfg *config.Configure) *Monitor {
 	return &Monitor{
-		isInitialized: false,
+		isInitialized: cfg.Initialize,
 		config:        cfg,
 		context:       context.Background(),
 	}
@@ -36,6 +35,7 @@ func (m *Monitor) Initialized() {
 
 // IsInitialized ...
 func (m *Monitor) IsInitialized() bool {
+
 	return m.isInitialized
 }
 
@@ -59,7 +59,9 @@ func (m *Monitor) waitingForInitialize(ctx context.Context) bool {
 
 // InitMaker ...
 func (m *Monitor) InitMaker(monitor *config.Monitor) error {
-	err := cluster.InitMaker(m.config, m.config.Root)
+
+	m.config.Monitor = *monitor
+	err := cluster.InitMaker(m.config)
 	if err == nil {
 		m.Initialized()
 		return nil
@@ -80,7 +82,6 @@ func (m *Monitor) Start() {
 
 	go func() {
 		if m.waitingForInitialize(ctx) {
-
 			if cluster.InitRunning(FileDir(m.config.Root, config.InitIPFS)) {
 				log.Println("init ipfs")
 				err := cluster.RunIPFSInit(ctx, m.config)
@@ -116,10 +117,7 @@ func (m *Monitor) Stop() {
 }
 
 // Clear ...
-func clear(path string, env []string) {
-	if strings.LastIndex(path, "/") != 0 {
-		path = path + "/"
-	}
+func clear(path string) {
 	log.Println("clear", path)
 	err := os.RemoveAll(path)
 	//err := cluster.RunCMD("rm", env,	"-R", path)
@@ -131,21 +129,32 @@ func clear(path string, env []string) {
 
 // Reset ...
 func (m *Monitor) Reset() error {
-
-	//stop running ipfs and service
-	m.Stop()
-
-	clear(config.IpfsPath(), m.config.Monitor.Env())
-	clear(config.IpfsClusterPath(), m.config.Monitor.Env())
-	//clear(m.config.Root, m.config.Monitor.Env())
-
-	//reset config
-	m.config = config.DefaultConfig()
-
 	//reset status
 	m.isInitialized = false
 
+	//stop running ipfs and service
+	m.Stop()
+	time.Sleep(15 * time.Second)
+	log.Println("stop all")
+
+	clear(config.IpfsPath())
+	clear(config.IpfsClusterPath())
+	err := os.Remove(m.config.FD())
+	log.Println(err)
+	dir, name := m.config.Root, m.config.ConfigName
+
+	//reset config
+	m.config = config.DefaultConfig()
+	m.config.Root, m.config.ConfigName = dir, name
+
+	err = m.InitMaker(&m.config.Monitor)
+	log.Println(err)
+
 	//rerun
 	go m.Start()
+	log.Println("starting")
+	time.Sleep(15 * time.Second)
+	m.isInitialized = true
+
 	return nil
 }

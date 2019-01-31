@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"github.com/juju/errors"
 	"github.com/pelletier/go-toml"
 	"golang.org/x/exp/xerrors"
 	"log"
@@ -137,22 +136,22 @@ var (
 
 // MonitorProperty ...
 type MonitorProperty struct {
-	Version            string
-	RootPath           string
-	CommandName        string
-	ServiceCommandName string
-	//HostType            HostType
-	RemoteIP            string
-	RemotePort          string
-	Interval            time.Duration
-	ServerCheckInterval time.Duration
-	MonitorInterval     time.Duration
-	ResetWaiting        int
+	Version             string        `toml:"version"`
+	CommandName         string        `toml:"command_name"`
+	ServiceCommandName  string        `toml:"service_command_name"`
+	RemoteIP            string        `toml:"remote_ip"`
+	RemotePort          string        `toml:"remote_port"`
+	Interval            time.Duration `toml:"interval"`
+	ServerCheckInterval time.Duration `toml:"server_check_interval"`
+	MonitorInterval     time.Duration `toml:"monitor_interval"`
+	ResetWaiting        int           `toml:"reset_waiting"`
 }
 
 // Configure ...
 type Configure struct {
-	Root            string          `toml:"root"`
+	Initialize      bool            `toml:"-"`
+	Root            string          `toml:"-"`
+	ConfigName      string          `toml:"-"`
 	Monitor         Monitor         `toml:"monitor"`
 	MonitorProperty MonitorProperty `toml:"monitor_property"`
 	//Database        Database        `toml:"database"`
@@ -176,7 +175,9 @@ func Initialize(filePath ...string) error {
 		filePath = []string{"config.toml"}
 	}
 	config = LoadConfig(filePath[0])
-	config.Root = filePath[0]
+	dir, name := filepath.Split(filePath[0])
+	config.Root = dir
+	config.ConfigName = name
 	return nil
 }
 
@@ -204,6 +205,7 @@ func LoadConfig(filePath string) *Configure {
 	if err != nil {
 		return DefaultConfig()
 	}
+	cfg.Initialize = true
 	log.Printf("config: %+v", cfg)
 	return &cfg
 }
@@ -245,7 +247,8 @@ func IpfsClusterPath() string {
 // DefaultConfig ...
 func DefaultConfig() *Configure {
 	return &Configure{
-		Root: "",
+		Initialize: false,
+		Root:       "",
 		Monitor: Monitor{
 			Enable:      false,
 			Type:        "tcp",
@@ -258,7 +261,6 @@ func DefaultConfig() *Configure {
 		},
 		MonitorProperty: MonitorProperty{
 			Version:             "",
-			RootPath:            "",
 			CommandName:         "ipfs",
 			ServiceCommandName:  "ipfs-cluster-service",
 			RemoteIP:            "",
@@ -283,6 +285,11 @@ func Config() *Configure {
 	return config
 }
 
+// FD config file dictionary
+func (c *Configure) FD() string {
+	return filepath.Join(c.Root, c.ConfigName)
+}
+
 // DefaultString ...
 func DefaultString(v, def string) string {
 	if v == "" {
@@ -292,10 +299,10 @@ func DefaultString(v, def string) string {
 }
 
 // CheckExist ...
-func (cfg *MonitorProperty) CheckExist() bool {
-	_, err := os.Stat(filepath.Join(cfg.RootPath, DefaultFileName))
+func (c *Configure) CheckExist() bool {
+	_, err := os.Stat(filepath.Join(c.Root, DefaultFileName))
 	if err != nil {
-		errors.ErrorStack(err)
+		log.Println(err)
 		return false
 	}
 	return true
@@ -304,11 +311,9 @@ func (cfg *MonitorProperty) CheckExist() bool {
 // DefaultMonitorProperty ...
 func DefaultMonitorProperty() *MonitorProperty {
 	return &MonitorProperty{
-		Version:            "v0",
-		CommandName:        "ipfs",
-		ServiceCommandName: "ipfs-cluster-service",
-		RootPath:           "",
-		//HostType:            "",
+		Version:             "v0",
+		CommandName:         "ipfs",
+		ServiceCommandName:  "ipfs-cluster-service",
 		RemoteIP:            "127.0.0.1",
 		RemotePort:          ":7758",
 		Interval:            1 * time.Second,

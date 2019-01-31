@@ -74,6 +74,7 @@ func WaitingIPFS(ctx context.Context) {
 	for {
 		select {
 		case <-ctx.Done():
+			log.Println("ipfs done")
 			return
 		default:
 			log.Println("waiting ipfs")

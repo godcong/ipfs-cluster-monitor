@@ -17,7 +17,7 @@ func TestClusterMonitor_Initialized(t *testing.T) {
 		Type: proto.MonitorType_Reset,
 	})
 
-	reply, err = client.MonitorInit(context.Background(), &proto.MonitorInitRequest{})
+	//reply, err := client.MonitorInit(context.Background(), &proto.MonitorInitRequest{})
 	//BootStrap:            "",
 	//Secret:               "",
 	//IpfsPath:             "",

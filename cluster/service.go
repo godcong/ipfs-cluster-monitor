@@ -229,6 +229,7 @@ func WaitingService(ctx context.Context) {
 	for {
 		select {
 		case <-ctx.Done():
+			log.Println("monitor done ")
 			return
 		default:
 			log.Println("waiting service")

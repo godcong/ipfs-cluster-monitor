@@ -123,13 +123,13 @@ func webAddress(api string) string {
 }
 
 // InitMaker ...
-func InitMaker(cfg *config.Configure, configPath string) error {
-	dir, _ := filepath.Split(configPath)
-	file, err := os.OpenFile(configPath, os.O_RDWR|os.O_CREATE|os.O_SYNC, os.ModePerm)
+func InitMaker(cfg *config.Configure) error {
+
+	file, err := os.OpenFile(cfg.Root, os.O_RDWR|os.O_CREATE|os.O_SYNC, os.ModePerm)
 	if os.IsNotExist(err) {
 		log.Println("not exist ", err)
-		_ = os.MkdirAll(dir, os.ModePerm)
-		file, err = os.OpenFile(configPath, os.O_RDWR|os.O_CREATE|os.O_SYNC, os.ModePerm)
+		_ = os.MkdirAll(cfg.Root, os.ModePerm)
+		file, err = os.OpenFile(cfg.FD(), os.O_RDWR|os.O_CREATE|os.O_SYNC, os.ModePerm)
 		if err != nil {
 			return xerrors.Errorf("make file:%w", err)
 		}
@@ -145,14 +145,14 @@ func InitMaker(cfg *config.Configure, configPath string) error {
 		return xerrors.Errorf("encode file:%w", err)
 	}
 
-	cfile, err := os.Create(filepath.Join(dir, config.InitIPFS))
+	cfile, err := os.Create(filepath.Join(cfg.Root, config.InitIPFS))
 	log.Println("created:", cfile.Name())
 	if err != nil {
 		return xerrors.Errorf("ipfs file:%w", err)
 	}
 	defer cfile.Close()
 
-	sfile, err := os.Create(filepath.Join(dir, config.InitIPFSCluster))
+	sfile, err := os.Create(filepath.Join(cfg.Root, config.InitIPFSCluster))
 	log.Println("created:", sfile.Name())
 	if err != nil {
 		return xerrors.Errorf("cluster file:%w", err)

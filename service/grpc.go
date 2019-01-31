@@ -27,6 +27,7 @@ type GRPCServer struct {
 func (s *GRPCServer) MonitorInit(ctx context.Context, req *proto.MonitorInitRequest) (*proto.MonitorReply, error) {
 	log.Println("monitor init call")
 	monitor := config.MustMonitor(req.Secret, req.Bootstrap, req.Path, req.ClusterPath)
+	log.Printf("%+v", monitor)
 	err := server.cluster.InitMaker(monitor)
 	if err != nil {
 		log.Println(err)
