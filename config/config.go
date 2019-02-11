@@ -8,7 +8,6 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
-	"strings"
 	"time"
 )
 
@@ -87,7 +86,8 @@ type Requester struct {
 type Monitor struct {
 	Enable      bool   `toml:"enable"`
 	Type        string `toml:"type"`
-	AddrPort    string `toml:"addr_port"`
+	Addr        string `toml:"addr"`
+	Port        string `toml:"port"`
 	Workspace   string `toml:"workspace"`
 	Secret      string `toml:"secret"`
 	Bootstrap   string `toml:"bootstrap"`
@@ -97,21 +97,46 @@ type Monitor struct {
 
 // MustMonitor ...
 func MustMonitor(secret, boot, workspace string) *Monitor {
+	ipfs := ""
+	cluster := ""
+	if workspace != "" {
+		ipfs = filepath.Join(workspace, Ipfs)
+		cluster = filepath.Join(workspace, Cluster)
+	}
+
 	return &Monitor{
 		Secret:      DefaultString(secret, "27b3f5c4e330c069cc045307152345cc391cb40e6dcabf01f98ae9cdc9dabb34"),
 		Bootstrap:   DefaultString(boot, "/ip4/47.101.169.94/tcp/9096/ipfs/QmU58AYMghsHEMq6gSrLNT1kVPigG3gpvfaifeUuXKXeLs"),
-		IpfsPath:    DefaultString(filepath.Join(workspace, Ipfs), HomePath(".ipfs")),
-		ClusterPath: DefaultString(filepath.Join(workspace, Cluster), HomePath(".ipfs-cluster")),
+		IpfsPath:    DefaultString(ipfs, HomePath(".ipfs")),
+		ClusterPath: DefaultString(cluster, HomePath(".ipfs-cluster")),
 	}
 }
 
 // Env ...
 func (m *Monitor) Env() (env []string) {
-	env = os.Environ()
-	env = append(env, strings.Join([]string{"IPFS_PATH", string(m.IpfsPath)}, "="))
-	env = append(env, strings.Join([]string{"CLUSTER_SECRET", string(m.Secret)}, "="))
-	env = append(env, strings.Join([]string{"IPFS_CLUSTER_PATH", string(m.ClusterPath)}, "="))
+	var e error
+	//if _, b := os.LookupEnv("IPFS_PATH"); b {
+	e = os.Setenv("IPFS_PATH", string(m.IpfsPath))
+	if e != nil {
+		panic(e)
+	}
+	//}
 
+	//if _, b := os.LookupEnv("CLUSTER_SECRET"); b {
+	e = os.Setenv("CLUSTER_SECRET", string(m.Secret))
+	if e != nil {
+		panic(e)
+	}
+	//}
+
+	//if _, b := os.LookupEnv("IPFS_CLUSTER_PATH"); b {
+	e = os.Setenv("IPFS_CLUSTER_PATH", string(m.ClusterPath))
+	if e != nil {
+		panic(e)
+	}
+	//}
+
+	env = os.Environ()
 	log.Println(env)
 	return
 }
@@ -141,7 +166,7 @@ type Configure struct {
 	//Media           Media           `toml:"media"`
 	//Queue           Queue           `toml:"queue"`
 	GRPC GRPC `toml:"grpc"`
-	//REST            REST            `toml:"rest"`
+	REST REST `toml:"rest"`
 	IPFS IPFS `toml:"ipfs"`
 
 	Requester Requester `toml:"requester"`
@@ -172,20 +197,20 @@ func IsExists(name string) bool {
 
 // LoadConfig ...
 func LoadConfig(filePath string) *Configure {
-	var cfg Configure
+	cfg := DefaultConfig()
 
 	openFile, err := os.OpenFile(filePath, os.O_RDONLY|os.O_SYNC, os.ModePerm)
 	if err != nil {
-		return DefaultConfig()
+		return cfg
 	}
 	decoder := toml.NewDecoder(openFile)
-	err = decoder.Decode(&cfg)
+	err = decoder.Decode(cfg)
 	if err != nil {
-		return DefaultConfig()
+		return cfg
 	}
 	cfg.Initialize = true
 	log.Printf("config: %+v", cfg)
-	return &cfg
+	return cfg
 }
 
 // HomePath ...
@@ -228,13 +253,15 @@ func DefaultConfig() *Configure {
 		Initialize: false,
 		Root:       "",
 		Monitor: Monitor{
-			Enable:      false,
-			Type:        "tcp",
-			AddrPort:    "localhost:7784",
-			Secret:      "27b3f5c4e330c069cc045307152345cc391cb40e6dcabf01f98ae9cdc9dabb34",
-			Bootstrap:   "/ip4/47.101.169.94/tcp/9096/ipfs/QmU58AYMghsHEMq6gSrLNT1kVPigG3gpvfaifeUuXKXeLs",
-			IpfsPath:    HomePath(".ipfs"),
-			ClusterPath: HomePath(".ipfs-cluster"),
+			Enable:    false,
+			Type:      "tcp",
+			Addr:      "localhost",
+			Port:      ":7784",
+			Secret:    "27b3f5c4e330c069cc045307152345cc391cb40e6dcabf01f98ae9cdc9dabb34",
+			Bootstrap: "/ip4/47.101.169.94/tcp/9096/ipfs/QmU58AYMghsHEMq6gSrLNT1kVPigG3gpvfaifeUuXKXeLs",
+			Workspace: "",
+			//IpfsPath:    HomePath(".ipfs"),
+			//ClusterPath: HomePath(".ipfs-cluster"),
 		},
 		MonitorProperty: MonitorProperty{
 			Version:             "",

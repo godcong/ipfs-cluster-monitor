@@ -4,9 +4,9 @@ import "github.com/godcong/ipfs-cluster-monitor/config"
 
 // service ...
 type service struct {
-	config *config.Configure
-	grpc   *GRPCServer
-	//rest    *RestServer
+	config  *config.Configure
+	grpc    *GRPCServer
+	rest    *RestServer
 	cluster *Monitor
 }
 
@@ -20,7 +20,7 @@ func Start() {
 		config:  cfg,
 		cluster: NewMonitor(cfg),
 		grpc:    NewGRPCServer(cfg),
-		//rest:    NewRestServer(cfg),
+		rest:    NewRestServer(cfg),
 		//queue: NewQueueServer(cfg),
 	}
 

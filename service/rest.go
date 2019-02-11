@@ -28,9 +28,9 @@ func NewRestServer(cfg *config.Configure) *RestServer {
 
 // Start ...
 func (s *RestServer) Start() {
-	//if !s.config.REST.Enable {
-	//	return
-	//}
+	if !s.config.REST.Enable {
+		return
+	}
 
 	Router(s.Engine)
 
