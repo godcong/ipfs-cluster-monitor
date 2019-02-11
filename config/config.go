@@ -39,17 +39,6 @@ type Callback struct {
 	BackAddr string `toml:"back_addr"`
 }
 
-// Media ...
-type Media struct {
-	Upload      string `toml:"upload"`        //上传路径
-	Transfer    string `toml:"transfer"`      //转换路径
-	M3U8        string `toml:"m3u8"`          //m3u8文件名
-	KeyURL      string `toml:"key_url"`       //default url
-	KeyDest     string `toml:"key_dest"`      //key 文件输出目录
-	KeyFile     string `toml:"key_file"`      //key文件名
-	KeyInfoFile string `toml:"key_info_file"` //keyFile文件名
-}
-
 // IPFS ...
 type IPFS struct {
 	Host string `toml:"host"`
@@ -132,8 +121,7 @@ type MonitorProperty struct {
 	Version             string        `toml:"version"`
 	IpfsCommandName     string        `toml:"ipfs_command_name"`
 	ClusterCommandName  string        `toml:"cluster_command_name"`
-	RemoteIP            string        `toml:"remote_ip"`
-	RemotePort          string        `toml:"remote_port"`
+	RemoteAddrPort      string        `toml:"remote_addr_port"`
 	Interval            time.Duration `toml:"interval"`
 	ServerCheckInterval time.Duration `toml:"server_check_interval"`
 	MonitorInterval     time.Duration `toml:"monitor_interval"`
@@ -168,9 +156,7 @@ func Initialize(filePath ...string) error {
 		filePath = []string{"config.toml"}
 	}
 	config = LoadConfig(filePath[0])
-	dir, name := filepath.Split(filePath[0])
-	config.Root = dir
-	config.ConfigName = name
+	config.Root, config.ConfigName = filepath.Split(filePath[0])
 	return nil
 }
 
@@ -180,7 +166,6 @@ func IsExists(name string) bool {
 		if os.IsNotExist(err) {
 			return false
 		}
-		log.Panicln(err)
 	}
 	return true
 }
@@ -255,17 +240,22 @@ func DefaultConfig() *Configure {
 			Version:             "",
 			IpfsCommandName:     "ipfs",
 			ClusterCommandName:  "ipfs-cluster-service",
-			RemoteIP:            "",
-			RemotePort:          "",
+			RemoteAddrPort:      "",
 			Interval:            3 * time.Second,
 			ServerCheckInterval: 3 * time.Second,
 			MonitorInterval:     3 * time.Second,
 			ResetWaiting:        0,
 		},
-		GRPC:      GRPC{},
-		IPFS:      IPFS{},
-		Requester: Requester{},
-		Callback:  Callback{},
+		GRPC: GRPC{
+			Enable: true,
+			Type:   "",
+			Path:   "",
+			Port:   "",
+		},
+		IPFS: IPFS{
+			Host: "",
+			Port: "",
+		},
 	}
 }
 
@@ -306,8 +296,7 @@ func DefaultMonitorProperty() *MonitorProperty {
 		Version:             "v0",
 		IpfsCommandName:     "ipfs",
 		ClusterCommandName:  "ipfs-cluster-service",
-		RemoteIP:            "127.0.0.1",
-		RemotePort:          ":7758",
+		RemoteAddrPort:      "127.0.0.1:7758",
 		Interval:            1 * time.Second,
 		MonitorInterval:     5 * time.Second,
 		ServerCheckInterval: 60 * time.Second,

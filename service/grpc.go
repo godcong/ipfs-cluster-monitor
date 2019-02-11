@@ -71,7 +71,8 @@ func Result(v interface{}) (*proto.MonitorReply, error) {
 func NewGRPCServer(cfg *config.Configure) *GRPCServer {
 	return &GRPCServer{
 		config: cfg,
-		Type:   config.DefaultString("", Type),
+		server: grpc.NewServer(),
+		Type:   config.DefaultString("", GRPCType),
 		Port:   config.DefaultString("", ":7784"),
 		Path:   config.DefaultString("", "/tmp/monitor.sock"),
 	}
@@ -113,7 +114,7 @@ func MonitorClient(g *GRPCClient) proto.ClusterMonitorClient {
 func NewMonitorGRPC(cfg *config.Configure) *GRPCClient {
 	return &GRPCClient{
 		config: cfg,
-		Type:   config.DefaultString(cfg.Monitor.Type, Type),
+		Type:   config.DefaultString(cfg.Monitor.Type, GRPCType),
 		Port:   config.DefaultString(cfg.Monitor.Port, ":7784"),
 		Addr:   config.DefaultString(cfg.Monitor.Addr, "/tmp/monitor.sock"),
 	}
@@ -123,7 +124,7 @@ func NewMonitorGRPC(cfg *config.Configure) *GRPCClient {
 func NewNodeGRPC(cfg *config.Configure) *GRPCClient {
 	return &GRPCClient{
 		config: cfg,
-		Type:   config.DefaultString("", Type),
+		Type:   config.DefaultString("", GRPCType),
 		Port:   config.DefaultString("", ":7787"),
 		Addr:   config.DefaultString("", "/tmp/node.sock"),
 	}
@@ -133,7 +134,7 @@ func NewNodeGRPC(cfg *config.Configure) *GRPCClient {
 func NewManagerGRPC(cfg *config.Configure) *GRPCClient {
 	return &GRPCClient{
 		config: cfg,
-		Type:   config.DefaultString("", Type),
+		Type:   config.DefaultString("", GRPCType),
 		Port:   config.DefaultString("", ":7781"),
 		Addr:   config.DefaultString("", "/tmp/manager.sock"),
 	}
@@ -143,7 +144,7 @@ func NewManagerGRPC(cfg *config.Configure) *GRPCClient {
 func NewCensorGRPC(cfg *config.Configure) *GRPCClient {
 	return &GRPCClient{
 		config: cfg,
-		Type:   config.DefaultString("", Type),
+		Type:   config.DefaultString("", GRPCType),
 		Port:   config.DefaultString("", ":7785"),
 		Addr:   config.DefaultString("", "/tmp/censor.sock"),
 	}
@@ -151,7 +152,9 @@ func NewCensorGRPC(cfg *config.Configure) *GRPCClient {
 
 // Start ...
 func (s *GRPCServer) Start() {
-
+	if !s.config.GRPC.Enable {
+		return
+	}
 	s.server = grpc.NewServer()
 	var lis net.Listener
 	var port string
