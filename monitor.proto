@@ -19,32 +19,30 @@ service ClusterMonitor {
 message MonitorInitRequest {
     string bootstrap = 1;
     string secret = 2;
-    string path =3;
-    string cluster_path =4;
+    string workspace = 3;
 }
 
 enum MonitorType {
-   Init = 0;
-   Reset = 1;
-   Info = 2;
+    Init = 0;
+    Reset = 1;
+    Info = 2;
 }
 
 message MonitorProcRequest {
     MonitorType type = 1;
     string boot_strap = 2;
     string secret = 3;
-    string ipfs_path =4;
-    string ipfs_cluster_path =5;
+    string workspace = 4;
 }
 
 message MonitorCensorRequest {
     string ID = 1;
-    string detail =2;
+    string detail = 2;
 }
 
 message MonitorReply {
     int32 code = 1;
     string message = 2;
-    string detail =3;
+    string detail = 3;
 }
 

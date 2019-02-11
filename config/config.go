@@ -100,6 +100,7 @@ type Monitor struct {
 	Type        string `toml:"type"`
 	Addr        string `toml:"addr"`
 	Port        string `toml:"port"`
+	Workspace   string `toml:"workspace"`
 	Secret      string `toml:"secret"`
 	Bootstrap   string `toml:"bootstrap"`
 	Path        string `toml:"path"`
