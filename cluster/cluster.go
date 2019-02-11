@@ -3,7 +3,6 @@ package cluster
 import (
 	"bufio"
 	"context"
-	"fmt"
 	"github.com/godcong/ipfs-cluster-monitor/config"
 	"github.com/json-iterator/go"
 	"github.com/juju/errors"
@@ -80,8 +79,8 @@ func optimizeRunCMD(ctx context.Context, command string, env []string, options .
 	cmd.Env = env
 
 	//显示运行的命令
-	//log.Println("command:", cmd.Args)
-	log.Output(2, fmt.Sprintln("command:", cmd.Args))
+	log.Println("command:", cmd.Args)
+	//log.Output(2, fmt.Sprintln("command:", cmd.Args))
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
@@ -126,7 +125,6 @@ func webAddress(api string) string {
 
 // InitMaker ...
 func InitMaker(cfg *config.Configure) error {
-
 	file, err := os.OpenFile(cfg.Root, os.O_RDWR|os.O_CREATE|os.O_SYNC, os.ModePerm)
 	if os.IsNotExist(err) {
 		log.Println("not exist ", err)
