@@ -11,17 +11,25 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"os/exec"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 )
 
 var configPath = flag.String("config", "config.toml", "config path")
+var logPath = flag.String("log", "monitor.log", "log path")
 
 func main() {
 
 	flag.Parse()
-	file, err := os.OpenFile("monitor.log", os.O_SYNC|os.O_RDWR|os.O_CREATE|os.O_APPEND, os.ModePerm)
+
+	dir, _ := filepath.Split(*logPath)
+	e := os.MkdirAll(dir, os.ModePerm)
+	if e != nil {
+		panic(e)
+	}
+
+	file, err := os.OpenFile(*logPath, os.O_SYNC|os.O_RDWR|os.O_CREATE|os.O_APPEND, os.ModePerm)
 	if err != nil {
 		panic(err)
 	}
@@ -57,18 +65,4 @@ func NoResponse(ctx *gin.Context) {
 		"code":    -1,
 		"message": "remote address not found",
 	})
-}
-
-func testCommand() {
-	//D:\\workspace\\project\\docker\\
-	cmd := exec.Command("nohup", "ipfs", "cluster", "&")
-
-	cmd.Env = os.Environ()
-
-	err := cmd.Run()
-	println(err)
-	log.Println(cmd.Output())
-	//bytes, err := cmd.CombinedOutput()
-	//log.Println(bytes, err)
-
 }
