@@ -24,10 +24,7 @@ func main() {
 	flag.Parse()
 
 	dir, _ := filepath.Split(*logPath)
-	e := os.MkdirAll(dir, os.ModePerm)
-	if e != nil {
-		panic(e)
-	}
+	_ = os.MkdirAll(dir, os.ModePerm)
 
 	file, err := os.OpenFile(*logPath, os.O_SYNC|os.O_RDWR|os.O_CREATE|os.O_APPEND, os.ModePerm)
 	if err != nil {
