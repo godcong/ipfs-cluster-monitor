@@ -33,7 +33,6 @@ func (s *RestServer) Start() {
 	}
 
 	Router(s.Engine)
-
 	s.server = &http.Server{
 		Addr:    s.Port,
 		Handler: s.Engine,
@@ -44,7 +43,6 @@ func (s *RestServer) Start() {
 			log.Printf("Httpserver: ListenAndServe() error: %s", err)
 		}
 	}()
-
 }
 
 // Stop ...

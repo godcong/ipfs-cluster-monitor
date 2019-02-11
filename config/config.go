@@ -100,6 +100,7 @@ func MustMonitor(secret, boot, workspace string) *Monitor {
 	ipfs := ""
 	cluster := ""
 	if workspace != "" {
+		log.Println(workspace)
 		ipfs = filepath.Join(workspace, Ipfs)
 		cluster = filepath.Join(workspace, Cluster)
 	}
