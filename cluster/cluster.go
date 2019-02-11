@@ -145,14 +145,14 @@ func InitMaker(cfg *config.Configure) error {
 		return xerrors.Errorf("encode file:%w", err)
 	}
 
-	cfile, err := os.Create(filepath.Join(cfg.Root, config.InitIPFS))
+	cfile, err := os.Create(filepath.Join(cfg.Root, config.Ipfs))
 	log.Println("created:", cfile.Name())
 	if err != nil {
 		return xerrors.Errorf("ipfs file:%w", err)
 	}
 	defer cfile.Close()
 
-	sfile, err := os.Create(filepath.Join(cfg.Root, config.InitIPFSCluster))
+	sfile, err := os.Create(filepath.Join(cfg.Root, config.Cluster))
 	log.Println("created:", sfile.Name())
 	if err != nil {
 		return xerrors.Errorf("cluster file:%w", err)

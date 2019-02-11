@@ -15,11 +15,11 @@ import (
 // DefaultFileName ...
 const DefaultFileName = "monitor.json"
 
-// InitIPFS ...
-const InitIPFS = "ipfs"
+// Ipfs ...
+const Ipfs = "ipfs"
 
-// InitIPFSCluster ...
-const InitIPFSCluster = "ipfscluster"
+// Cluster ...
+const Cluster = "cluster"
 
 // Database ...
 type Database struct {
@@ -103,7 +103,7 @@ type Monitor struct {
 	Workspace   string `toml:"workspace"`
 	Secret      string `toml:"secret"`
 	Bootstrap   string `toml:"bootstrap"`
-	Path        string `toml:"path"`
+	IpfsPath    string `toml:"ipfs_path"`
 	ClusterPath string `toml:"cluster_path"`
 }
 
@@ -112,15 +112,15 @@ func MustMonitor(secret, boot, workspace string) *Monitor {
 	return &Monitor{
 		Secret:      DefaultString(secret, "27b3f5c4e330c069cc045307152345cc391cb40e6dcabf01f98ae9cdc9dabb34"),
 		Bootstrap:   DefaultString(boot, "/ip4/47.101.169.94/tcp/9096/ipfs/QmU58AYMghsHEMq6gSrLNT1kVPigG3gpvfaifeUuXKXeLs"),
-		Path:        DefaultString(filepath.Join(workspace, InitIPFS), HomePath(".ipfs")),
-		ClusterPath: DefaultString(filepath.Join(workspace, InitIPFSCluster), HomePath(".ipfs-cluster")),
+		IpfsPath:    DefaultString(filepath.Join(workspace, Ipfs), HomePath(".ipfs")),
+		ClusterPath: DefaultString(filepath.Join(workspace, Cluster), HomePath(".ipfs-cluster")),
 	}
 }
 
 // Env ...
 func (m *Monitor) Env() (env []string) {
 	env = os.Environ()
-	env = append(env, strings.Join([]string{"IPFS_PATH", string(m.Path)}, "="))
+	env = append(env, strings.Join([]string{"IPFS_PATH", string(m.IpfsPath)}, "="))
 	env = append(env, strings.Join([]string{"CLUSTER_SECRET", string(m.Secret)}, "="))
 	env = append(env, strings.Join([]string{"IPFS_CLUSTER_PATH", string(m.ClusterPath)}, "="))
 
@@ -224,8 +224,8 @@ func HomePath(name string) string {
 
 // IpfsPath ...
 func IpfsPath() string {
-	if config.Monitor.Path != "" {
-		return config.Monitor.Path
+	if config.Monitor.IpfsPath != "" {
+		return config.Monitor.IpfsPath
 	}
 	return HomePath(".ipfs")
 }
@@ -250,7 +250,7 @@ func DefaultConfig() *Configure {
 			Port:        ":7784",
 			Secret:      "27b3f5c4e330c069cc045307152345cc391cb40e6dcabf01f98ae9cdc9dabb34",
 			Bootstrap:   "/ip4/47.101.169.94/tcp/9096/ipfs/QmU58AYMghsHEMq6gSrLNT1kVPigG3gpvfaifeUuXKXeLs",
-			Path:        HomePath(".ipfs"),
+			IpfsPath:    HomePath(".ipfs"),
 			ClusterPath: HomePath(".ipfs-cluster"),
 		},
 		MonitorProperty: MonitorProperty{

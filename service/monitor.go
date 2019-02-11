@@ -82,14 +82,14 @@ func (m *Monitor) Start() {
 
 	go func() {
 		if m.waitingForInitialize(ctx) {
-			if cluster.InitRunning(FileDir(m.config.Root, config.InitIPFS)) {
+			if cluster.InitRunning(FileDir(m.config.Root, config.Ipfs)) {
 				log.Println("init ipfs")
 				err := cluster.RunIPFSInit(ctx, m.config)
 				if err != nil {
 					panic(err)
 				}
 			}
-			if cluster.InitRunning(FileDir(m.config.Root, config.InitIPFSCluster)) {
+			if cluster.InitRunning(FileDir(m.config.Root, config.Cluster)) {
 				log.Println("init ipfs cluster")
 				err := cluster.RunServiceInit(ctx, m.config)
 				if err != nil {
