@@ -98,8 +98,7 @@ type Requester struct {
 type Monitor struct {
 	Enable      bool   `toml:"enable"`
 	Type        string `toml:"type"`
-	Addr        string `toml:"addr"`
-	Port        string `toml:"port"`
+	AddrPort    string `toml:"addr_port"`
 	Workspace   string `toml:"workspace"`
 	Secret      string `toml:"secret"`
 	Bootstrap   string `toml:"bootstrap"`
@@ -131,8 +130,8 @@ func (m *Monitor) Env() (env []string) {
 // MonitorProperty ...
 type MonitorProperty struct {
 	Version             string        `toml:"version"`
-	CommandName         string        `toml:"command_name"`
-	ServiceCommandName  string        `toml:"service_command_name"`
+	IpfsCommandName     string        `toml:"ipfs_command_name"`
+	ClusterCommandName  string        `toml:"cluster_command_name"`
 	RemoteIP            string        `toml:"remote_ip"`
 	RemotePort          string        `toml:"remote_port"`
 	Interval            time.Duration `toml:"interval"`
@@ -246,8 +245,7 @@ func DefaultConfig() *Configure {
 		Monitor: Monitor{
 			Enable:      false,
 			Type:        "tcp",
-			Addr:        "localhost",
-			Port:        ":7784",
+			AddrPort:    "localhost:7784",
 			Secret:      "27b3f5c4e330c069cc045307152345cc391cb40e6dcabf01f98ae9cdc9dabb34",
 			Bootstrap:   "/ip4/47.101.169.94/tcp/9096/ipfs/QmU58AYMghsHEMq6gSrLNT1kVPigG3gpvfaifeUuXKXeLs",
 			IpfsPath:    HomePath(".ipfs"),
@@ -255,8 +253,8 @@ func DefaultConfig() *Configure {
 		},
 		MonitorProperty: MonitorProperty{
 			Version:             "",
-			CommandName:         "ipfs",
-			ServiceCommandName:  "ipfs-cluster-service",
+			IpfsCommandName:     "ipfs",
+			ClusterCommandName:  "ipfs-cluster-service",
 			RemoteIP:            "",
 			RemotePort:          "",
 			Interval:            3 * time.Second,
@@ -306,8 +304,8 @@ func (c *Configure) CheckExist() bool {
 func DefaultMonitorProperty() *MonitorProperty {
 	return &MonitorProperty{
 		Version:             "v0",
-		CommandName:         "ipfs",
-		ServiceCommandName:  "ipfs-cluster-service",
+		IpfsCommandName:     "ipfs",
+		ClusterCommandName:  "ipfs-cluster-service",
 		RemoteIP:            "127.0.0.1",
 		RemotePort:          ":7758",
 		Interval:            1 * time.Second,

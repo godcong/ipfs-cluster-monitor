@@ -132,7 +132,7 @@ type ServiceConfig struct {
 
 // RunServiceInit ...
 func RunServiceInit(ctx context.Context, cfg *config.Configure) error {
-	cmd := exec.CommandContext(ctx, cfg.MonitorProperty.ServiceCommandName, "init")
+	cmd := exec.CommandContext(ctx, cfg.MonitorProperty.ClusterCommandName, "init")
 	cmd.Env = cfg.Monitor.Env()
 
 	bytes, err := cmd.CombinedOutput()
@@ -144,7 +144,7 @@ func RunServiceInit(ctx context.Context, cfg *config.Configure) error {
 }
 
 func optimizationFirstRunService(ctx context.Context, cfg *config.Configure) {
-	err := optimizeRunCMD(ctx, cfg.MonitorProperty.ServiceCommandName, cfg.Monitor.Env(), "init")
+	err := optimizeRunCMD(ctx, cfg.MonitorProperty.ClusterCommandName, cfg.Monitor.Env(), "init")
 	if err != nil {
 		panic(err)
 	}
@@ -153,7 +153,7 @@ func optimizationFirstRunService(ctx context.Context, cfg *config.Configure) {
 // RunService ...
 func RunService(ctx context.Context, cfg *config.Configure) {
 	log.Println("bootstrap", cfg.Monitor.Bootstrap)
-	go optimizeRunCMD(ctx, cfg.MonitorProperty.ServiceCommandName, cfg.Monitor.Env(), "daemon", "--bootstrap", cfg.Monitor.Bootstrap)
+	go optimizeRunCMD(ctx, cfg.MonitorProperty.ClusterCommandName, cfg.Monitor.Env(), "daemon", "--bootstrap", cfg.Monitor.Bootstrap)
 
 }
 
