@@ -7,7 +7,7 @@ import (
 	"github.com/json-iterator/go"
 	"github.com/juju/errors"
 	"github.com/pelletier/go-toml"
-	"golang.org/x/exp/xerrors"
+	"golang.org/x/xerrors"
 	"io"
 	"io/ioutil"
 	"log"

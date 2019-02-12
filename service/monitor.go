@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/godcong/ipfs-cluster-monitor/cluster"
 	"github.com/godcong/ipfs-cluster-monitor/config"
-	"golang.org/x/exp/xerrors"
+	"golang.org/x/xerrors"
 	"log"
 	"os"
 	"path/filepath"

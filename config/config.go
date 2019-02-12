@@ -3,7 +3,7 @@ package config
 import (
 	"fmt"
 	"github.com/pelletier/go-toml"
-	"golang.org/x/exp/xerrors"
+	"golang.org/x/xerrors"
 	"log"
 	"os"
 	"os/user"

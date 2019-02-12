@@ -17,11 +17,10 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/stretchr/testify v1.2.2 // indirect
 	github.com/ugorji/go/codec v0.0.0-20181209151446-772ced7fd4c2 // indirect
-	golang.org/x/exp/xerrors v0.0.0-20190125153040-c74c464bbbf2
-	golang.org/x/net v0.0.0-20181220203305-927f97764cc3
+	golang.org/x/net v0.0.0-20181220203305-927f97764cc3 // indirect
 	golang.org/x/sync v0.0.0-20181221193216-37e7f081c4d4 // indirect
 	golang.org/x/sys v0.0.0-20190102155601-82a175fd1598 // indirect
-	google.golang.org/genproto v0.0.0-20180817151627-c66870c02cf8
+	golang.org/x/xerrors v0.0.0-20190208160001-334af843aad9
 	google.golang.org/grpc v1.18.0
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v8 v8.18.2 // indirect

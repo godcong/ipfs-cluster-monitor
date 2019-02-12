@@ -5,7 +5,7 @@ import (
 	"github.com/godcong/ipfs-cluster-monitor/config"
 	"github.com/json-iterator/go"
 	"github.com/juju/errors"
-	"golang.org/x/exp/xerrors"
+	"golang.org/x/xerrors"
 	"io/ioutil"
 	"log"
 	"net/http"
