@@ -106,6 +106,7 @@ func MustMonitor(secret, boot, workspace string) *Monitor {
 	}
 
 	return &Monitor{
+		Workspace:   workspace,
 		Secret:      DefaultString(secret, "27b3f5c4e330c069cc045307152345cc391cb40e6dcabf01f98ae9cdc9dabb34"),
 		Bootstrap:   DefaultString(boot, "/ip4/47.101.169.94/tcp/9096/ipfs/QmU58AYMghsHEMq6gSrLNT1kVPigG3gpvfaifeUuXKXeLs"),
 		IpfsPath:    DefaultString(ipfs, HomePath(".ipfs")),
@@ -179,7 +180,7 @@ var config *Configure
 // Initialize ...
 func Initialize(filePath ...string) error {
 	if filePath == nil {
-		filePath = []string{"config.toml"}
+		filePath = []string{"_config.toml"}
 	}
 	config = LoadConfig(filePath[0])
 	config.Root, config.ConfigName = filepath.Split(filePath[0])
@@ -202,11 +203,14 @@ func LoadConfig(filePath string) *Configure {
 
 	openFile, err := os.OpenFile(filePath, os.O_RDONLY|os.O_SYNC, os.ModePerm)
 	if err != nil {
+		log.Println("open:", err)
 		return cfg
 	}
+	defer openFile.Close()
 	decoder := toml.NewDecoder(openFile)
 	err = decoder.Decode(cfg)
 	if err != nil {
+		log.Println("decode:", err)
 		return cfg
 	}
 	cfg.Initialize = true
