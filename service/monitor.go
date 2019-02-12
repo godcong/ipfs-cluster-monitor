@@ -155,7 +155,7 @@ func (m *Monitor) Reset() error {
 	log.Println(err)
 
 	//rerun
-	go m.Start()
+	m.Start()
 	log.Println("starting")
 	time.Sleep(15 * time.Second)
 	m.isInitialized = true
