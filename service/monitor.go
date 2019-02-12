@@ -77,6 +77,9 @@ func FileDir(path, name string) string {
 
 // Start ...
 func (m *Monitor) Start() {
+	if !m.config.Monitor.Enable {
+		return
+	}
 	var ctx context.Context
 	ctx, m.cancelFunc = context.WithCancel(m.context)
 
