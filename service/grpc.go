@@ -28,6 +28,14 @@ func (s *GRPCServer) MonitorInit(ctx context.Context, req *proto.MonitorInitRequ
 	log.Println("monitor init call")
 	monitor := config.MustMonitor(req.Secret, req.Bootstrap, req.Workspace)
 	log.Printf("%+v", monitor)
+	log.Printf("%+v", s.config)
+	if s.config.Initialize {
+		return &proto.MonitorReply{
+			Code:    0,
+			Message: "initialized",
+			Detail:  "",
+		}, nil
+	}
 	err := server.cluster.InitMaker(monitor)
 	if err != nil {
 		log.Println(err)

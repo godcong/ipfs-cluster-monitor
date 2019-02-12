@@ -59,7 +59,7 @@ func (m *Monitor) waitingForInitialize(ctx context.Context) bool {
 
 // InitMaker ...
 func (m *Monitor) InitMaker(monitor *config.Monitor) error {
-
+	log.Printf("monitor:%+v", *monitor)
 	m.config.Monitor = *monitor
 	err := cluster.InitMaker(m.config)
 	if err == nil {
@@ -82,14 +82,14 @@ func (m *Monitor) Start() {
 
 	go func() {
 		if m.waitingForInitialize(ctx) {
-			if cluster.InitRunning(FileDir(m.config.Root, config.Ipfs)) {
+			if cluster.InitRunning(m.config.Monitor.IpfsPath) {
 				log.Println("init ipfs")
 				err := cluster.RunIPFSInit(ctx, m.config)
 				if err != nil {
 					panic(err)
 				}
 			}
-			if cluster.InitRunning(FileDir(m.config.Root, config.Cluster)) {
+			if cluster.InitRunning(m.config.Monitor.ClusterPath) {
 				log.Println("init ipfs cluster")
 				err := cluster.RunServiceInit(ctx, m.config)
 				if err != nil {
