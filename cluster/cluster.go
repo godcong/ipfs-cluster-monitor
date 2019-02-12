@@ -14,7 +14,6 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"path/filepath"
 )
 
 // StatusCode ...
@@ -125,38 +124,41 @@ func webAddress(api string) string {
 
 // InitMaker ...
 func InitMaker(cfg *config.Configure) error {
-	file, err := os.OpenFile(cfg.Root, os.O_RDWR|os.O_CREATE|os.O_SYNC, os.ModePerm)
-	if os.IsNotExist(err) {
-		log.Println("not exist ", err)
+	file, e := os.OpenFile(cfg.Root, os.O_RDWR|os.O_CREATE|os.O_SYNC, os.ModePerm)
+	if os.IsNotExist(e) {
+		log.Println("not exist ", e)
 		_ = os.MkdirAll(cfg.Root, os.ModePerm)
-		file, err = os.OpenFile(cfg.FD(), os.O_RDWR|os.O_CREATE|os.O_SYNC, os.ModePerm)
-		if err != nil {
-			return xerrors.Errorf("make file:%w", err)
+		file, e = os.OpenFile(cfg.FD(), os.O_RDWR|os.O_CREATE|os.O_SYNC, os.ModePerm)
+		if e != nil {
+			return xerrors.Errorf("make file:%w", e)
 		}
-	} else {
-
 	}
-
 	defer file.Close()
 	enc := toml.NewEncoder(file)
-	err = enc.Encode(*cfg)
+	e = enc.Encode(*cfg)
+	if e != nil {
+		return xerrors.Errorf("encode file:%w", e)
+	}
 	log.Println("created:", file.Name())
-	if err != nil {
-		return xerrors.Errorf("encode file:%w", err)
-	}
 
-	cfile, err := os.Create(filepath.Join(cfg.Root, config.Ipfs))
-	log.Println("created:", cfile.Name())
-	if err != nil {
-		return xerrors.Errorf("ipfs file:%w", err)
+	e = os.MkdirAll(cfg.Monitor.Workspace, os.ModePerm)
+	if e != nil {
+		log.Println("make workspace err:", cfg.Monitor.Workspace, e)
 	}
+	cfile, e := os.Create(cfg.Monitor.IpfsPath)
+	if e != nil {
+		log.Println(e)
+		return xerrors.Errorf("ipfs file:%w", e)
+	}
+	log.Println("created:", cfile.Name())
 	defer cfile.Close()
 
-	sfile, err := os.Create(filepath.Join(cfg.Root, config.Cluster))
-	log.Println("created:", sfile.Name())
-	if err != nil {
-		return xerrors.Errorf("cluster file:%w", err)
+	sfile, e := os.Create(cfg.Monitor.ClusterPath)
+	if e != nil {
+		log.Println(e)
+		return xerrors.Errorf("cluster file:%w", e)
 	}
+	log.Println("created:", sfile.Name())
 	defer sfile.Close()
 	return nil
 }
