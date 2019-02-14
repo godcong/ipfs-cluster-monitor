@@ -5,9 +5,9 @@ import (
 	"github.com/godcong/ipfs-cluster-monitor/config"
 	"github.com/json-iterator/go"
 	"github.com/juju/errors"
+	log "github.com/sirupsen/logrus"
 	"golang.org/x/xerrors"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -153,7 +153,9 @@ func optimizationFirstRunService(ctx context.Context, cfg *config.Configure) {
 // RunService ...
 func RunService(ctx context.Context, cfg *config.Configure) {
 	log.Println("bootstrap", cfg.Monitor.Bootstrap)
-	go optimizeRunCMD(ctx, cfg.MonitorProperty.ClusterCommandName, cfg.Monitor.Env(), "daemon", "--bootstrap", cfg.Monitor.Bootstrap)
+	for _, boot := range cfg.Monitor.Bootstrap {
+		go optimizeRunCMD(ctx, cfg.MonitorProperty.ClusterCommandName, cfg.Monitor.Env(), "daemon", "--bootstrap", boot)
+	}
 
 }
 
@@ -246,7 +248,7 @@ func WaitingService(ctx context.Context) {
 func GetServiceConfig() (*ServiceConfig, error) {
 	var serviceConfig ServiceConfig
 
-	file := filepath.Join(config.Config().Root, "_config.toml")
+	file := filepath.Join(config.Config().Root, "config.toml")
 	openFile, err := os.OpenFile(file, os.O_RDONLY|os.O_SYNC, os.ModePerm)
 	if err != nil {
 		return nil, err

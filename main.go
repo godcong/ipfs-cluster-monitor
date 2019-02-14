@@ -7,8 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/ipfs-cluster-monitor/config"
 	"github.com/godcong/ipfs-cluster-monitor/service"
+	log "github.com/sirupsen/logrus"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -32,7 +32,6 @@ func main() {
 	}
 
 	log.SetOutput(io.MultiWriter(file, os.Stdout))
-	log.SetFlags(log.Ldate | log.Lshortfile)
 
 	err = config.Initialize(*configPath)
 	if err != nil {

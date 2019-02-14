@@ -3,8 +3,8 @@ package config
 import (
 	"fmt"
 	"github.com/pelletier/go-toml"
+	log "github.com/sirupsen/logrus"
 	"golang.org/x/xerrors"
-	"log"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -84,15 +84,15 @@ type Requester struct {
 
 // Monitor ...
 type Monitor struct {
-	Enable      bool   `toml:"enable"`
-	Type        string `toml:"type"`
-	Addr        string `toml:"addr"`
-	Port        string `toml:"port"`
-	Workspace   string `toml:"workspace"`
-	Secret      string `toml:"secret"`
-	Bootstrap   string `toml:"bootstrap"`
-	IpfsPath    string `toml:"ipfs_path"`
-	ClusterPath string `toml:"cluster_path"`
+	Enable      bool     `toml:"enable"`
+	Type        string   `toml:"type"`
+	Addr        string   `toml:"addr"`
+	Port        string   `toml:"port"`
+	Workspace   string   `toml:"workspace"`
+	Secret      string   `toml:"secret"`
+	Bootstrap   []string `toml:"bootstrap"`
+	IpfsPath    string   `toml:"ipfs_path"`
+	ClusterPath string   `toml:"cluster_path"`
 }
 
 // MustMonitor ...
@@ -109,7 +109,7 @@ func MustMonitor(secret, boot, workspace string) *Monitor {
 		Enable:      true,
 		Workspace:   workspace,
 		Secret:      DefaultString(secret, "27b3f5c4e330c069cc045307152345cc391cb40e6dcabf01f98ae9cdc9dabb34"),
-		Bootstrap:   DefaultString(boot, "/ip4/47.101.169.94/tcp/9096/ipfs/QmeQzPKd7HzKZwBKNmnJnyub3YyCBvtcWraaJKEKk1BWmx"),
+		Bootstrap:   []string{DefaultString(boot, "/ip4/47.101.169.94/tcp/9096/ipfs/QmeQzPKd7HzKZwBKNmnJnyub3YyCBvtcWraaJKEKk1BWmx")},
 		IpfsPath:    DefaultString(ipfs, HomePath(".ipfs")),
 		ClusterPath: DefaultString(cluster, HomePath(".ipfs-cluster")),
 	}
@@ -265,7 +265,7 @@ func DefaultConfig() *Configure {
 			Addr:      "localhost",
 			Port:      ":7784",
 			Secret:    "27b3f5c4e330c069cc045307152345cc391cb40e6dcabf01f98ae9cdc9dabb34",
-			Bootstrap: "/ip4/47.101.169.94/tcp/9096/ipfs/QmeQzPKd7HzKZwBKNmnJnyub3YyCBvtcWraaJKEKk1BWmx",
+			Bootstrap: []string{"/ip4/47.101.169.94/tcp/9096/ipfs/QmeQzPKd7HzKZwBKNmnJnyub3YyCBvtcWraaJKEKk1BWmx"},
 			//Workspace: "",
 			//IpfsPath:    HomePath(".ipfs"),
 			//ClusterPath: HomePath(".ipfs-cluster"),

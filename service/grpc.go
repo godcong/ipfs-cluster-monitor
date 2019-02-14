@@ -6,10 +6,10 @@ import (
 	"github.com/godcong/ipfs-cluster-monitor/config"
 	"github.com/godcong/ipfs-cluster-monitor/proto"
 	"github.com/json-iterator/go"
+	log "github.com/sirupsen/logrus"
 	"golang.org/x/xerrors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	"log"
 	"net"
 	"syscall"
 )

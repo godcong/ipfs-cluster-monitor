@@ -4,8 +4,8 @@ import (
 	"context"
 	"github.com/json-iterator/go"
 	"github.com/juju/errors"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 )

@@ -4,8 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/ipfs-cluster-monitor/cluster"
 	"github.com/json-iterator/go"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strings"
 )
