@@ -106,6 +106,7 @@ func MustMonitor(secret, boot, workspace string) *Monitor {
 	}
 
 	return &Monitor{
+		Enable:      true,
 		Workspace:   workspace,
 		Secret:      DefaultString(secret, "27b3f5c4e330c069cc045307152345cc391cb40e6dcabf01f98ae9cdc9dabb34"),
 		Bootstrap:   DefaultString(boot, "/ip4/47.101.169.94/tcp/9096/ipfs/QmeQzPKd7HzKZwBKNmnJnyub3YyCBvtcWraaJKEKk1BWmx"),
@@ -179,9 +180,10 @@ var config *Configure
 
 // Initialize ...
 func Initialize(filePath ...string) error {
-	if filePath == nil {
-		filePath = []string{"_config.toml"}
-	}
+	//if filePath == nil {
+	//	filePath = []string{"config.toml"}
+	//}
+	log.Println(filePath)
 	config = LoadConfig(filePath[0])
 	config.Root, config.ConfigName = filepath.Split(filePath[0])
 	return nil

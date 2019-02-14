@@ -142,7 +142,7 @@ func InitMaker(cfg *config.Configure) error {
 	}
 	log.Println("created:", file.Name())
 
-	e = os.MkdirAll(cfg.Monitor.Workspace, os.ModePerm)
+	e = os.MkdirAll(filepath.Join(cfg.Monitor.Workspace, "data"), os.ModePerm)
 	if e != nil {
 		log.Println("make workspace err:", cfg.Monitor.Workspace, e)
 	}
