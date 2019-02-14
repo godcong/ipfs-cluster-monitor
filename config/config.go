@@ -101,14 +101,14 @@ func MustMonitor(secret, boot, workspace string) *Monitor {
 	cluster := ""
 	if workspace != "" {
 		log.Println(workspace)
-		ipfs = filepath.Join(workspace, Ipfs)
-		cluster = filepath.Join(workspace, Cluster)
+		ipfs = filepath.Join(workspace, "data", Ipfs)
+		cluster = filepath.Join(workspace, "data", Cluster)
 	}
 
 	return &Monitor{
 		Workspace:   workspace,
 		Secret:      DefaultString(secret, "27b3f5c4e330c069cc045307152345cc391cb40e6dcabf01f98ae9cdc9dabb34"),
-		Bootstrap:   DefaultString(boot, "/ip4/47.101.169.94/tcp/9096/ipfs/QmU58AYMghsHEMq6gSrLNT1kVPigG3gpvfaifeUuXKXeLs"),
+		Bootstrap:   DefaultString(boot, "/ip4/47.101.169.94/tcp/9096/ipfs/QmeQzPKd7HzKZwBKNmnJnyub3YyCBvtcWraaJKEKk1BWmx"),
 		IpfsPath:    DefaultString(ipfs, HomePath(".ipfs")),
 		ClusterPath: DefaultString(cluster, HomePath(".ipfs-cluster")),
 	}
@@ -263,15 +263,15 @@ func DefaultConfig() *Configure {
 			Addr:      "localhost",
 			Port:      ":7784",
 			Secret:    "27b3f5c4e330c069cc045307152345cc391cb40e6dcabf01f98ae9cdc9dabb34",
-			Bootstrap: "/ip4/47.101.169.94/tcp/9096/ipfs/QmU58AYMghsHEMq6gSrLNT1kVPigG3gpvfaifeUuXKXeLs",
+			Bootstrap: "/ip4/47.101.169.94/tcp/9096/ipfs/QmeQzPKd7HzKZwBKNmnJnyub3YyCBvtcWraaJKEKk1BWmx",
 			//Workspace: "",
 			//IpfsPath:    HomePath(".ipfs"),
 			//ClusterPath: HomePath(".ipfs-cluster"),
 		},
 		MonitorProperty: MonitorProperty{
 			Version:             "",
-			IpfsCommandName:     "ipfs",
-			ClusterCommandName:  "ipfs-cluster-service",
+			IpfsCommandName:     "/data/local/bin/ipfs",
+			ClusterCommandName:  "/data/local/bin/ipfs-cluster-service",
 			RemoteAddrPort:      "",
 			Interval:            3 * time.Second,
 			ServerCheckInterval: 3 * time.Second,

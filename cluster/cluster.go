@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
 )
 
 // StatusCode ...
@@ -145,7 +146,7 @@ func InitMaker(cfg *config.Configure) error {
 	if e != nil {
 		log.Println("make workspace err:", cfg.Monitor.Workspace, e)
 	}
-	cfile, e := os.Create(cfg.Monitor.IpfsPath)
+	cfile, e := os.Create(filepath.Join(cfg.Monitor.Workspace, config.Ipfs))
 	if e != nil {
 		log.Println(e)
 		return xerrors.Errorf("ipfs file:%w", e)
@@ -153,7 +154,7 @@ func InitMaker(cfg *config.Configure) error {
 	log.Println("created:", cfile.Name())
 	defer cfile.Close()
 
-	sfile, e := os.Create(cfg.Monitor.ClusterPath)
+	sfile, e := os.Create(filepath.Join(cfg.Monitor.Workspace, config.Cluster))
 	if e != nil {
 		log.Println(e)
 		return xerrors.Errorf("cluster file:%w", e)
