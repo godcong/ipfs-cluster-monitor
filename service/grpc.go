@@ -100,11 +100,15 @@ type GRPCClient struct {
 func (c *GRPCClient) Conn() (*grpc.ClientConn, error) {
 	var conn *grpc.ClientConn
 	var err error
+	cred, err := credentials.NewClientTLSFromFile("./keys/server.pem", "GodCong")
+	if err != nil {
+		grpclog.Fatalf("Failed to create TLS credentials %v", err)
+	}
 
 	if c.Type == "unix" {
-		conn, err = grpc.Dial("passthrough:///unix://"+c.Addr, grpc.WithInsecure())
+		conn, err = grpc.Dial("passthrough:///unix://"+c.Addr, grpc.WithTransportCredentials(cred))
 	} else {
-		conn, err = grpc.Dial(c.Addr+c.Port, grpc.WithInsecure())
+		conn, err = grpc.Dial(c.Addr+c.Port, grpc.WithTransportCredentials(cred))
 	}
 
 	return conn, err
