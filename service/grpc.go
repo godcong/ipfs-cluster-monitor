@@ -14,6 +14,7 @@ import (
 	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"
+	"google.golang.org/grpc/status"
 	"net"
 	"syscall"
 )
@@ -32,7 +33,7 @@ func (s *GRPCServer) MonitorManager(ctx context.Context, in *proto.MonitorManage
 
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
-		return nil, grpc.Errorf(codes.Unauthenticated, "无Token认证信息")
+		return nil, status.Errorf(codes.Unauthenticated, "无Token认证信息")
 	}
 	log.Println(md)
 	return Result("v0")
