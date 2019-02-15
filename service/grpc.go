@@ -30,24 +30,27 @@ type GRPCServer struct {
 
 //MonitorManager ...
 func (s *GRPCServer) MonitorManager(ctx context.Context, in *proto.MonitorManagerRequest) (*proto.MonitorReply, error) {
-
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, status.Errorf(codes.Unauthenticated, "无Token认证信息")
 	}
 	log.Println(md)
 	log.Println(in.Type, in.Data)
-	return Result("v0")
+	return Result("")
 }
 
 // MonitorBootstrap ...
 func (s *GRPCServer) MonitorBootstrap(context.Context, *proto.MonitorRequest) (*proto.MonitorBootstrapReply, error) {
-	panic("implement me")
+	return &proto.MonitorBootstrapReply{
+		Bootstraps: nil,
+	}, nil
 }
 
 // MonitorPin ...
 func (s *GRPCServer) MonitorPin(context.Context, *proto.MonitorRequest) (*proto.MonitorPinReply, error) {
-	panic("implement me")
+	return &proto.MonitorPinReply{
+		Pins: nil,
+	}, nil
 }
 
 // MonitorInit ...
