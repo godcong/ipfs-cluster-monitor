@@ -14,6 +14,15 @@ service ClusterMonitor {
     rpc MonitorProc (MonitorProcRequest) returns (MonitorReply) {
     }
 
+    rpc MonitorBootstrap (MonitorRequest) returns (MonitorBootstrapReply) {
+    }
+
+    rpc MonitorPin (MonitorRequest) returns (MonitorPinReply) {
+    }
+}
+
+message MonitorRequest{
+
 }
 
 message MonitorInitRequest {
@@ -21,6 +30,15 @@ message MonitorInitRequest {
     string secret = 2;
     string workspace = 3;
 }
+
+message MonitorBootstrapReply {
+    repeated string bootstraps = 1;
+}
+
+message MonitorPinReply {
+    repeated string pins = 1;
+}
+
 
 enum MonitorType {
     Init = 0;

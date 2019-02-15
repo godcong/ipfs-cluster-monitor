@@ -9,6 +9,8 @@ import (
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/xerrors"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/reflection"
 	"net"
 	"syscall"
@@ -163,10 +165,17 @@ func (s *GRPCServer) Start() {
 	if !s.config.GRPC.Enable {
 		return
 	}
-	s.server = grpc.NewServer()
+	var err error
 	var lis net.Listener
 	var port string
-	var err error
+
+	creds, err := credentials.NewServerTLSFromFile("./keys/server.pem", "./keys/server.key")
+	if err != nil {
+		grpclog.Fatalf("Failed to generate credentials %v", err)
+	}
+
+	s.server = grpc.NewServer(grpc.Creds(creds))
+
 	go func() {
 		if s.Type == "unix" {
 			_ = syscall.Unlink(s.Path)
