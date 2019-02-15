@@ -84,6 +84,7 @@ type Requester struct {
 
 // Monitor ...
 type Monitor struct {
+	Token       string   `toml:"token"`
 	Enable      bool     `toml:"enable"`
 	Type        string   `toml:"type"`
 	Addr        string   `toml:"addr"`
@@ -264,6 +265,7 @@ func DefaultConfig() *Configure {
 			Type:      "tcp",
 			Addr:      "localhost",
 			Port:      ":7784",
+			Token:     "2UQEoTCGV7j689CEImQDAjcv7k1X0ZpxT2yzCX8vaqRg1vKp5f0uScvPVB7yuZPP",
 			Secret:    "27b3f5c4e330c069cc045307152345cc391cb40e6dcabf01f98ae9cdc9dabb34",
 			Bootstrap: []string{"/ip4/47.101.169.94/tcp/9096/ipfs/QmeQzPKd7HzKZwBKNmnJnyub3YyCBvtcWraaJKEKk1BWmx"},
 			//Workspace: "",

@@ -25,6 +25,16 @@ type GRPCServer struct {
 	Path   string
 }
 
+// MonitorBootstrap ...
+func (s *GRPCServer) MonitorBootstrap(context.Context, *proto.MonitorRequest) (*proto.MonitorBootstrapReply, error) {
+	panic("implement me")
+}
+
+// MonitorPin ...
+func (s *GRPCServer) MonitorPin(context.Context, *proto.MonitorRequest) (*proto.MonitorPinReply, error) {
+	panic("implement me")
+}
+
 // MonitorInit ...
 func (s *GRPCServer) MonitorInit(ctx context.Context, req *proto.MonitorInitRequest) (*proto.MonitorReply, error) {
 	log.Println("monitor init call")

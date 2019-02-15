@@ -19,10 +19,23 @@ service ClusterMonitor {
 
     rpc MonitorPin (MonitorRequest) returns (MonitorPinReply) {
     }
+
+    rpc MonitorManager (MonitorManagerRequest) returns (MonitorReply) {
+
+    }
 }
 
-message MonitorRequest{
+message MonitorRequest {
 
+}
+enum ManagerType {
+    Bootstrap = 0;
+    Pin = 1;
+}
+
+message MonitorManagerRequest {
+    ManagerType type = 1;
+    repeated string data = 2;
 }
 
 message MonitorInitRequest {
