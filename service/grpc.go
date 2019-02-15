@@ -169,12 +169,12 @@ func (s *GRPCServer) Start() {
 	var lis net.Listener
 	var port string
 
-	creds, err := credentials.NewServerTLSFromFile("./keys/server.pem", "./keys/server.key")
+	cred, err := credentials.NewServerTLSFromFile("./keys/server.pem", "./keys/server.key")
 	if err != nil {
 		grpclog.Fatalf("Failed to generate credentials %v", err)
 	}
 
-	s.server = grpc.NewServer(grpc.Creds(creds))
+	s.server = grpc.NewServer(grpc.Creds(cred))
 
 	go func() {
 		if s.Type == "unix" {
