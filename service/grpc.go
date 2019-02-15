@@ -9,8 +9,10 @@ import (
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/xerrors"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/grpclog"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"
 	"net"
 	"syscall"
@@ -23,6 +25,17 @@ type GRPCServer struct {
 	Type   string
 	Port   string
 	Path   string
+}
+
+//MonitorManager ...
+func (s *GRPCServer) MonitorManager(ctx context.Context, in *proto.MonitorManagerRequest, opts ...grpc.CallOption) (*proto.MonitorReply, error) {
+
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, grpc.Errorf(codes.Unauthenticated, "无Token认证信息")
+	}
+	log.Println(md)
+	return Result("v0")
 }
 
 // MonitorBootstrap ...

@@ -29,8 +29,10 @@ message MonitorRequest {
 
 }
 enum ManagerType {
-    Bootstrap = 0;
-    Pin = 1;
+    BootstrapAdd = 0;
+    BootstrapRemove = 1;
+    PinAdd = 2;
+    PinRemove = 3;
 }
 
 message MonitorManagerRequest {
