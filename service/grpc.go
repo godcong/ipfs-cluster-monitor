@@ -36,6 +36,7 @@ func (s *GRPCServer) MonitorManager(ctx context.Context, in *proto.MonitorManage
 		return nil, status.Errorf(codes.Unauthenticated, "无Token认证信息")
 	}
 	log.Println(md)
+	log.Println(in.Type, in.Data)
 	return Result("v0")
 }
 
