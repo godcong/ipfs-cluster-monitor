@@ -29,7 +29,7 @@ type GRPCServer struct {
 }
 
 //MonitorManager ...
-func (s *GRPCServer) MonitorManager(ctx context.Context, in *proto.MonitorManagerRequest, opts ...grpc.CallOption) (*proto.MonitorReply, error) {
+func (s *GRPCServer) MonitorManager(ctx context.Context, in *proto.MonitorManagerRequest) (*proto.MonitorReply, error) {
 
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
@@ -120,19 +120,34 @@ type GRPCClient struct {
 	Addr   string
 }
 
+// GetRequestMetadata ...
+func (c *GRPCClient) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
+	return map[string]string{
+		"token": c.config.Monitor.Token,
+	}, nil
+}
+
+// RequireTransportSecurity ...
+func (c *GRPCClient) RequireTransportSecurity() bool {
+	return true
+}
+
 // Conn ...
 func (c *GRPCClient) Conn() (*grpc.ClientConn, error) {
 	var conn *grpc.ClientConn
+	var opts []grpc.DialOption
+
 	var err error
 	cred, err := credentials.NewClientTLSFromFile("./keys/server.pem", "GodCong")
 	if err != nil {
 		grpclog.Fatalf("Failed to create TLS credentials %v", err)
 	}
 
+	opts = append(opts, grpc.WithTransportCredentials(cred), grpc.WithPerRPCCredentials(c))
 	if c.Type == "unix" {
-		conn, err = grpc.Dial("passthrough:///unix://"+c.Addr, grpc.WithTransportCredentials(cred))
+		conn, err = grpc.Dial("passthrough:///unix://"+c.Addr, opts...)
 	} else {
-		conn, err = grpc.Dial(c.Addr+c.Port, grpc.WithTransportCredentials(cred))
+		conn, err = grpc.Dial(c.Addr+c.Port, opts...)
 	}
 
 	return conn, err
