@@ -40,10 +40,16 @@ message MonitorManagerRequest {
     repeated string data = 2;
 }
 
+enum StartMode {
+    Cluster = 0;
+    Simple = 1;
+}
+
 message MonitorInitRequest {
-    string bootstrap = 1;
-    string secret = 2;
-    string workspace = 3;
+    StartMode start_mode = 1;
+    string bootstrap = 2;
+    string secret = 3;
+    string workspace = 4;
 }
 
 message MonitorBootstrapReply {
