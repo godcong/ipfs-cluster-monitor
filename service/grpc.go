@@ -28,6 +28,11 @@ type GRPCServer struct {
 	Path   string
 }
 
+// MonitorAddress ...
+func (s *GRPCServer) MonitorAddress(context.Context, *proto.MonitorRequest) (*proto.MonitorBootstrapReply, error) {
+	return &proto.MonitorBootstrapReply{}, nil
+}
+
 //MonitorManager ...
 func (s *GRPCServer) MonitorManager(ctx context.Context, in *proto.MonitorManagerRequest) (*proto.MonitorReply, error) {
 	md, ok := metadata.FromIncomingContext(ctx)

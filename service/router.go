@@ -13,7 +13,6 @@ func Router(eng *gin.Engine) {
 	ver := config.Config().MonitorProperty.Version
 
 	v0 := eng.Group(ver)
-	v0.Use(AccessControlAllow)
 	v0.POST("init", InitPost(ver))
 	//v0.GET("init", InitGet(ver))
 	v0.GET("heartbeat", HeartBeatGet(ver))
