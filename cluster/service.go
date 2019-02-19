@@ -33,6 +33,18 @@ type ServiceInfo struct {
 	Peername string `json:"peername"`
 }
 
+// ServiceAddress ...
+type ServiceAddress struct {
+	Addresses []string `json:"addresses"`
+}
+
+// ServiceList ...
+type ServiceList struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+	Detail  IpfsAddress
+}
+
 // ServiceConfig ...
 type ServiceConfig struct {
 	Cluster struct {
@@ -223,6 +235,24 @@ func getServiceInfo() (*ServiceInfo, error) {
 		return nil, err
 	}
 	return &service, nil
+}
+
+func getRemoteServiceist() (*ServiceList, error) {
+	var ipfs ServiceList
+	//TODO:remote ip address
+	response, err := http.Get("")
+	if err != nil {
+		return nil, err
+	}
+	bytes, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+	err = jsoniter.Unmarshal(bytes, &ipfs)
+	if err != nil {
+		return nil, err
+	}
+	return &ipfs, nil
 }
 
 // WaitingService ...

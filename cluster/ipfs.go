@@ -26,7 +26,7 @@ type IpfsAddress struct {
 	Addresses []string `json:"addresses"`
 }
 
-// IpfsInfo ...
+// IpfsList ...
 type IpfsList struct {
 	Code    string `json:"code"`
 	Message string `json:"message"`
@@ -80,10 +80,10 @@ func getIpfsInfo() (*IpfsInfo, error) {
 	return &ipfs, nil
 }
 
-func getRemoteIpfsList() (*IpfsInfo, error) {
-	var ipfs IpfsInfo
+func getRemoteIpfsList() (*IpfsList, error) {
+	var ipfs IpfsList
 	//TODO:remote ip address
-	response, err := http.Get("http://localhost:5001/api/v0/id")
+	response, err := http.Get("")
 	if err != nil {
 		return nil, err
 	}

@@ -14,6 +14,9 @@ service ClusterMonitor {
     rpc MonitorProc (MonitorProcRequest) returns (MonitorReply) {
     }
 
+    rpc MonitorAddress (MonitorRequest) returns (MonitorBootstrapReply) {
+    }
+
     rpc MonitorBootstrap (MonitorRequest) returns (MonitorBootstrapReply) {
     }
 
@@ -28,6 +31,7 @@ service ClusterMonitor {
 message MonitorRequest {
 
 }
+
 enum ManagerType {
     BootstrapAdd = 0;
     BootstrapRemove = 1;
@@ -47,19 +51,22 @@ enum StartMode {
 
 message MonitorInitRequest {
     StartMode start_mode = 1;
-    string bootstrap = 2;
-    string secret = 3;
-    string workspace = 4;
+    string host = 2;
+    string bootstrap = 3;
+    string secret = 4;
+    string workspace = 5;
 }
 
 message MonitorBootstrapReply {
     repeated string bootstraps = 1;
 }
+message MonitorAddressReply {
+    repeated string addresses = 1;
+}
 
 message MonitorPinReply {
     repeated string pins = 1;
 }
-
 
 enum MonitorType {
     Init = 0;
