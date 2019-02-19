@@ -21,6 +21,18 @@ type IpfsInfo struct {
 	ProtocolVersion string   `json:"ProtocolVersion"`
 }
 
+// IpfsAddress ...
+type IpfsAddress struct {
+	Addresses []string `json:"addresses"`
+}
+
+// IpfsInfo ...
+type IpfsList struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+	Detail  IpfsAddress
+}
+
 // RunIPFS ...
 func RunIPFS(ctx context.Context, cfg *config.Configure) {
 	go optimizeRunCMD(ctx, cfg.MonitorProperty.IpfsCommandName, cfg.Monitor.Env(), "daemon")
@@ -68,6 +80,24 @@ func getIpfsInfo() (*IpfsInfo, error) {
 	return &ipfs, nil
 }
 
+func getRemoteIpfsList() (*IpfsInfo, error) {
+	var ipfs IpfsInfo
+	//TODO:remote ip address
+	response, err := http.Get("http://localhost:5001/api/v0/id")
+	if err != nil {
+		return nil, err
+	}
+	bytes, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+	err = jsoniter.Unmarshal(bytes, &ipfs)
+	if err != nil {
+		return nil, err
+	}
+	return &ipfs, nil
+}
+
 // WaitingIPFS ...
 func WaitingIPFS(ctx context.Context) {
 	var err error
@@ -84,6 +114,5 @@ func WaitingIPFS(ctx context.Context) {
 				return
 			}
 		}
-
 	}
 }

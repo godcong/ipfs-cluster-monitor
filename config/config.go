@@ -119,26 +119,20 @@ func MustMonitor(secret, boot, workspace string) *Monitor {
 // Env ...
 func (m *Monitor) Env() (env []string) {
 	var e error
-	//if _, b := os.LookupEnv("IPFS_PATH"); b {
 	e = os.Setenv("IPFS_PATH", string(m.IpfsPath))
 	if e != nil {
 		panic(e)
 	}
-	//}
 
-	//if _, b := os.LookupEnv("CLUSTER_SECRET"); b {
 	e = os.Setenv("CLUSTER_SECRET", string(m.Secret))
 	if e != nil {
 		panic(e)
 	}
-	//}
 
-	//if _, b := os.LookupEnv("IPFS_CLUSTER_PATH"); b {
 	e = os.Setenv("IPFS_CLUSTER_PATH", string(m.ClusterPath))
 	if e != nil {
 		panic(e)
 	}
-	//}
 
 	env = os.Environ()
 	log.Println(env)
@@ -165,17 +159,11 @@ type Configure struct {
 	ConfigName      string          `toml:"-"`
 	Monitor         Monitor         `toml:"monitor"`
 	MonitorProperty MonitorProperty `toml:"monitor_property"`
-	//Database        Database        `toml:"database"`
-	//Censor          HostInfo        `toml:"censor"`
-	//Node            HostInfo        `toml:"node"`
-	//Media           Media           `toml:"media"`
-	//Queue           Queue           `toml:"queue"`
-	GRPC GRPC `toml:"grpc"`
-	REST REST `toml:"rest"`
-	IPFS IPFS `toml:"ipfs"`
-
-	Requester Requester `toml:"requester"`
-	Callback  Callback  `toml:"callback"`
+	GRPC            GRPC            `toml:"grpc"`
+	REST            REST            `toml:"rest"`
+	IPFS            IPFS            `toml:"ipfs"`
+	Requester       Requester       `toml:"requester"`
+	Callback        Callback        `toml:"callback"`
 }
 
 var config *Configure
