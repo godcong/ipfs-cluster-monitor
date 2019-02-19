@@ -159,6 +159,7 @@ type MonitorProperty struct {
 
 // Configure ...
 type Configure struct {
+	Mode            int             `toml:"mode"`
 	Initialize      bool            `toml:"-"`
 	Root            string          `toml:"-"`
 	ConfigName      string          `toml:"-"`
