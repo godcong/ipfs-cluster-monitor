@@ -165,8 +165,23 @@ func optimizationFirstRunService(ctx context.Context, cfg *config.Configure) {
 // RunService ...
 func RunService(ctx context.Context, cfg *config.Configure) {
 	log.Println("bootstrap", cfg.Monitor.Bootstrap)
+	ticker := time.NewTicker(15 * time.Minute)
+	defer ticker.Stop()
+	c := make(chan int)
 	for _, boot := range cfg.Monitor.Bootstrap {
-		go optimizeRunCMD(ctx, cfg.MonitorProperty.ClusterCommandName, cfg.Monitor.Env(), "daemon", "--bootstrap", boot)
+		var e error
+		go func(c chan<- int) {
+			log.Println("run optimizeRunCMD")
+			e = optimizeRunCMD(ctx, cfg.MonitorProperty.ClusterCommandName, cfg.Monitor.Env(), "daemon", "--bootstrap", boot)
+			c <- 0
+		}(c)
+		select {
+		case <-c:
+			log.Error(e)
+		case <-ticker.C:
+			log.Println("time out")
+			return
+		}
 	}
 
 }
@@ -257,7 +272,6 @@ func getRemoteServiceist() (*ServiceList, error) {
 
 // WaitingService ...
 func WaitingService(ctx context.Context) {
-	var err error
 	for {
 		select {
 		case <-ctx.Done():
@@ -266,8 +280,9 @@ func WaitingService(ctx context.Context) {
 		default:
 			log.Println("waiting service")
 			time.Sleep(1 * time.Second)
-			_, err = getServiceInfo()
-			if err == nil {
+			s, e := getServiceInfo()
+			log.Println(s, e)
+			if e == nil {
 				return
 			}
 		}

@@ -7,8 +7,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/ipfs-cluster-monitor/config"
 	"github.com/godcong/ipfs-cluster-monitor/service"
+	"github.com/olivere/elastic"
 	log "github.com/sirupsen/logrus"
-	"io"
+	"gopkg.in/sohlich/elogrus.v3"
 	"net/http"
 	"os"
 	"os/signal"
@@ -26,13 +27,14 @@ func main() {
 	dir, _ := filepath.Split(*logPath)
 	_ = os.MkdirAll(dir, os.ModePerm)
 
-	file, err := os.OpenFile(*logPath, os.O_SYNC|os.O_RDWR|os.O_CREATE|os.O_APPEND, os.ModePerm)
+	_, err := os.OpenFile(*logPath, os.O_SYNC|os.O_RDWR|os.O_CREATE|os.O_APPEND, os.ModePerm)
 	if err != nil {
 		panic(err)
 	}
 
-	log.SetOutput(io.MultiWriter(file, os.Stdout))
-
+	initLog()
+	log.SetReportCaller(true)
+	log.SetFormatter(&log.JSONFormatter{})
 	err = config.Initialize(*configPath)
 	if err != nil {
 		panic(err)
@@ -61,4 +63,17 @@ func NoResponse(ctx *gin.Context) {
 		"code":    -1,
 		"message": "remote address not found",
 	})
+}
+
+func initLog() {
+	client, err := elastic.NewClient(elastic.SetSniff(false), elastic.SetURL("http://localhost:9200"))
+	if err != nil {
+		log.Panic(err)
+	}
+
+	t, err := elogrus.NewElasticHook(client, "localhost", log.TraceLevel, "ipfs-cluster-monitor")
+	if err != nil {
+		log.Panic(err)
+	}
+	log.AddHook(t)
 }

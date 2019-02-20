@@ -84,13 +84,14 @@ func (m *Monitor) Start() {
 	ctx, m.cancelFunc = context.WithCancel(m.context)
 
 	go func() {
-		defer func() { m.Reset() }()
+
 		if m.waitingForInitialize(ctx) {
 			if cluster.InitRunning(filepath.Join(m.config.Monitor.Workspace, config.Ipfs)) {
 				log.Println("init ipfs")
 				err := cluster.RunIPFSInit(ctx, m.config)
 				if err != nil {
 					log.Error(err)
+					defer func() { m.Reset() }()
 					return
 				}
 			}
@@ -99,6 +100,7 @@ func (m *Monitor) Start() {
 				err := cluster.RunServiceInit(ctx, m.config)
 				if err != nil {
 					log.Error(err)
+					defer func() { m.Reset() }()
 					return
 				}
 			}
@@ -161,7 +163,7 @@ func (m *Monitor) Reset() error {
 	m.Start()
 	log.Println("starting")
 	time.Sleep(15 * time.Second)
-	m.isInitialized = true
+	//m.isInitialized = true
 
 	return nil
 }

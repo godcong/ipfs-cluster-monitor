@@ -82,19 +82,22 @@ func optimizeRunCMD(ctx context.Context, command string, env []string, options .
 	log.Println("command:", cmd.Args)
 	//log.Output(2, fmt.Sprintln("command:", cmd.Args))
 
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		return xerrors.Errorf("out pipe:%w", err)
+	stdout, e := cmd.StdoutPipe()
+	if e != nil {
+		log.Error(e)
+		return xerrors.Errorf("out pipe:%w", e)
 	}
 
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		return xerrors.Errorf("err pipe:%w", err)
+	stderr, e := cmd.StderrPipe()
+	if e != nil {
+		log.Error(e)
+		return xerrors.Errorf("e pipe:%w", e)
 	}
 
-	err = cmd.Start()
-	if err != nil {
-		return xerrors.Errorf("start:%w", err)
+	e = cmd.Start()
+	if e != nil {
+		log.Error(e)
+		return xerrors.Errorf("start:%w", e)
 	}
 
 	reader := bufio.NewReader(io.MultiReader(stdout, stderr))
@@ -103,6 +106,7 @@ func optimizeRunCMD(ctx context.Context, command string, env []string, options .
 	for {
 		line, e := reader.ReadString('\n')
 		if e != nil || io.EOF == e {
+			log.Error(e)
 			log.Println("end", cmd.Args, e)
 			break
 		}
@@ -110,9 +114,10 @@ func optimizeRunCMD(ctx context.Context, command string, env []string, options .
 		log.Print(line)
 	}
 
-	err = cmd.Wait()
-	if err != nil {
-		return xerrors.Errorf("wait:%w", err)
+	e = cmd.Wait()
+	if e != nil {
+		log.Error(e)
+		return xerrors.Errorf("wait e:%w", e)
 	}
 	return nil
 }
