@@ -263,8 +263,8 @@ func DefaultConfig() *Configure {
 		},
 		MonitorProperty: MonitorProperty{
 			Version:            "",
-			IpfsCommandName:    "ipfs",
-			ClusterCommandName: "ipfs-cluster-service",
+			IpfsCommandName:    "/data/local/bin/ipfs",
+			ClusterCommandName: "/data/local/bin/ipfs-cluster-service",
 			//IpfsCommandName:     "/data/local/bin/ipfs",
 			//ClusterCommandName:  "/data/local/bin/ipfs-cluster-service",
 			RemoteAddrPort:      "",
@@ -321,8 +321,8 @@ func (c *Configure) CheckExist() bool {
 func DefaultMonitorProperty() *MonitorProperty {
 	return &MonitorProperty{
 		Version:             "v0",
-		IpfsCommandName:     "ipfs",
-		ClusterCommandName:  "ipfs-cluster-service",
+		IpfsCommandName:     "/data/local/bin/ipfs",
+		ClusterCommandName:  "/data/local/bin/ipfs-cluster-service",
 		RemoteAddrPort:      "127.0.0.1:7758",
 		Interval:            1 * time.Second,
 		MonitorInterval:     5 * time.Second,

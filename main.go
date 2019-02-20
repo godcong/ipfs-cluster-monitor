@@ -32,7 +32,7 @@ func main() {
 		panic(err)
 	}
 
-	initLog()
+	//initLog()
 	log.SetReportCaller(true)
 	log.SetFormatter(&log.JSONFormatter{})
 	err = config.Initialize(*configPath)
