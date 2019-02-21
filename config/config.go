@@ -117,6 +117,8 @@ func MustIPFSClient(ws string) *IPFSClient {
 
 // MustClusterClient ...
 func MustClusterClient(ws string, sec string, boot string) *ClusterClient {
+	sec = DefaultString(sec, "27b3f5c4e330c069cc045307152345cc391cb40e6dcabf01f98ae9cdc9dabb34")
+	boot = DefaultString(boot, "/ip4/47.101.169.94/tcp/9096/ipfs/QmeQzPKd7HzKZwBKNmnJnyub3YyCBvtcWraaJKEKk1BWmx")
 	return &ClusterClient{
 		Secret:      sec,
 		Bootstrap:   []string{boot},
@@ -125,7 +127,7 @@ func MustClusterClient(ws string, sec string, boot string) *ClusterClient {
 }
 
 // MustMonitor ...
-func MustMonitor(secret, boot, workspace string) *Monitor {
+func MustMonitor(mode proto.StartMode, secret, boot, workspace string) *Monitor {
 	var ipfs IPFSClient
 	var cluster ClusterClient
 	if workspace != "" {
@@ -134,7 +136,7 @@ func MustMonitor(secret, boot, workspace string) *Monitor {
 	}
 	log.Debug(workspace, ipfs, cluster)
 	return &Monitor{
-		Mode:          proto.StartMode_Simple,
+		Mode:          mode,
 		Workspace:     workspace,
 		IPFSClient:    ipfs,
 		ClusterClient: cluster,
@@ -184,8 +186,6 @@ type Configure struct {
 	ConfigPath      string          `toml:"-"`
 	RunPath         string          `toml:"-"` //运行路径(启动加载)
 	ConfigName      string          `toml:"-"` //配置文件名
-	ClusterClient   ClusterClient   `toml:"cluster_client"`
-	IPFSClient      IPFSClient      `toml:"ipfs_client"`
 	Monitor         Monitor         `toml:"monitor"`
 	MonitorProperty MonitorProperty `toml:"monitor_property"`
 	GRPC            GRPC            `toml:"grpc"`
@@ -278,11 +278,9 @@ func ClusterPath() string {
 // DefaultConfig ...
 func DefaultConfig(runPath string) *Configure {
 	return &Configure{
-		Initialize: false,
-		RunPath:    runPath,
-		Monitor: *MustMonitor("27b3f5c4e330c069cc045307152345cc391cb40e6dcabf01f98ae9cdc9dabb34",
-			"/ip4/47.101.169.94/tcp/9096/ipfs/QmeQzPKd7HzKZwBKNmnJnyub3YyCBvtcWraaJKEKk1BWmx",
-			runPath),
+		Initialize:      false,
+		RunPath:         runPath,
+		Monitor:         *MustMonitor(proto.StartMode_Cluster, "", "", runPath),
 		MonitorProperty: *MustMonitorProperty(runPath),
 		GRPC: GRPC{
 			Enable: true,

@@ -38,7 +38,6 @@ func (m *Monitor) Initialized() {
 
 // IsInitialized ...
 func (m *Monitor) IsInitialized() bool {
-
 	return m.isInitialized
 }
 

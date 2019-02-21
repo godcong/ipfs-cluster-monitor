@@ -62,7 +62,7 @@ func (s *GRPCServer) MonitorPin(context.Context, *proto.MonitorRequest) (*proto.
 // MonitorInit ...
 func (s *GRPCServer) MonitorInit(ctx context.Context, req *proto.MonitorInitRequest) (*proto.MonitorReply, error) {
 	log.Println("monitor init call")
-	monitor := config.MustMonitor(req.Secret, req.Bootstrap, req.Workspace)
+	monitor := config.MustMonitor(req.StartMode, req.Secret, req.Bootstrap, req.Workspace)
 	log.Printf("%+v", monitor)
 	log.Printf("%+v", s.config)
 	if s.config.Initialize {
