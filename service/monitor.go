@@ -146,7 +146,7 @@ func (m *Monitor) Reset() error {
 	log.Println("stop all")
 
 	clear(config.IpfsPath())
-	clear(config.IpfsClusterPath())
+	clear(config.ClusterPath())
 	err := os.Remove(m.config.FD())
 	log.Println(err)
 	//dir, name := m.config.ConfigPath, m.config.ConfigName
