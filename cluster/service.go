@@ -164,11 +164,11 @@ func optimizationFirstRunService(ctx context.Context, cfg *config.Configure) {
 
 // RunService ...
 func RunService(ctx context.Context, cfg *config.Configure) {
-	log.Println("bootstrap", cfg.Monitor.Bootstrap)
+	log.Println("bootstrap", cfg.Monitor.ClusterClient.Bootstrap)
 	ticker := time.NewTicker(15 * time.Minute)
 	defer ticker.Stop()
 	c := make(chan int)
-	for _, boot := range cfg.Monitor.Bootstrap {
+	for _, boot := range cfg.Monitor.ClusterClient.Bootstrap {
 		var e error
 		go func(c chan<- int) {
 			log.Println("run optimizeRunCMD")

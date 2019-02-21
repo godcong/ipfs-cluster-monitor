@@ -14,9 +14,10 @@ import (
 // Monitor ...
 type Monitor struct {
 	isInitialized bool
-	config        *config.Configure
-	context       context.Context
-	cancelFunc    context.CancelFunc
+	Mode
+	config     *config.Configure
+	context    context.Context
+	cancelFunc context.CancelFunc
 }
 
 // NewMonitor ...

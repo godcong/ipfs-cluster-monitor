@@ -21,11 +21,12 @@ import (
 
 // GRPCServer ...
 type GRPCServer struct {
-	config *config.Configure
-	server *grpc.Server
-	Type   string
-	Port   string
-	Path   string
+	config                   *config.Configure
+	server                   *grpc.Server
+	requireTransportSecurity bool
+	Type                     string
+	Port                     string
+	Path                     string
 }
 
 // MonitorAddress ...
@@ -123,10 +124,11 @@ func NewGRPCServer(cfg *config.Configure) *GRPCServer {
 
 // GRPCClient ...
 type GRPCClient struct {
-	config *config.Configure
-	Type   string
-	Port   string
-	Addr   string
+	config                   *config.Configure
+	requireTransportSecurity bool
+	Type                     string
+	Port                     string
+	Addr                     string
 }
 
 // GetRequestMetadata ...
@@ -138,21 +140,24 @@ func (c *GRPCClient) GetRequestMetadata(ctx context.Context, uri ...string) (map
 
 // RequireTransportSecurity ...
 func (c *GRPCClient) RequireTransportSecurity() bool {
-	return true
+	return c.requireTransportSecurity
 }
 
 // Conn ...
 func (c *GRPCClient) Conn() (*grpc.ClientConn, error) {
 	var conn *grpc.ClientConn
 	var opts []grpc.DialOption
-
 	var err error
-	cred, err := credentials.NewClientTLSFromFile("./keys/server.pem", "GodCong")
-	if err != nil {
-		grpclog.Fatalf("Failed to create TLS credentials %v", err)
+	if c.RequireTransportSecurity() {
+		cred, err := credentials.NewClientTLSFromFile("./keys/server.pem", "GodCong")
+		if err != nil {
+			grpclog.Fatalf("Failed to create TLS credentials %v", err)
+		}
+		opts = append(opts, grpc.WithTransportCredentials(cred), grpc.WithPerRPCCredentials(c))
+	} else {
+		opts = append(opts, grpc.WithInsecure())
 	}
 
-	opts = append(opts, grpc.WithTransportCredentials(cred), grpc.WithPerRPCCredentials(c))
 	if c.Type == "unix" {
 		conn, err = grpc.Dial("passthrough:///unix://"+c.Addr, opts...)
 	} else {
@@ -221,12 +226,15 @@ func (s *GRPCServer) Start() {
 	var lis net.Listener
 	var port string
 
-	cred, err := credentials.NewServerTLSFromFile("./keys/server.pem", "./keys/server.key")
-	if err != nil {
-		grpclog.Fatalf("Failed to generate credentials %v", err)
+	if s.requireTransportSecurity {
+		cred, err := credentials.NewServerTLSFromFile("./keys/server.pem", "./keys/server.key")
+		if err != nil {
+			grpclog.Fatalf("Failed to generate credentials %v", err)
+		}
+		s.server = grpc.NewServer(grpc.Creds(cred))
+	} else {
+		s.server = grpc.NewServer()
 	}
-
-	s.server = grpc.NewServer(grpc.Creds(cred))
 
 	go func() {
 		if s.Type == "unix" {

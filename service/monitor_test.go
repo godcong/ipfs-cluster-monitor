@@ -9,9 +9,9 @@ import (
 
 // TestMonitorClient_Init ...
 func TestMonitorClient_Init(t *testing.T) {
-	cfg := config.DefaultConfig()
-	//cfg.Monitor.Addr = "192.168.1.183"
-	//cfg.Monitor.Type = "tcp"
+	cfg := config.DefaultConfig("")
+	cfg.Monitor.Addr = "localhost"
+	cfg.Monitor.Type = "tcp"
 	grpc := NewMonitorGRPC(cfg)
 
 	client := MonitorClient(grpc)
@@ -28,7 +28,7 @@ func TestMonitorClient_Init(t *testing.T) {
 
 // TestClusterMonitor_Initialized ...
 func TestMonitorClient_Proc(t *testing.T) {
-	cfg := config.DefaultConfig()
+	cfg := config.DefaultConfig("")
 	//cfg.Monitor.Addr = "192.168.1.183"
 	//cfg.Monitor.Type = "tcp"
 	grpc := NewMonitorGRPC(cfg)
@@ -44,9 +44,9 @@ func TestMonitorClient_Proc(t *testing.T) {
 
 // TestMonitorClient_Manager ...
 func TestMonitorClient_Manager(t *testing.T) {
-	cfg := config.DefaultConfig()
+	cfg := config.DefaultConfig("")
 	//cfg.Monitor.Addr = "192.168.1.183"
-	//cfg.Monitor.Type = "tcp"
+	cfg.Monitor.Type = "tcp"
 	grpc := NewMonitorGRPC(cfg)
 	client := MonitorClient(grpc)
 	reply, err := client.MonitorManager(context.Background(), &proto.MonitorManagerRequest{

@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"github.com/godcong/ipfs-cluster-monitor/proto"
 	"github.com/pelletier/go-toml"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/xerrors"
@@ -96,14 +97,15 @@ type IPFSClient struct {
 
 // Monitor ...
 type Monitor struct {
-	Token         string         `toml:"token"`
-	Enable        bool           `toml:"enable"`
-	Type          string         `toml:"type"`
-	Addr          string         `toml:"addr"`
-	Port          string         `toml:"port"`
-	Workspace     string         `toml:"workspace"`
-	IPFSClient    *IPFSClient    `toml:"ipfs_client"`
-	ClusterClient *ClusterClient `toml:"cluster_client"`
+	Mode          proto.StartMode `toml:"mode"`
+	Token         string          `toml:"token"`
+	Enable        bool            `toml:"enable"`
+	Type          string          `toml:"type"`
+	Addr          string          `toml:"addr"`
+	Port          string          `toml:"port"`
+	Workspace     string          `toml:"workspace"`
+	IPFSClient    IPFSClient      `toml:"ipfs_client"`
+	ClusterClient ClusterClient   `toml:"cluster_client"`
 }
 
 // MustIPFSClient ...
@@ -127,15 +129,15 @@ func MustMonitor(secret, boot, workspace string) *Monitor {
 	var ipfs IPFSClient
 	var cluster ClusterClient
 	if workspace != "" {
-		&ipfs = MustIPFSClient(workspace)
-		&cluster = MustClusterClient(workspace, secret, boot)
+		ipfs = *MustIPFSClient(workspace)
+		cluster = *MustClusterClient(workspace, secret, boot)
 	}
 	log.Debug(workspace, ipfs, cluster)
 	return &Monitor{
-		Enable:        true,
+		Mode:          proto.StartMode_Simple,
 		Workspace:     workspace,
-		IPFSClient:    &ipfs,
-		ClusterClient: &cluster,
+		IPFSClient:    ipfs,
+		ClusterClient: cluster,
 	}
 }
 
@@ -147,18 +149,20 @@ func (m *Monitor) Env() (env []string) {
 		panic(e)
 	}
 
-	e = os.Setenv("CLUSTER_SECRET", m.ClusterClient.Secret)
-	if e != nil {
-		panic(e)
-	}
+	if m.Mode == proto.StartMode_Cluster {
+		e = os.Setenv("CLUSTER_SECRET", m.ClusterClient.Secret)
+		if e != nil {
+			panic(e)
+		}
 
-	e = os.Setenv("IPFS_CLUSTER_PATH", m.ClusterClient.ClusterPath)
-	if e != nil {
-		panic(e)
+		e = os.Setenv("IPFS_CLUSTER_PATH", m.ClusterClient.ClusterPath)
+		if e != nil {
+			panic(e)
+		}
 	}
 
 	env = os.Environ()
-	log.Println(env)
+	log.Debug(env)
 	return
 }
 
@@ -195,8 +199,14 @@ var config *Configure
 
 // Initialize ...
 func Initialize(runPath string, configPath ...string) error {
-	log.Debug(runPath, configPath)
-	config = DefaultConfig(runPath)
+	log.Info(runPath, configPath)
+	s, e := filepath.Abs(filepath.Dir(runPath))
+	if e != nil {
+		s = ""
+	}
+	log.Info(s)
+	config = DefaultConfig(s)
+
 	config.LoadConfig(configPath[0])
 	config.ConfigPath, config.ConfigName = filepath.Split(configPath[0])
 	return nil
@@ -213,22 +223,22 @@ func IsExists(name string) bool {
 }
 
 // LoadConfig ...
-func (obj *Configure) LoadConfig(filePath string) *Configure {
+func (c *Configure) LoadConfig(filePath string) *Configure {
 	openFile, err := os.OpenFile(filePath, os.O_RDONLY|os.O_SYNC, os.ModePerm)
 	if err != nil {
 		log.Error("config open:", err)
-		return obj
+		return c
 	}
 	defer openFile.Close()
 	decoder := toml.NewDecoder(openFile)
-	err = decoder.Decode(obj)
+	err = decoder.Decode(c)
 	if err != nil {
 		log.Error("config decode:", err)
-		return obj
+		return c
 	}
-	obj.Initialize = true
-	log.Debugf("config: %+v", obj)
-	return obj
+	c.Initialize = true
+	log.Debugf("config: %+v", c)
+	return c
 }
 
 // HomePath ...
@@ -270,19 +280,10 @@ func DefaultConfig(runPath string) *Configure {
 	return &Configure{
 		Initialize: false,
 		RunPath:    runPath,
-		Monitor: Monitor{
-			Token:      "2UQEoTCGV7j689CEImQDAjcv7k1X0ZpxT2yzCX8vaqRg1vKp5f0uScvPVB7yuZPP",
-			Enable:     true,
-			Type:       "tcp",
-			Addr:       "localhost",
-			Port:       ":7784",
-			Workspace:  runPath,
-			IPFSClient: MustIPFSClient(runPath),
-			ClusterClient: MustClusterClient(runPath,
-				"27b3f5c4e330c069cc045307152345cc391cb40e6dcabf01f98ae9cdc9dabb34",
-				"/ip4/47.101.169.94/tcp/9096/ipfs/QmeQzPKd7HzKZwBKNmnJnyub3YyCBvtcWraaJKEKk1BWmx"),
-		},
-		MonitorProperty: *DefaultMonitorProperty(runPath),
+		Monitor: *MustMonitor("27b3f5c4e330c069cc045307152345cc391cb40e6dcabf01f98ae9cdc9dabb34",
+			"/ip4/47.101.169.94/tcp/9096/ipfs/QmeQzPKd7HzKZwBKNmnJnyub3YyCBvtcWraaJKEKk1BWmx",
+			runPath),
+		MonitorProperty: *MustMonitorProperty(runPath),
 		GRPC: GRPC{
 			Enable: true,
 			Type:   "",
@@ -307,7 +308,7 @@ func Config() *Configure {
 	return config
 }
 
-// SetRoot ...
+// SetRunPath ...
 func SetRunPath(fp string) (err error) {
 	config.RunPath, err = filepath.Abs(filepath.Dir(fp)) //返回绝对路径  filepath.Dir(os.Args[0])去除最后一个元素的路径
 	if err != nil {
@@ -344,8 +345,8 @@ func (c *Configure) CheckExist() bool {
 	return true
 }
 
-// DefaultMonitorProperty ...
-func DefaultMonitorProperty(runPath string) *MonitorProperty {
+// MustMonitorProperty ...
+func MustMonitorProperty(runPath string) *MonitorProperty {
 	return &MonitorProperty{
 		Version:             "v0",
 		IpfsCommandName:     filepath.Join(runPath, "ipfs"),
