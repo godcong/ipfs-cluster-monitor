@@ -81,6 +81,7 @@ type HostInfo struct {
 // Requester ...
 type Requester struct {
 	Type string `toml:"type"`
+	Host string `toml:"host"`
 }
 
 // ClusterClient ...
