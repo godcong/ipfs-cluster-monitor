@@ -142,17 +142,17 @@ func MustMonitor(secret, boot, workspace string) *Monitor {
 // Env ...
 func (m *Monitor) Env() (env []string) {
 	var e error
-	e = os.Setenv("IPFS_PATH", string(m.IPFSClient.IpfsPath))
+	e = os.Setenv("IPFS_PATH", m.IPFSClient.IpfsPath)
 	if e != nil {
 		panic(e)
 	}
 
-	e = os.Setenv("CLUSTER_SECRET", string(m.ClusterClient.Secret))
+	e = os.Setenv("CLUSTER_SECRET", m.ClusterClient.Secret)
 	if e != nil {
 		panic(e)
 	}
 
-	e = os.Setenv("IPFS_CLUSTER_PATH", string(m.ClusterClient.ClusterPath))
+	e = os.Setenv("IPFS_CLUSTER_PATH", m.ClusterClient.ClusterPath)
 	if e != nil {
 		panic(e)
 	}
@@ -180,7 +180,8 @@ type Configure struct {
 	ConfigPath      string          `toml:"-"`
 	RunPath         string          `toml:"-"` //运行路径(启动加载)
 	ConfigName      string          `toml:"-"` //配置文件名
-	ClusterServer   ClusterClient   `toml:"cluster_server"`
+	ClusterClient   ClusterClient   `toml:"cluster_client"`
+	IPFSClient      IPFSClient      `toml:"ipfs_client"`
 	Monitor         Monitor         `toml:"monitor"`
 	MonitorProperty MonitorProperty `toml:"monitor_property"`
 	GRPC            GRPC            `toml:"grpc"`
