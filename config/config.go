@@ -155,8 +155,9 @@ type MonitorProperty struct {
 type Configure struct {
 	Mode            int             `toml:"mode"`
 	Initialize      bool            `toml:"-"`
-	Root            string          `toml:"-"`
-	ConfigName      string          `toml:"-"`
+	ConfigPath      string          `toml:"-"`
+	RunPath         string          `toml:"-"` //运行路径(启动加载)
+	ConfigName      string          `toml:"-"` //配置文件名
 	Monitor         Monitor         `toml:"monitor"`
 	MonitorProperty MonitorProperty `toml:"monitor_property"`
 	GRPC            GRPC            `toml:"grpc"`
@@ -170,12 +171,9 @@ var config *Configure
 
 // Initialize ...
 func Initialize(filePath ...string) error {
-	//if filePath == nil {
-	//	filePath = []string{"config.toml"}
-	//}
-	log.Println(filePath)
+	log.Debug(filePath)
 	config = LoadConfig(filePath[0])
-	config.Root, config.ConfigName = filepath.Split(filePath[0])
+	config.ConfigPath, config.ConfigName = filepath.Split(filePath[0])
 	return nil
 }
 
@@ -248,7 +246,7 @@ func IpfsClusterPath() string {
 func DefaultConfig() *Configure {
 	return &Configure{
 		Initialize: false,
-		Root:       "",
+		ConfigPath: "",
 		Monitor: Monitor{
 			Enable:    true,
 			Type:      "tcp",
@@ -294,9 +292,23 @@ func Config() *Configure {
 	return config
 }
 
+// SetRoot ...
+func SetRunPath(fp string) (err error) {
+	config.RunPath, err = filepath.Abs(filepath.Dir(fp)) //返回绝对路径  filepath.Dir(os.Args[0])去除最后一个元素的路径
+	if err != nil {
+		log.Fatal(err)
+		config.RunPath = ""
+	}
+	//TODO:Maybe move to together
+	if config.ConfigPath == "" {
+		config.ConfigPath = config.RunPath
+	}
+	return
+}
+
 // FD config file dictionary
 func (c *Configure) FD() string {
-	return filepath.Join(c.Root, c.ConfigName)
+	return filepath.Join(c.ConfigPath, c.ConfigName)
 }
 
 // DefaultString ...
@@ -309,7 +321,7 @@ func DefaultString(v, def string) string {
 
 // CheckExist ...
 func (c *Configure) CheckExist() bool {
-	_, err := os.Stat(filepath.Join(c.Root, DefaultFileName))
+	_, err := os.Stat(filepath.Join(c.ConfigPath, DefaultFileName))
 	if err != nil {
 		log.Println(err)
 		return false

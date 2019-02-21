@@ -293,7 +293,7 @@ func WaitingService(ctx context.Context) {
 func GetServiceConfig() (*ServiceConfig, error) {
 	var serviceConfig ServiceConfig
 
-	file := filepath.Join(config.Config().Root, "config.toml")
+	file := filepath.Join(config.Config().ConfigPath, "config.toml")
 	openFile, err := os.OpenFile(file, os.O_RDONLY|os.O_SYNC, os.ModePerm)
 	if err != nil {
 		return nil, err

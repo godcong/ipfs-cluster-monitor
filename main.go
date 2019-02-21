@@ -35,10 +35,12 @@ func main() {
 	//initLog()
 	log.SetReportCaller(true)
 	log.SetFormatter(&log.JSONFormatter{})
+
 	err = config.Initialize(*configPath)
 	if err != nil {
 		panic(err)
 	}
+	config.SetRunPath(fp)
 
 	sigs := make(chan os.Signal, 1)
 	done := make(chan bool, 1)
@@ -54,7 +56,6 @@ func main() {
 		done <- true
 	}()
 	<-done
-
 }
 
 // NoResponse ...

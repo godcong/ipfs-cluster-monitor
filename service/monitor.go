@@ -149,12 +149,12 @@ func (m *Monitor) Reset() error {
 	clear(config.IpfsClusterPath())
 	err := os.Remove(m.config.FD())
 	log.Println(err)
-	//dir, name := m.config.Root, m.config.ConfigName
+	//dir, name := m.config.ConfigPath, m.config.ConfigName
 
 	//reset config
 	//m.config.Initialize = false
 	//m.config = config.DefaultConfig()
-	//m.config.Root, m.config.ConfigName = dir, name
+	//m.config.ConfigPath, m.config.ConfigName = dir, name
 
 	err = m.InitMaker(&m.config.Monitor)
 	log.Println(err)

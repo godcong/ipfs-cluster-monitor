@@ -130,10 +130,10 @@ func webAddress(api string) string {
 
 // InitMaker ...
 func InitMaker(cfg *config.Configure) error {
-	file, e := os.OpenFile(cfg.Root, os.O_RDWR|os.O_CREATE|os.O_SYNC, os.ModePerm)
+	file, e := os.OpenFile(cfg.ConfigPath, os.O_RDWR|os.O_CREATE|os.O_SYNC, os.ModePerm)
 	if os.IsNotExist(e) {
 		log.Println("not exist ", e)
-		_ = os.MkdirAll(cfg.Root, os.ModePerm)
+		_ = os.MkdirAll(cfg.ConfigPath, os.ModePerm)
 		file, e = os.OpenFile(cfg.FD(), os.O_RDWR|os.O_CREATE|os.O_SYNC, os.ModePerm)
 		if e != nil {
 			return xerrors.Errorf("make file:%w", e)
