@@ -14,7 +14,7 @@ service ClusterMonitor {
     rpc MonitorProc (MonitorProcRequest) returns (MonitorReply) {
     }
 
-    rpc MonitorAddress (MonitorRequest) returns (MonitorBootstrapReply) {
+    rpc MonitorAddress (MonitorRequest) returns (MonitorAddressReply) {
     }
 
     rpc MonitorBootstrap (MonitorRequest) returns (MonitorBootstrapReply) {
@@ -60,6 +60,7 @@ message MonitorInitRequest {
 message MonitorBootstrapReply {
     repeated string bootstraps = 1;
 }
+
 message MonitorAddressReply {
     repeated string addresses = 1;
 }
