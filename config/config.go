@@ -136,6 +136,7 @@ func MustMonitor(mode proto.StartMode, secret, boot, workspace string) *Monitor 
 	}
 	log.Debug(workspace, ipfs, cluster)
 	return &Monitor{
+		Enable:        true,
 		Mode:          mode,
 		Workspace:     workspace,
 		IPFSClient:    ipfs,

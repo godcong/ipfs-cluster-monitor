@@ -18,7 +18,7 @@ func TestMonitorClient_Init(t *testing.T) {
 	reply, err := client.MonitorInit(context.Background(), &proto.MonitorInitRequest{
 		StartMode: proto.StartMode_Simple,
 		Host:      "http://localhost:8081",
-		Bootstrap: "/ip4/47.101.169.94/tcp/9096/ipfs/QmdpBCokb3XBZL5o79X8MaxatPQWxPhBZmmV7pGP13gRmL",
+		Bootstrap: "",
 		Secret:    "",
 		Workspace: "d:\\workspace\\ipfs2",
 		//Workspace: "/storage/1A247F77247F54AB/ws/",

@@ -7,18 +7,21 @@ import (
 	"github.com/godcong/ipfs-cluster-monitor/proto"
 	"github.com/godcong/ipfs-cluster-monitor/service"
 	log "github.com/sirupsen/logrus"
+	"os"
 )
 
 var bootstrap = flag.String("bootstrap", "", "monitor manager bootstrap address")
 var pin = flag.String("pin", "", "monitor manager pin address")
 var del = flag.Bool("delete", false, "is delete")
+var configPath = flag.String("config", "config.toml", "config path")
 
 func main() {
 	flag.Parse()
-	cfg := config.DefaultConfig()
-	//cfg.Monitor.Addr = "192.168.1.183"
-	//cfg.Monitor.Type = "tcp"
-	grpc := service.NewMonitorGRPC(cfg)
+	err := config.Initialize(os.Args[0], *configPath)
+	if err != nil {
+		panic(err)
+	}
+	grpc := service.NewMonitorGRPC(config.Config())
 	var e error
 	var reply *proto.MonitorReply
 	client := service.MonitorClient(grpc)
