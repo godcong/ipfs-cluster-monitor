@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/godcong/ipfs-cluster-monitor/cluster"
 	"github.com/godcong/ipfs-cluster-monitor/config"
+	"github.com/godcong/ipfs-cluster-monitor/proto"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/xerrors"
 	"os"
@@ -14,16 +15,17 @@ import (
 // Monitor ...
 type Monitor struct {
 	isInitialized bool
-	Mode
-	config     *config.Configure
-	context    context.Context
-	cancelFunc context.CancelFunc
+	Mode          proto.StartMode
+	config        *config.Configure
+	context       context.Context
+	cancelFunc    context.CancelFunc
 }
 
 // NewMonitor ...
 func NewMonitor(cfg *config.Configure) *Monitor {
 	return &Monitor{
 		isInitialized: cfg.Initialize,
+		Mode:          cfg.Monitor.Mode,
 		config:        cfg,
 		context:       context.Background(),
 	}
@@ -96,21 +98,26 @@ func (m *Monitor) Start() {
 					return
 				}
 			}
-			if cluster.InitRunning(filepath.Join(m.config.Monitor.Workspace, config.Cluster)) {
-				log.Println("init ipfs cluster")
-				err := cluster.RunServiceInit(ctx, m.config)
-				if err != nil {
-					log.Error(err)
-					defer func() { m.Reset() }()
-					return
+
+			if m.Mode == proto.StartMode_Cluster {
+				if cluster.InitRunning(filepath.Join(m.config.Monitor.Workspace, config.Cluster)) {
+					log.Println("init ipfs cluster")
+					err := cluster.RunServiceInit(ctx, m.config)
+					if err != nil {
+						log.Error(err)
+						defer func() { m.Reset() }()
+						return
+					}
 				}
 			}
 
 			cluster.RunIPFS(ctx, m.config)
 			cluster.WaitingIPFS(ctx)
 
-			cluster.RunService(ctx, m.config)
-			cluster.WaitingService(ctx)
+			if m.Mode == proto.StartMode_Cluster {
+				cluster.RunService(ctx, m.config)
+				cluster.WaitingService(ctx)
+			}
 
 		}
 	}()
