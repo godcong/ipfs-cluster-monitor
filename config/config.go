@@ -101,11 +101,10 @@ func MustMonitor(secret, boot, workspace string) *Monitor {
 	ipfs := ""
 	cluster := ""
 	if workspace != "" {
-		log.Println(workspace)
 		ipfs = filepath.Join(workspace, "data", Ipfs)
 		cluster = filepath.Join(workspace, "data", Cluster)
 	}
-
+	log.Debug(workspace, ipfs, cluster)
 	return &Monitor{
 		Enable:      true,
 		Workspace:   workspace,
@@ -170,7 +169,7 @@ type Configure struct {
 var config *Configure
 
 // Initialize ...
-func Initialize(filePath ...string) error {
+func Initialize(runPath string, filePath ...string) error {
 	log.Debug(filePath)
 	config = LoadConfig(filePath[0])
 	config.ConfigPath, config.ConfigName = filepath.Split(filePath[0])
@@ -259,18 +258,7 @@ func DefaultConfig() *Configure {
 			//IpfsPath:    HomePath(".ipfs"),
 			//ClusterPath: HomePath(".ipfs-cluster"),
 		},
-		MonitorProperty: MonitorProperty{
-			Version:            "",
-			IpfsCommandName:    "/data/local/bin/ipfs",
-			ClusterCommandName: "/data/local/bin/ipfs-cluster-service",
-			//IpfsCommandName:     "/data/local/bin/ipfs",
-			//ClusterCommandName:  "/data/local/bin/ipfs-cluster-service",
-			RemoteAddrPort:      "",
-			Interval:            3 * time.Second,
-			ServerCheckInterval: 3 * time.Second,
-			MonitorInterval:     3 * time.Second,
-			ResetWaiting:        0,
-		},
+		MonitorProperty: DefaultMonitorProperty(),
 		GRPC: GRPC{
 			Enable: true,
 			Type:   "",

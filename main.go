@@ -36,11 +36,10 @@ func main() {
 	log.SetReportCaller(true)
 	log.SetFormatter(&log.JSONFormatter{})
 
-	err = config.Initialize(*configPath)
+	err = config.Initialize(os.Args[0], *configPath)
 	if err != nil {
 		panic(err)
 	}
-	config.SetRunPath(fp)
 
 	sigs := make(chan os.Signal, 1)
 	done := make(chan bool, 1)
