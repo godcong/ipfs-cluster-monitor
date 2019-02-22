@@ -30,8 +30,8 @@ type GRPCServer struct {
 }
 
 // MonitorAddress ...
-func (s *GRPCServer) MonitorAddress(context.Context, *proto.MonitorRequest) (*proto.MonitorBootstrapReply, error) {
-	return &proto.MonitorBootstrapReply{}, nil
+func (s *GRPCServer) MonitorAddress(context.Context, *proto.MonitorRequest) (*proto.MonitorAddressReply, error) {
+	return &proto.MonitorAddressReply{}, nil
 }
 
 //MonitorManager ...

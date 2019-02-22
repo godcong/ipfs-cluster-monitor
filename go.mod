@@ -2,23 +2,27 @@ module github.com/godcong/ipfs-cluster-monitor
 
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
-	github.com/fortytw2/leaktest v1.3.0 // indirect
+	github.com/fastly/go-utils v0.0.0-20180712184237-d95a45783239 // indirect
 	github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7 // indirect
 	github.com/gin-gonic/gin v1.3.0
 	github.com/golang/protobuf v1.2.0
-	github.com/google/go-cmp v0.2.0 // indirect
+	github.com/jehiah/go-strftime v0.0.0-20171201141054-1d33003b3869 // indirect
+	github.com/jonboulle/clockwork v0.1.0 // indirect
 	github.com/json-iterator/go v1.1.5
 	github.com/juju/errors v0.0.0-20181118221551-089d3ea4e4d5
 	github.com/juju/loggo v0.0.0-20180524022052-584905176618 // indirect
 	github.com/juju/testing v0.0.0-20180920084828-472a3e8b2073 // indirect
-	github.com/mailru/easyjson v0.0.0-20180823135443-60711f1a8329 // indirect
+	github.com/lestrrat-go/envload v0.0.0-20180220234015-a3eb8ddeffcc // indirect
+	github.com/lestrrat-go/file-rotatelogs v2.2.0+incompatible
+	github.com/lestrrat-go/strftime v0.0.0-20180821113735-8b31f9c59b0f // indirect
 	github.com/mattn/go-isatty v0.0.4 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
-	github.com/olivere/elastic v6.2.16+incompatible
 	github.com/pelletier/go-toml v1.2.0
-	github.com/pkg/errors v0.8.1 // indirect
+	github.com/pkg/errors v0.8.1
+	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
 	github.com/sirupsen/logrus v1.3.0
+	github.com/tebeka/strftime v0.0.0-20140926081919-3f9c7761e312 // indirect
 	github.com/ugorji/go/codec v0.0.0-20181209151446-772ced7fd4c2 // indirect
 	golang.org/x/net v0.0.0-20181220203305-927f97764cc3 // indirect
 	golang.org/x/sync v0.0.0-20181221193216-37e7f081c4d4 // indirect
@@ -28,6 +32,5 @@ require (
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v8 v8.18.2 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce // indirect
-	gopkg.in/sohlich/elogrus.v3 v3.0.0-20180410122755-1fa29e2f2009
 	gopkg.in/yaml.v2 v2.2.2 // indirect
 )

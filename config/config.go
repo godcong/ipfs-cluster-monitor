@@ -109,6 +109,41 @@ type Monitor struct {
 	ClusterClient ClusterClient   `toml:"cluster_client"`
 }
 
+// MonitorProperty ...
+type MonitorProperty struct {
+	Version             string        `toml:"version"`
+	IpfsCommandName     string        `toml:"ipfs_command_name"`
+	ClusterCommandName  string        `toml:"cluster_command_name"`
+	Interval            time.Duration `toml:"interval"`
+	ServerCheckInterval time.Duration `toml:"server_check_interval"`
+	MonitorInterval     time.Duration `toml:"monitor_interval"`
+	ResetWaiting        int           `toml:"reset_waiting"`
+}
+
+// Logger ...
+type Logger struct {
+	Level string `toml:"level"`
+}
+
+// Configure ...
+type Configure struct {
+	Mode            int             `toml:"mode"`
+	Logger          Logger          `toml:"logger"`
+	Initialize      bool            `toml:"-"`
+	ConfigPath      string          `toml:"-"`
+	RunPath         string          `toml:"-"` //运行路径(启动加载)
+	ConfigName      string          `toml:"-"` //配置文件名
+	Monitor         Monitor         `toml:"monitor"`
+	MonitorProperty MonitorProperty `toml:"monitor_property"`
+	GRPC            GRPC            `toml:"grpc"`
+	REST            REST            `toml:"rest"`
+	IPFS            IPFS            `toml:"ipfs"`
+	Requester       Requester       `toml:"requester"`
+	Callback        Callback        `toml:"callback"`
+}
+
+var config *Configure
+
 // MustIPFSClient ...
 func MustIPFSClient(ws string) *IPFSClient {
 	return &IPFSClient{
@@ -169,35 +204,6 @@ func (m *Monitor) Env() (env []string) {
 	log.Debug(env)
 	return
 }
-
-// MonitorProperty ...
-type MonitorProperty struct {
-	Version             string        `toml:"version"`
-	IpfsCommandName     string        `toml:"ipfs_command_name"`
-	ClusterCommandName  string        `toml:"cluster_command_name"`
-	Interval            time.Duration `toml:"interval"`
-	ServerCheckInterval time.Duration `toml:"server_check_interval"`
-	MonitorInterval     time.Duration `toml:"monitor_interval"`
-	ResetWaiting        int           `toml:"reset_waiting"`
-}
-
-// Configure ...
-type Configure struct {
-	Mode            int             `toml:"mode"`
-	Initialize      bool            `toml:"-"`
-	ConfigPath      string          `toml:"-"`
-	RunPath         string          `toml:"-"` //运行路径(启动加载)
-	ConfigName      string          `toml:"-"` //配置文件名
-	Monitor         Monitor         `toml:"monitor"`
-	MonitorProperty MonitorProperty `toml:"monitor_property"`
-	GRPC            GRPC            `toml:"grpc"`
-	REST            REST            `toml:"rest"`
-	IPFS            IPFS            `toml:"ipfs"`
-	Requester       Requester       `toml:"requester"`
-	Callback        Callback        `toml:"callback"`
-}
-
-var config *Configure
 
 // Initialize ...
 func Initialize(runPath string, configPath ...string) error {
