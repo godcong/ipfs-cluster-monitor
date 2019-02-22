@@ -9,8 +9,49 @@ import (
 	"golang.org/x/xerrors"
 	"os"
 	"path/filepath"
+	"sync"
 	"time"
 )
+
+// Swarm ...
+type Swarm struct {
+	sync.Mutex
+	address []string
+}
+
+// Pin ...
+type Pin struct {
+	sync.Mutex
+	pins []string
+}
+
+// Pins ...
+func (p *Pin) Pins() []string {
+	p.Lock()
+	defer p.Unlock()
+	return p.pins
+}
+
+// SetPins ...
+func (p *Pin) SetPins(pins []string) {
+	p.Lock()
+	defer p.Unlock()
+	p.pins = pins
+}
+
+// Address ...
+func (s *Swarm) Address() []string {
+	s.Lock()
+	defer s.Unlock()
+	return s.address
+}
+
+// SetAddress ...
+func (s *Swarm) SetAddress(address []string) {
+	s.Lock()
+	defer s.Unlock()
+	s.address = address
+}
 
 // Monitor ...
 type Monitor struct {
@@ -19,6 +60,8 @@ type Monitor struct {
 	config        *config.Configure
 	context       context.Context
 	cancelFunc    context.CancelFunc
+	Swarm         *Swarm
+	Pin           *Pin
 }
 
 // NewMonitor ...
@@ -28,6 +71,14 @@ func NewMonitor(cfg *config.Configure) *Monitor {
 		Mode:          cfg.Monitor.Mode,
 		config:        cfg,
 		context:       context.Background(),
+		Swarm: &Swarm{
+			Mutex:   sync.Mutex{},
+			address: nil,
+		},
+		Pin: &Pin{
+			Mutex: sync.Mutex{},
+			pins:  nil,
+		},
 	}
 }
 
@@ -116,6 +167,10 @@ func (m *Monitor) Start() {
 			if m.Mode == proto.StartMode_Cluster {
 				cluster.RunService(ctx, m.config)
 				cluster.WaitingService(ctx)
+			}
+
+			if m.Mode == proto.StartMode_Simple {
+
 			}
 
 		}
