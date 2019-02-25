@@ -5,8 +5,11 @@ import (
 	"github.com/godcong/ipfs-cluster-monitor/cluster"
 	"github.com/godcong/ipfs-cluster-monitor/config"
 	"github.com/godcong/ipfs-cluster-monitor/proto"
+	"github.com/json-iterator/go"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/xerrors"
+	"io/ioutil"
+	"net/http"
 	"os"
 	"path/filepath"
 	"sync"
@@ -170,12 +173,86 @@ func (m *Monitor) Start() {
 			}
 
 			if m.Mode == proto.StartMode_Simple {
-
+				m.HandleAddress(ctx)
+				m.HandlePins(ctx)
 			}
 
 		}
 	}()
+}
 
+// AddressRes ...
+type AddressRes struct {
+	Code    int      `json:"code"`
+	Message string   `json:"message"`
+	Detail  []string `json:"detail"`
+}
+
+// HandleAddress ...
+func (m *Monitor) HandleAddress(ctx context.Context) {
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				resp, e := http.Get("http://localhost:7773/monitor/address")
+				if e == nil {
+					bytes, e := ioutil.ReadAll(resp.Body)
+					if e == nil {
+						var address AddressRes
+						e = jsoniter.Unmarshal(bytes, &address)
+						if e == nil {
+							log.Info(address.Detail)
+							m.Swarm.SetAddress(address.Detail)
+						}
+					}
+
+				}
+				if e != nil {
+					log.Error(e)
+				}
+				time.Sleep(30 * time.Minute)
+			}
+		}
+	}()
+}
+
+// PinsRes ...
+type PinsRes struct {
+	Code    int      `json:"code"`
+	Message string   `json:"message"`
+	Detail  []string `json:"detail"`
+}
+
+// HandlePins ...
+func (m *Monitor) HandlePins(ctx context.Context) {
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				resp, e := http.Get("http://localhost:7773/monitor/pins")
+				if e == nil {
+					bytes, e := ioutil.ReadAll(resp.Body)
+					if e == nil {
+						var pins PinsRes
+						e = jsoniter.Unmarshal(bytes, &pins)
+						if e == nil {
+							log.Info(pins.Detail)
+							m.Pin.SetPins(pins.Detail)
+						}
+					}
+				}
+				if e != nil {
+					log.Error(e)
+				}
+
+				time.Sleep(30 * time.Minute)
+			}
+		}
+	}()
 }
 
 // Stop ...
