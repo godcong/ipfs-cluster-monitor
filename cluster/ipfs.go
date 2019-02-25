@@ -142,6 +142,6 @@ func SwarmAddress(arg string) error {
 		log.Error(e)
 	}
 	bytes, e := ioutil.ReadAll(resp.Body)
-	log.Info("pin res:", string(bytes), e)
+	log.Info("address res:", string(bytes), e)
 	return e
 }
