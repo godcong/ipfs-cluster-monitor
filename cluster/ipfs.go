@@ -8,6 +8,7 @@ import (
 	"golang.org/x/xerrors"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os/exec"
 	"time"
 )
@@ -115,4 +116,32 @@ func WaitingIPFS(ctx context.Context) {
 			}
 		}
 	}
+}
+
+// Pin ...
+func Pin(arg string) error {
+	v := url.Values{
+		"arg": {arg},
+	}
+	resp, e := http.Get("http://localhost:5001/api/v0/pin/add?" + v.Encode())
+	if e != nil {
+		log.Error(e)
+	}
+	bytes, e := ioutil.ReadAll(resp.Body)
+	log.Info("pin res:", string(bytes), e)
+	return e
+}
+
+// SwarmAddress ...
+func SwarmAddress(arg string) error {
+	v := url.Values{
+		"arg": {arg},
+	}
+	resp, e := http.Get("http://localhost:5001/api/v0/swarm/connect?" + v.Encode())
+	if e != nil {
+		log.Error(e)
+	}
+	bytes, e := ioutil.ReadAll(resp.Body)
+	log.Info("pin res:", string(bytes), e)
+	return e
 }

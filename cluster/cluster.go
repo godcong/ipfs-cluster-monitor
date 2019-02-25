@@ -110,7 +110,6 @@ func optimizeRunCMD(ctx context.Context, command string, env []string, options .
 			log.Println("end", cmd.Args, e)
 			break
 		}
-
 		log.Print(line)
 	}
 

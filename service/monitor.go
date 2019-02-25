@@ -18,20 +18,20 @@ import (
 
 // Swarm ...
 type Swarm struct {
-	sync.Mutex
+	sync.RWMutex
 	address []string
 }
 
 // Pin ...
 type Pin struct {
-	sync.Mutex
+	sync.RWMutex
 	pins []string
 }
 
 // Pins ...
 func (p *Pin) Pins() []string {
-	p.Lock()
-	defer p.Unlock()
+	p.RLock()
+	defer p.RUnlock()
 	return p.pins
 }
 
@@ -44,8 +44,8 @@ func (p *Pin) SetPins(pins []string) {
 
 // Address ...
 func (s *Swarm) Address() []string {
-	s.Lock()
-	defer s.Unlock()
+	s.RLock()
+	defer s.RUnlock()
 	return s.address
 }
 
@@ -75,12 +75,12 @@ func NewMonitor(cfg *config.Configure) *Monitor {
 		config:        cfg,
 		context:       context.Background(),
 		Swarm: &Swarm{
-			Mutex:   sync.Mutex{},
+			RWMutex: sync.RWMutex{},
 			address: nil,
 		},
 		Pin: &Pin{
-			Mutex: sync.Mutex{},
-			pins:  nil,
+			RWMutex: sync.RWMutex{},
+			pins:    nil,
 		},
 	}
 }
@@ -174,7 +174,9 @@ func (m *Monitor) Start() {
 
 			if m.Mode == proto.StartMode_Simple {
 				m.HandleAddress(ctx)
+				m.Address(ctx)
 				m.HandlePins(ctx)
+				m.Pins(ctx)
 			}
 
 		}
@@ -188,6 +190,23 @@ type AddressRes struct {
 	Detail  []string `json:"detail"`
 }
 
+// Address ...
+func (m *Monitor) Address(ctx context.Context) {
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				for _, v := range m.Swarm.Address() {
+					cluster.SwarmAddress(v)
+				}
+				time.Sleep(1 * time.Second)
+			}
+		}
+	}()
+}
+
 // HandleAddress ...
 func (m *Monitor) HandleAddress(ctx context.Context) {
 	go func() {
@@ -196,7 +215,7 @@ func (m *Monitor) HandleAddress(ctx context.Context) {
 			case <-ctx.Done():
 				return
 			default:
-				resp, e := http.Get("http://localhost:7773/monitor/address")
+				resp, e := http.Get("http://localhost:7773/v0/monitor/address")
 				if e == nil {
 					bytes, e := ioutil.ReadAll(resp.Body)
 					if e == nil {
@@ -207,12 +226,11 @@ func (m *Monitor) HandleAddress(ctx context.Context) {
 							m.Swarm.SetAddress(address.Detail)
 						}
 					}
-
 				}
 				if e != nil {
 					log.Error(e)
 				}
-				time.Sleep(30 * time.Minute)
+				time.Sleep(3 * time.Second)
 			}
 		}
 	}()
@@ -225,6 +243,23 @@ type PinsRes struct {
 	Detail  []string `json:"detail"`
 }
 
+// Pins ...
+func (m *Monitor) Pins(ctx context.Context) {
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				for _, v := range m.Pin.Pins() {
+					cluster.Pin(v)
+				}
+				time.Sleep(1 * time.Second)
+			}
+		}
+	}()
+}
+
 // HandlePins ...
 func (m *Monitor) HandlePins(ctx context.Context) {
 	go func() {
@@ -233,7 +268,7 @@ func (m *Monitor) HandlePins(ctx context.Context) {
 			case <-ctx.Done():
 				return
 			default:
-				resp, e := http.Get("http://localhost:7773/monitor/pins")
+				resp, e := http.Get("http://localhost:7773/v0/monitor/pins")
 				if e == nil {
 					bytes, e := ioutil.ReadAll(resp.Body)
 					if e == nil {
@@ -248,8 +283,7 @@ func (m *Monitor) HandlePins(ctx context.Context) {
 				if e != nil {
 					log.Error(e)
 				}
-
-				time.Sleep(30 * time.Minute)
+				time.Sleep(3 * time.Second)
 			}
 		}
 	}()
