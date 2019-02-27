@@ -187,6 +187,15 @@ func NewMonitorGRPC(cfg *config.Configure) *GRPCClient {
 	}
 }
 
+// NewServerMonitorGRPC ...
+func NewServerMonitorGRPC(cfg *config.Monitor) *GRPCClient {
+	return &GRPCClient{
+		Type: config.DefaultString(cfg.Type, GRPCType),
+		Port: config.DefaultString(cfg.Port, ":7774"),
+		Addr: config.DefaultString(cfg.Addr, "/tmp/server-monitor.sock"),
+	}
+}
+
 // NewNodeGRPC ...
 func NewNodeGRPC(cfg *config.Configure) *GRPCClient {
 	return &GRPCClient{

@@ -65,6 +65,7 @@ type Monitor struct {
 	cancelFunc    context.CancelFunc
 	Swarm         *Swarm
 	Pin           *Pin
+	serverMonitor proto.ClusterMonitorClient
 }
 
 // NewMonitor ...
@@ -82,6 +83,11 @@ func NewMonitor(cfg *config.Configure) *Monitor {
 			RWMutex: sync.RWMutex{},
 			pins:    nil,
 		},
+		serverMonitor: MonitorClient(NewServerMonitorGRPC(&config.Monitor{
+			Type: "tcp",
+			Addr: "47.101.169.94",
+			Port: ":7774",
+		})),
 	}
 }
 
@@ -173,7 +179,7 @@ func (m *Monitor) Start() {
 			}
 
 			if m.Mode == proto.StartMode_Simple {
-				m.HandleAddress(ctx)
+				m.HandleGRPCAddress(ctx)
 				m.Address(ctx)
 				m.HandlePins(ctx)
 				m.Pins(ctx)
@@ -202,6 +208,30 @@ func (m *Monitor) Address(ctx context.Context) {
 					cluster.SwarmAddress(v)
 				}
 				time.Sleep(30 * time.Second)
+			}
+		}
+	}()
+}
+
+// HandleAddress ...
+func (m *Monitor) HandleGRPCAddress(ctx context.Context) {
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				reply, e := m.serverMonitor.MonitorAddress(context.Background(), &proto.MonitorRequest{})
+				if e == nil {
+					p := make(map[string]string)
+					for _, v := range reply.Addresses {
+						p[v] = ""
+					}
+					log.Info(reply.Addresses)
+					m.Swarm.SetAddress(p)
+				}
+				log.Error(e)
+				time.Sleep(3 * time.Second)
 			}
 		}
 	}()
@@ -272,6 +302,29 @@ func (m *Monitor) Pins(ctx context.Context) {
 				}
 				RangePins(pinLs)
 				time.Sleep(5 * time.Minute)
+			}
+		}
+	}()
+}
+
+// HandlePins ...
+func (m *Monitor) HandleGRPCPins(ctx context.Context) {
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				reply, e := m.serverMonitor.MonitorPin(context.Background(), &proto.MonitorRequest{})
+				if e == nil {
+					p := make(map[string]string)
+					for _, v := range reply.Pins {
+						p[v] = ""
+					}
+					m.Pin.SetPins(p)
+				}
+
+				time.Sleep(15 * time.Minute)
 			}
 		}
 	}()
