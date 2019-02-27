@@ -118,8 +118,8 @@ func WaitingIPFS(ctx context.Context) {
 	}
 }
 
-// Pin ...
-func Pin(arg string) error {
+// PinAdd ...
+func PinAdd(arg string) error {
 	v := url.Values{
 		"arg": {arg},
 	}
@@ -128,8 +128,38 @@ func Pin(arg string) error {
 		log.Error(e)
 	}
 	bytes, e := ioutil.ReadAll(resp.Body)
-	log.Info("pin res:", string(bytes), e)
+	log.Info("pin add res:", string(bytes), e)
 	return e
+}
+
+type PinLsType struct {
+	Type string `json:"Type"`
+}
+
+type PinLsRes struct {
+	Keys map[string]PinLsType `json:"Keys"`
+}
+
+// PinAdd ...
+func PinLs(args ...string) (*PinLsRes, error) {
+	q := "http://localhost:5001/api/v0/pin/ls?"
+	if args != nil {
+		v := url.Values{
+			"arg": {args[0]},
+		}
+		q = q + v.Encode()
+	}
+
+	resp, e := http.Get(q)
+	if e != nil {
+		log.Error(e)
+	}
+	bytes, e := ioutil.ReadAll(resp.Body)
+
+	var res PinLsRes
+	e = jsoniter.Unmarshal(bytes, &res)
+	log.Info("pin ls res:", res, e)
+	return &res, e
 }
 
 // SwarmAddress ...

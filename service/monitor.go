@@ -19,38 +19,38 @@ import (
 // Swarm ...
 type Swarm struct {
 	sync.RWMutex
-	address []string
+	address map[string]string
 }
 
-// Pin ...
+// PinAdd ...
 type Pin struct {
 	sync.RWMutex
-	pins []string
+	pins map[string]string
 }
 
 // Pins ...
-func (p *Pin) Pins() []string {
+func (p *Pin) Pins() map[string]string {
 	p.RLock()
 	defer p.RUnlock()
 	return p.pins
 }
 
 // SetPins ...
-func (p *Pin) SetPins(pins []string) {
+func (p *Pin) SetPins(pins map[string]string) {
 	p.Lock()
 	defer p.Unlock()
 	p.pins = pins
 }
 
 // Address ...
-func (s *Swarm) Address() []string {
+func (s *Swarm) Address() map[string]string {
 	s.RLock()
 	defer s.RUnlock()
 	return s.address
 }
 
 // SetAddress ...
-func (s *Swarm) SetAddress(address []string) {
+func (s *Swarm) SetAddress(address map[string]string) {
 	s.Lock()
 	defer s.Unlock()
 	s.address = address
@@ -185,9 +185,9 @@ func (m *Monitor) Start() {
 
 // AddressRes ...
 type AddressRes struct {
-	Code    int      `json:"code"`
-	Message string   `json:"message"`
-	Detail  []string `json:"detail"`
+	Code    int               `json:"code"`
+	Message string            `json:"message"`
+	Detail  map[string]string `json:"detail"`
 }
 
 // Address ...
@@ -198,10 +198,10 @@ func (m *Monitor) Address(ctx context.Context) {
 			case <-ctx.Done():
 				return
 			default:
-				for _, v := range m.Swarm.Address() {
+				for v := range m.Swarm.Address() {
 					cluster.SwarmAddress(v)
 				}
-				time.Sleep(1 * time.Second)
+				time.Sleep(30 * time.Second)
 			}
 		}
 	}()
@@ -215,7 +215,7 @@ func (m *Monitor) HandleAddress(ctx context.Context) {
 			case <-ctx.Done():
 				return
 			default:
-				resp, e := http.Get("http://localhost:7773/v0/monitor/address")
+				resp, e := http.Get("http://cluster.dvbox.net/v0/monitor/address")
 				if e == nil {
 					bytes, e := ioutil.ReadAll(resp.Body)
 					if e == nil {
@@ -230,7 +230,7 @@ func (m *Monitor) HandleAddress(ctx context.Context) {
 				if e != nil {
 					log.Error(e)
 				}
-				time.Sleep(3 * time.Second)
+				time.Sleep(30 * time.Minute)
 			}
 		}
 	}()
@@ -238,9 +238,16 @@ func (m *Monitor) HandleAddress(ctx context.Context) {
 
 // PinsRes ...
 type PinsRes struct {
-	Code    int      `json:"code"`
-	Message string   `json:"message"`
-	Detail  []string `json:"detail"`
+	Code    int               `json:"code"`
+	Message string            `json:"message"`
+	Detail  map[string]string `json:"detail"`
+}
+
+func RangePins(pins map[string]string) {
+	for v := range pins {
+		log.Info("pin add:", pins)
+		_ = cluster.PinAdd(v)
+	}
 }
 
 // Pins ...
@@ -251,10 +258,20 @@ func (m *Monitor) Pins(ctx context.Context) {
 			case <-ctx.Done():
 				return
 			default:
-				for _, v := range m.Pin.Pins() {
-					cluster.Pin(v)
+				res, e := cluster.PinLs()
+				var pinLs map[string]string
+				if e != nil || res.Keys == nil {
+					pinLs = m.Pin.Pins()
+				} else {
+					pinLs = make(map[string]string)
+					for v := range m.Pin.Pins() {
+						if _, b := (res.Keys)[v]; !b {
+							pinLs[v] = "0"
+						}
+					}
 				}
-				time.Sleep(1 * time.Second)
+				RangePins(pinLs)
+				time.Sleep(5 * time.Minute)
 			}
 		}
 	}()
@@ -268,7 +285,7 @@ func (m *Monitor) HandlePins(ctx context.Context) {
 			case <-ctx.Done():
 				return
 			default:
-				resp, e := http.Get("http://localhost:7773/v0/monitor/pins")
+				resp, e := http.Get("http://cluster.dvbox.net/v0/monitor/pins")
 				if e == nil {
 					bytes, e := ioutil.ReadAll(resp.Body)
 					if e == nil {
@@ -283,7 +300,7 @@ func (m *Monitor) HandlePins(ctx context.Context) {
 				if e != nil {
 					log.Error(e)
 				}
-				time.Sleep(3 * time.Second)
+				time.Sleep(15 * time.Minute)
 			}
 		}
 	}()
