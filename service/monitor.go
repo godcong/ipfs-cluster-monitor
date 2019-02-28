@@ -230,7 +230,9 @@ func (m *Monitor) HandleGRPCAddress(ctx context.Context) {
 					log.Info(reply.Addresses)
 					m.Swarm.SetAddress(p)
 				}
-				log.Error(e)
+				if e != nil {
+					log.Error(e)
+				}
 				time.Sleep(3 * time.Second)
 			}
 		}
