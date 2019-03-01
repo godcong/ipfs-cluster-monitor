@@ -364,6 +364,12 @@ func MustMonitorProperty(runPath string) *MonitorProperty {
 	}
 }
 
+func SetMonitor(monitor *Monitor) {
+	if config != nil {
+		config.Monitor = *monitor
+	}
+}
+
 // CheckError ...
 func CheckError(err error) error {
 	return xerrors.Errorf("check err:%w", err)

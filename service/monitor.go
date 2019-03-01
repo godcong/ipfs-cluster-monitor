@@ -122,7 +122,7 @@ func (m *Monitor) waitingForInitialize(ctx context.Context) bool {
 // InitMaker ...
 func (m *Monitor) InitMaker(monitor *config.Monitor) error {
 	log.Printf("monitor:%+v", *monitor)
-	m.config.Monitor = *monitor
+	config.SetMonitor(monitor)
 	err := cluster.InitMaker(m.config)
 	if err == nil {
 		m.Initialized()
@@ -233,7 +233,7 @@ func (m *Monitor) HandleGRPCAddress(ctx context.Context) {
 				if e != nil {
 					log.Error(e)
 				}
-				time.Sleep(3 * time.Second)
+				time.Sleep(15 * time.Minute)
 			}
 		}
 	}()
@@ -262,7 +262,7 @@ func (m *Monitor) HandleAddress(ctx context.Context) {
 				if e != nil {
 					log.Error(e)
 				}
-				time.Sleep(30 * time.Minute)
+				time.Sleep(15 * time.Minute)
 			}
 		}
 	}()
@@ -303,7 +303,7 @@ func (m *Monitor) Pins(ctx context.Context) {
 					}
 				}
 				RangePins(pinLs)
-				time.Sleep(5 * time.Minute)
+				time.Sleep(30 * time.Minute)
 			}
 		}
 	}()
@@ -326,7 +326,7 @@ func (m *Monitor) HandleGRPCPins(ctx context.Context) {
 					m.Pin.SetPins(p)
 				}
 
-				time.Sleep(15 * time.Minute)
+				time.Sleep(30 * time.Minute)
 			}
 		}
 	}()
@@ -355,7 +355,7 @@ func (m *Monitor) HandlePins(ctx context.Context) {
 				if e != nil {
 					log.Error(e)
 				}
-				time.Sleep(15 * time.Minute)
+				time.Sleep(30 * time.Minute)
 			}
 		}
 	}()
