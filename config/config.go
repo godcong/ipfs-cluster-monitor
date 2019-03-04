@@ -34,9 +34,7 @@ type Database struct {
 
 // Callback ...
 type Callback struct {
-	Type     string `toml:"type"`
-	BackType string `toml:"back_type"`
-	BackAddr string `toml:"back_addr"`
+	Type string `toml:"type"`
 }
 
 // IPFS ...
@@ -296,11 +294,8 @@ func DefaultConfig(runPath string) *Configure {
 			Path:   "",
 			Port:   "",
 		},
-		REST: REST{},
-		IPFS: IPFS{
-			Host: "",
-			Port: "",
-		},
+		REST:      REST{},
+		IPFS:      IPFS{},
 		Requester: Requester{},
 		Callback:  Callback{},
 	}
