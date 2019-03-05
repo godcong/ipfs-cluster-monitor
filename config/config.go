@@ -17,9 +17,11 @@ const DefaultFileName = "monitor.json"
 
 // Ipfs ...
 const Ipfs = "ipfs"
+const IpfsTmp = "ipfs_tmp"
 
 // Cluster ...
 const Cluster = "cluster"
+const ClusterTmp = "cluster_tmp"
 
 // Database ...
 type Database struct {

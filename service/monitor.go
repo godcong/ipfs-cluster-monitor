@@ -65,7 +65,7 @@ type Monitor struct {
 	cancelFunc    context.CancelFunc
 	Swarm         *Swarm
 	Pin           *Pin
-	serverMonitor proto.ClusterMonitorClient
+	monitorServer proto.ClusterMonitorClient
 }
 
 // NewMonitor ...
@@ -83,7 +83,7 @@ func NewMonitor(cfg *config.Configure) *Monitor {
 			RWMutex: sync.RWMutex{},
 			pins:    nil,
 		},
-		serverMonitor: MonitorClient(NewServerMonitorGRPC(&config.Monitor{
+		monitorServer: MonitorClient(NewServerMonitorGRPC(&config.Monitor{
 			Type: "tcp",
 			Addr: "47.101.169.94",
 			Port: ":7774",
@@ -221,7 +221,7 @@ func (m *Monitor) HandleGRPCAddress(ctx context.Context) {
 			case <-ctx.Done():
 				return
 			default:
-				reply, e := m.serverMonitor.MonitorAddress(context.Background(), &proto.MonitorRequest{})
+				reply, e := m.monitorServer.MonitorAddress(context.Background(), &proto.MonitorRequest{})
 				if e == nil {
 					p := make(map[string]string)
 					for _, v := range reply.Addresses {
@@ -317,7 +317,7 @@ func (m *Monitor) HandleGRPCPins(ctx context.Context) {
 			case <-ctx.Done():
 				return
 			default:
-				reply, e := m.serverMonitor.MonitorPin(context.Background(), &proto.MonitorRequest{})
+				reply, e := m.monitorServer.MonitorPin(context.Background(), &proto.MonitorRequest{})
 				if e == nil {
 					p := make(map[string]string)
 					for _, v := range reply.Pins {

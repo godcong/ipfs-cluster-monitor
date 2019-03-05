@@ -121,12 +121,6 @@ func optimizeRunCMD(ctx context.Context, command string, env []string, options .
 	return nil
 }
 
-func webAddress(api string) string {
-	//url := strings.Join([]string{cfg.RemoteIP + cfg.RemotePort, cfg.Version, api}, "/")
-	//return "http://" + url
-	return ""
-}
-
 // InitMaker ...
 func InitMaker(cfg *config.Configure) error {
 	file, e := os.OpenFile(cfg.ConfigPath, os.O_RDWR|os.O_CREATE|os.O_SYNC, os.ModePerm)
@@ -139,18 +133,20 @@ func InitMaker(cfg *config.Configure) error {
 		}
 	}
 	defer file.Close()
+	//create config file
 	enc := toml.NewEncoder(file)
 	e = enc.Encode(*cfg)
 	if e != nil {
 		return xerrors.Errorf("encode file:%w", e)
 	}
 	log.Println("created:", file.Name())
-
+	//create directory
 	e = os.MkdirAll(filepath.Join(cfg.Monitor.Workspace, "data"), os.ModePerm)
 	if e != nil {
 		log.Println("make workspace err:", cfg.Monitor.Workspace, e)
 	}
-	cfile, e := os.Create(filepath.Join(cfg.Monitor.Workspace, config.Ipfs))
+	//
+	cfile, e := os.Create(filepath.Join(cfg.Monitor.Workspace, config.IpfsTmp))
 	if e != nil {
 		log.Println(e)
 		return xerrors.Errorf("ipfs file:%w", e)
@@ -158,7 +154,7 @@ func InitMaker(cfg *config.Configure) error {
 	log.Println("created:", cfile.Name())
 	defer cfile.Close()
 
-	sfile, e := os.Create(filepath.Join(cfg.Monitor.Workspace, config.Cluster))
+	sfile, e := os.Create(filepath.Join(cfg.Monitor.Workspace, config.ClusterTmp))
 	if e != nil {
 		log.Println(e)
 		return xerrors.Errorf("cluster file:%w", e)
