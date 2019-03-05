@@ -58,8 +58,8 @@ func (s *Swarm) SetAddress(address map[string]string) {
 
 // Monitor ...
 type Monitor struct {
-	isInitialized bool
-	Mode          proto.StartMode
+	//isInitialized bool
+	//Mode          proto.StartMode
 	config        *config.Configure
 	context       context.Context
 	cancelFunc    context.CancelFunc
@@ -68,13 +68,20 @@ type Monitor struct {
 	monitorServer proto.ClusterMonitorClient
 }
 
+func (m *Monitor) Mode() proto.StartMode {
+	if m.config != nil {
+		return m.config.Monitor.Mode
+	}
+	return proto.StartMode_Simple
+}
+
 // NewMonitor ...
 func NewMonitor(cfg *config.Configure) *Monitor {
 	return &Monitor{
-		isInitialized: cfg.Initialize,
-		Mode:          cfg.Monitor.Mode,
-		config:        cfg,
-		context:       context.Background(),
+		//isInitialized: cfg.Initialize,
+		//Mode:          cfg.Monitor.Mode,
+		config:  cfg,
+		context: context.Background(),
 		Swarm: &Swarm{
 			RWMutex: sync.RWMutex{},
 			address: nil,
@@ -91,20 +98,18 @@ func NewMonitor(cfg *config.Configure) *Monitor {
 	}
 }
 
-// Initialized ...
-func (m *Monitor) Initialized() {
-	m.isInitialized = true
-}
-
 // IsInitialized ...
 func (m *Monitor) IsInitialized() bool {
-	return m.isInitialized
+	if m.config != nil {
+		return m.config.Initialize
+	}
+	return false
 }
 
 // waitingForInitialize ...
 func (m *Monitor) waitingForInitialize(ctx context.Context) bool {
 	for {
-		if !m.isInitialized {
+		if !m.IsInitialized() {
 			select {
 			case <-ctx.Done():
 				return false
@@ -125,7 +130,6 @@ func (m *Monitor) InitMaker(monitor *config.Monitor) error {
 	config.SetMonitor(monitor)
 	err := cluster.InitMaker(m.config)
 	if err == nil {
-		m.Initialized()
 		return nil
 	}
 	return xerrors.Errorf("init maker:%w", err)
@@ -148,7 +152,7 @@ func (m *Monitor) Start() {
 	go func() {
 
 		if m.waitingForInitialize(ctx) {
-			if cluster.InitRunning(filepath.Join(m.config.Monitor.Workspace, config.Ipfs)) {
+			if cluster.InitRunning(filepath.Join(m.config.Monitor.Workspace, config.IpfsTmp)) {
 				log.Println("init ipfs")
 				err := cluster.RunIPFSInit(ctx, m.config)
 				if err != nil {
@@ -158,8 +162,8 @@ func (m *Monitor) Start() {
 				}
 			}
 
-			if m.Mode == proto.StartMode_Cluster {
-				if cluster.InitRunning(filepath.Join(m.config.Monitor.Workspace, config.Cluster)) {
+			if m.Mode() == proto.StartMode_Cluster {
+				if cluster.InitRunning(filepath.Join(m.config.Monitor.Workspace, config.ClusterTmp)) {
 					log.Println("init ipfs cluster")
 					err := cluster.RunServiceInit(ctx, m.config)
 					if err != nil {
@@ -173,12 +177,12 @@ func (m *Monitor) Start() {
 			cluster.RunIPFS(ctx, m.config)
 			cluster.WaitingIPFS(ctx)
 
-			if m.Mode == proto.StartMode_Cluster {
+			if m.Mode() == proto.StartMode_Cluster {
 				cluster.RunService(ctx, m.config)
 				cluster.WaitingService(ctx)
 			}
 
-			if m.Mode == proto.StartMode_Simple {
+			if m.Mode() == proto.StartMode_Simple {
 				m.HandleGRPCAddress(ctx)
 				m.Address(ctx)
 				m.HandlePins(ctx)
@@ -383,7 +387,7 @@ func clear(path string) {
 // Reset ...
 func (m *Monitor) Reset() error {
 	//reset status
-	m.isInitialized = false
+	m.config.Initialize = false
 
 	//stop running ipfs and service
 	m.Stop()

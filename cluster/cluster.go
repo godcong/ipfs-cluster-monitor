@@ -15,6 +15,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"time"
 )
 
 // StatusCode ...
@@ -58,6 +59,10 @@ func getServiceBootstrap() string {
 		}
 	}
 	return ""
+}
+
+func webAddress(s string) string {
+	return s
 }
 
 // RunCMD ...
@@ -161,6 +166,10 @@ func InitMaker(cfg *config.Configure) error {
 	}
 	log.Println("created:", sfile.Name())
 	defer sfile.Close()
+
+	time.Sleep(3 * time.Second)
+	cfg.Initialize = true
+
 	return nil
 }
 
