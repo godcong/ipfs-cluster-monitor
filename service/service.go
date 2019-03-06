@@ -6,8 +6,8 @@ import "github.com/godcong/ipfs-cluster-monitor/config"
 type service struct {
 	config  *config.Configure
 	grpc    *GRPCServer
-	monitor *GRPCClient
-	cluster *Monitor
+	client  *GRPCClient
+	monitor *Monitor
 }
 
 var server *service
@@ -18,15 +18,15 @@ func Start() {
 
 	server = &service{
 		config:  cfg,
-		monitor: NewMonitorGRPC(cfg),
-		cluster: NewMonitor(cfg),
+		client:  NewMonitorGRPC(cfg),
+		monitor: NewMonitor(cfg),
 		grpc:    NewGRPCServer(cfg),
 		//rest:    NewRestServer(cfg),
 		//queue: NewQueueServer(cfg),
 	}
 
 	server.grpc.Start()
-	server.cluster.Start()
+	server.monitor.Start()
 
 }
 
@@ -34,5 +34,5 @@ func Start() {
 func Stop() {
 	//server.rest.Stop()
 	server.grpc.Stop()
-	server.cluster.Stop()
+	server.monitor.Stop()
 }

@@ -61,7 +61,7 @@ func (s *GRPCServer) MonitorPin(context.Context, *proto.MonitorRequest) (*proto.
 
 // MonitorInit ...
 func (s *GRPCServer) MonitorInit(ctx context.Context, req *proto.MonitorInitRequest) (*proto.MonitorReply, error) {
-	log.Println("monitor init call")
+	log.Println("client init call")
 	monitor := config.MustMonitor(req.StartMode, req.Secret, req.Bootstrap, req.Workspace)
 	log.Printf("%+v", monitor)
 	config.SetMonitor(monitor)
@@ -73,10 +73,10 @@ func (s *GRPCServer) MonitorInit(ctx context.Context, req *proto.MonitorInitRequ
 			Detail:  "",
 		}, nil
 	}
-	err := server.cluster.InitMaker(monitor)
+	err := server.monitor.InitMaker(monitor)
 	if err != nil {
 		log.Println(err)
-		return nil, xerrors.Errorf("monitor init %w", err)
+		return nil, xerrors.Errorf("client init %w", err)
 	}
 	return Result("")
 }
@@ -86,10 +86,10 @@ func (s *GRPCServer) MonitorProc(ctx context.Context, req *proto.MonitorProcRequ
 	if req.Type == proto.MonitorType_Init {
 		return &proto.MonitorReply{}, nil
 	} else if req.Type == proto.MonitorType_Reset {
-		err := server.cluster.Reset()
+		err := server.monitor.Reset()
 		if err != nil {
 			log.Println(err)
-			return nil, xerrors.Errorf("monitor proc %w", err)
+			return nil, xerrors.Errorf("client proc %w", err)
 		}
 	}
 	return Result("")
@@ -119,7 +119,7 @@ func NewGRPCServer(cfg *config.Configure) *GRPCServer {
 		server: grpc.NewServer(),
 		Type:   config.DefaultString("", GRPCType),
 		Port:   config.DefaultString("", ":7784"),
-		Path:   config.DefaultString("", "/tmp/monitor.sock"),
+		Path:   config.DefaultString("", "/tmp/client.sock"),
 	}
 }
 
@@ -184,7 +184,7 @@ func NewMonitorGRPC(cfg *config.Configure) *GRPCClient {
 		config: cfg,
 		Type:   config.DefaultString(cfg.Monitor.Type, GRPCType),
 		Port:   config.DefaultString(cfg.Monitor.Port, ":7784"),
-		Addr:   config.DefaultString(cfg.Monitor.Addr, "/tmp/monitor.sock"),
+		Addr:   config.DefaultString(cfg.Monitor.Addr, "/tmp/client.sock"),
 	}
 }
 
@@ -193,7 +193,7 @@ func NewServerMonitorGRPC(cfg *config.Monitor) *GRPCClient {
 	return &GRPCClient{
 		Type: config.DefaultString(cfg.Type, GRPCType),
 		Port: config.DefaultString(cfg.Port, ":7774"),
-		Addr: config.DefaultString(cfg.Addr, "/tmp/server-monitor.sock"),
+		Addr: config.DefaultString(cfg.Addr, "/tmp/server-client.sock"),
 	}
 }
 

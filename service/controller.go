@@ -37,22 +37,22 @@ func InitPost(ver string) gin.HandlerFunc {
 		//clusterSecret := ctx.PostForm("CLUSTER_SECRET")
 		//ipfs := ctx.PostForm("IPFS_PATH")
 		//service := ctx.PostForm("IPFS_CLUSTER_PATH")
-		////monitor := ctx.PostForm("IPFS_CLUSTER_MONITOR")
-		//if !cluster {
+		////client := ctx.PostForm("IPFS_CLUSTER_MONITOR")
+		//if !monitor {
 		//	if remote != "" {
-		//		cluster.Config().SetClient(remote)
-		//		cluster.Config().MonitorSecret = secret
+		//		monitor.Config().SetClient(remote)
+		//		monitor.Config().MonitorSecret = secret
 		//	} else {
-		//		cluster.Config().MonitorSecret = prefix + cluster.GenerateRandomString(64)
+		//		monitor.Config().MonitorSecret = prefix + monitor.GenerateRandomString(64)
 		//	}
-		//	cluster.Config().SetEnv(cluster.EnvironSecret(clusterSecret))
-		//	cluster.Config().SetEnv(cluster.EnvironIPFS(ipfs))
-		//	cluster.Config().SetEnv(cluster.EnvironService(service))
-		//	cluster.Config().Make()
-		//	cluster.Default().SetStatus("init", cluster.StatusCreated)
+		//	monitor.Config().SetEnv(monitor.EnvironSecret(clusterSecret))
+		//	monitor.Config().SetEnv(monitor.EnvironIPFS(ipfs))
+		//	monitor.Config().SetEnv(monitor.EnvironService(service))
+		//	monitor.Config().Make()
+		//	monitor.Default().SetStatus("init", monitor.StatusCreated)
 		//
 		//	log.Println("host initialized")
-		//	success(ctx, cluster.Config())
+		//	success(ctx, monitor.Config())
 		//	return
 		//}
 
@@ -140,11 +140,11 @@ func ResetGet(ver string) gin.HandlerFunc {
 func DeleteGet(s string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		//pn := ctx.Param("pn")
-		//peers := cluster.GetPeers()
+		//peers := monitor.GetPeers()
 		//size := len(peers)
 		//for i := 0; i < size; i++ {
 		//	if peers[0].Peername == pn {
-		//		err := cluster.DeletePeers(peers[0].ID)
+		//		err := monitor.DeletePeers(peers[0].ID)
 		//		if err != nil {
 		//			failed(ctx, err.Error())
 		//			return
@@ -186,7 +186,7 @@ func JoinPost(ver string) gin.HandlerFunc {
 		if address == "" {
 			address = ctx.Request.RemoteAddr
 		}
-		//cluster.AddMySon(name, address)
+		//monitor.AddMySon(name, address)
 		success(ctx, gin.H{})
 	}
 }

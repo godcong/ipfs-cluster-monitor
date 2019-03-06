@@ -22,7 +22,7 @@ type Swarm struct {
 	address map[string]string
 }
 
-// PinAdd ...
+// Pin ...
 type Pin struct {
 	sync.RWMutex
 	pins map[string]string
@@ -68,6 +68,7 @@ type Monitor struct {
 	monitorServer proto.ClusterMonitorClient
 }
 
+// Mode ...
 func (m *Monitor) Mode() proto.StartMode {
 	if m.config != nil {
 		return m.config.Monitor.Mode
@@ -126,7 +127,7 @@ func (m *Monitor) waitingForInitialize(ctx context.Context) bool {
 
 // InitMaker ...
 func (m *Monitor) InitMaker(monitor *config.Monitor) error {
-	log.Printf("monitor:%+v", *monitor)
+	log.Printf("client:%+v", *monitor)
 	config.SetMonitor(monitor)
 	err := cluster.InitMaker(m.config)
 	if err == nil {
@@ -164,7 +165,7 @@ func (m *Monitor) Start() {
 
 			if m.Mode() == proto.StartMode_Cluster {
 				if cluster.InitRunning(filepath.Join(m.config.Monitor.Workspace, config.ClusterTmp)) {
-					log.Println("init ipfs cluster")
+					log.Println("init ipfs monitor")
 					err := cluster.RunServiceInit(ctx, m.config)
 					if err != nil {
 						log.Error(err)
@@ -217,7 +218,7 @@ func (m *Monitor) Address(ctx context.Context) {
 	}()
 }
 
-// HandleAddress ...
+// HandleGRPCAddress ...
 func (m *Monitor) HandleGRPCAddress(ctx context.Context) {
 	go func() {
 		for {
@@ -251,7 +252,7 @@ func (m *Monitor) HandleAddress(ctx context.Context) {
 			case <-ctx.Done():
 				return
 			default:
-				resp, e := http.Get("http://cluster.dvbox.net/v0/monitor/address")
+				resp, e := http.Get("http://monitor.dvbox.net/v0/client/address")
 				if e == nil {
 					bytes, e := ioutil.ReadAll(resp.Body)
 					if e == nil {
@@ -279,6 +280,7 @@ type PinsRes struct {
 	Detail  map[string]string `json:"detail"`
 }
 
+// RangePins ...
 func RangePins(pins map[string]string) {
 	for v := range pins {
 		log.Info("pin add:", pins)
@@ -313,7 +315,7 @@ func (m *Monitor) Pins(ctx context.Context) {
 	}()
 }
 
-// HandlePins ...
+// HandleGRPCPins ...
 func (m *Monitor) HandleGRPCPins(ctx context.Context) {
 	go func() {
 		for {
@@ -344,7 +346,7 @@ func (m *Monitor) HandlePins(ctx context.Context) {
 			case <-ctx.Done():
 				return
 			default:
-				resp, e := http.Get("http://cluster.dvbox.net/v0/monitor/pins")
+				resp, e := http.Get("http://monitor.dvbox.net/v0/client/pins")
 				if e == nil {
 					bytes, e := ioutil.ReadAll(resp.Body)
 					if e == nil {
@@ -377,7 +379,7 @@ func (m *Monitor) Stop() {
 func clear(path string) {
 	log.Println("clear", path)
 	err := os.RemoveAll(path)
-	//err := cluster.RunCMD("rm", env,	"-R", path)
+	//err := monitor.RunCMD("rm", env,	"-R", path)
 	if err != nil {
 		log.Println(err)
 	}
