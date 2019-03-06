@@ -65,9 +65,9 @@ func InitLogger(logPath string, level string) {
 	_ = os.MkdirAll(dir, os.ModePerm)
 	writer, err := rotatelogs.New(
 		dir+"%Y%m%d%H%M_"+fname,
-		rotatelogs.WithLinkName(logPath),           // 生成软链，指向最新日志文件
-		rotatelogs.WithMaxAge(7*24*time.Hour),      // 文件最大保存时间
-		rotatelogs.WithRotationTime(3*time.Minute), // 日志切割时间间隔
+		rotatelogs.WithLinkName(logPath),          // 生成软链，指向最新日志文件
+		rotatelogs.WithMaxAge(7*24*time.Hour),     // 文件最大保存时间
+		rotatelogs.WithRotationTime(24*time.Hour), // 日志切割时间间隔
 	)
 	if err != nil {
 		log.Errorf("config local file system logger error. %v", errors.WithStack(err))

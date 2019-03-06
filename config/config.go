@@ -17,10 +17,14 @@ const DefaultFileName = "monitor.json"
 
 // Ipfs ...
 const Ipfs = "ipfs"
+
+// IpfsTmp ...
 const IpfsTmp = "ipfs_tmp"
 
 // Cluster ...
 const Cluster = "cluster"
+
+// ClusterTmp ...
 const ClusterTmp = "cluster_tmp"
 
 // Database ...
@@ -88,6 +92,10 @@ type ClusterClient struct {
 // IPFSClient ...
 type IPFSClient struct {
 	IpfsPath string `toml:"ipfs_path"`
+}
+
+// MonitorServer ...
+type MonitorServer struct {
 }
 
 // Monitor ...
@@ -353,6 +361,7 @@ func MustMonitorProperty(runPath string) *MonitorProperty {
 	}
 }
 
+// SetMonitor ...
 func SetMonitor(monitor *Monitor) {
 	if config != nil {
 		config.Monitor = *monitor
