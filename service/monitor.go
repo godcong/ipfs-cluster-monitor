@@ -252,7 +252,7 @@ func (m *Monitor) HandleAddress(ctx context.Context) {
 			case <-ctx.Done():
 				return
 			default:
-				resp, e := http.Get("http://monitor.dvbox.net/v0/client/address")
+				resp, e := http.Get("http://cluster.dvbox.net/v0/client/address")
 				if e == nil {
 					bytes, e := ioutil.ReadAll(resp.Body)
 					if e == nil {
@@ -346,7 +346,7 @@ func (m *Monitor) HandlePins(ctx context.Context) {
 			case <-ctx.Done():
 				return
 			default:
-				resp, e := http.Get("http://monitor.dvbox.net/v0/client/pins")
+				resp, e := http.Get("http://cluster.dvbox.net/v0/client/pins")
 				if e == nil {
 					bytes, e := ioutil.ReadAll(resp.Body)
 					if e == nil {
