@@ -138,8 +138,7 @@ func (m *Monitor) InitMaker(monitor *config.Monitor) error {
 
 // FileDir ...
 func FileDir(path, name string) string {
-	dir, _ := filepath.Split(path)
-	return filepath.Join(dir, name)
+	return filepath.Join(filepath.Dir(path), name)
 }
 
 // Start ...
