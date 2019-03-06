@@ -78,12 +78,6 @@ type HostInfo struct {
 	Version string `toml:"version"`
 }
 
-// Requester ...
-type Requester struct {
-	Type string `toml:"type"`
-	Host string `toml:"host"`
-}
-
 // ClusterClient ...
 type ClusterClient struct {
 	Secret      string   `toml:"secret"`
@@ -138,7 +132,6 @@ type Configure struct {
 	GRPC            GRPC            `toml:"grpc"`
 	REST            REST            `toml:"rest"`
 	IPFS            IPFS            `toml:"ipfs"`
-	Requester       Requester       `toml:"requester"`
 	Callback        Callback        `toml:"callback"`
 }
 
@@ -296,10 +289,9 @@ func DefaultConfig(runPath string) *Configure {
 			Path:   "",
 			Port:   "",
 		},
-		REST:      REST{},
-		IPFS:      IPFS{},
-		Requester: Requester{},
-		Callback:  Callback{},
+		REST:     REST{},
+		IPFS:     IPFS{},
+		Callback: Callback{},
 	}
 }
 

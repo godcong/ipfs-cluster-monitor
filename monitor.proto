@@ -71,8 +71,9 @@ message MonitorPinReply {
 
 enum MonitorType {
     Init = 0;
-    Reset = 1;
-    Info = 2;
+    Info = 1;
+    Reset = 2;
+    Change = 3;
 }
 
 message MonitorProcRequest {
@@ -80,6 +81,7 @@ message MonitorProcRequest {
     string boot_strap = 2;
     string secret = 3;
     string workspace = 4;
+    string max_size = 5;
 }
 
 message MonitorCensorRequest {

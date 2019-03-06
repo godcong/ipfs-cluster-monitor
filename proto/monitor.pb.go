@@ -22,10 +22,8 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
-// ManagerType ...
 type ManagerType int32
 
-// ManagerType_BootstrapAdd ...
 const (
 	ManagerType_BootstrapAdd    ManagerType = 0
 	ManagerType_BootstrapRemove ManagerType = 1
@@ -33,7 +31,6 @@ const (
 	ManagerType_PinRemove       ManagerType = 3
 )
 
-// ManagerType_name ...
 var ManagerType_name = map[int32]string{
 	0: "BootstrapAdd",
 	1: "BootstrapRemove",
@@ -41,7 +38,6 @@ var ManagerType_name = map[int32]string{
 	3: "PinRemove",
 }
 
-// ManagerType_value ...
 var ManagerType_value = map[string]int32{
 	"BootstrapAdd":    0,
 	"BootstrapRemove": 1,
@@ -49,130 +45,101 @@ var ManagerType_value = map[string]int32{
 	"PinRemove":       3,
 }
 
-// String ...
 func (x ManagerType) String() string {
 	return proto.EnumName(ManagerType_name, int32(x))
 }
 
-// EnumDescriptor ...
 func (ManagerType) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_44174b7b2a306b71, []int{0}
 }
 
-// StartMode ...
 type StartMode int32
 
-// StartMode_Cluster ...
 const (
 	StartMode_Cluster StartMode = 0
 	StartMode_Simple  StartMode = 1
 )
 
-// StartMode_name ...
 var StartMode_name = map[int32]string{
 	0: "Cluster",
 	1: "Simple",
 }
 
-// StartMode_value ...
 var StartMode_value = map[string]int32{
 	"Cluster": 0,
 	"Simple":  1,
 }
 
-// String ...
 func (x StartMode) String() string {
 	return proto.EnumName(StartMode_name, int32(x))
 }
 
-// EnumDescriptor ...
 func (StartMode) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_44174b7b2a306b71, []int{1}
 }
 
-// MonitorType ...
 type MonitorType int32
 
-// MonitorType_Init ...
 const (
-	MonitorType_Init  MonitorType = 0
-	MonitorType_Reset MonitorType = 1
-	MonitorType_Info  MonitorType = 2
+	MonitorType_Init   MonitorType = 0
+	MonitorType_Info   MonitorType = 1
+	MonitorType_Reset  MonitorType = 2
+	MonitorType_Change MonitorType = 3
 )
 
-// MonitorType_name ...
 var MonitorType_name = map[int32]string{
 	0: "Init",
-	1: "Reset",
-	2: "Info",
+	1: "Info",
+	2: "Reset",
+	3: "Change",
 }
 
-// MonitorType_value ...
 var MonitorType_value = map[string]int32{
-	"Init":  0,
-	"Reset": 1,
-	"Info":  2,
+	"Init":   0,
+	"Info":   1,
+	"Reset":  2,
+	"Change": 3,
 }
 
-// String ...
 func (x MonitorType) String() string {
 	return proto.EnumName(MonitorType_name, int32(x))
 }
 
-// EnumDescriptor ...
 func (MonitorType) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_44174b7b2a306b71, []int{2}
 }
 
-// MonitorRequest ...
 type MonitorRequest struct {
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-// Reset ...
-func (m *MonitorRequest) Reset() { *m = MonitorRequest{} }
-
-// String ...
+func (m *MonitorRequest) Reset()         { *m = MonitorRequest{} }
 func (m *MonitorRequest) String() string { return proto.CompactTextString(m) }
-
-// ProtoMessage ...
-func (*MonitorRequest) ProtoMessage() {}
-
-// Descriptor ...
+func (*MonitorRequest) ProtoMessage()    {}
 func (*MonitorRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_44174b7b2a306b71, []int{0}
 }
 
-// XXX_Unmarshal ...
 func (m *MonitorRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MonitorRequest.Unmarshal(m, b)
 }
-
-// XXX_Marshal ...
 func (m *MonitorRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_MonitorRequest.Marshal(b, m, deterministic)
 }
-
-// XXX_Merge ...
 func (m *MonitorRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MonitorRequest.Merge(m, src)
 }
-
-// XXX_Size ...
 func (m *MonitorRequest) XXX_Size() int {
 	return xxx_messageInfo_MonitorRequest.Size(m)
 }
-
-// XXX_DiscardUnknown ...
 func (m *MonitorRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_MonitorRequest.DiscardUnknown(m)
 }
 
 var xxx_messageInfo_MonitorRequest proto.InternalMessageInfo
 
-// MonitorManagerRequest ...
 type MonitorManagerRequest struct {
 	Type                 ManagerType `protobuf:"varint,1,opt,name=type,proto3,enum=proto.ManagerType" json:"type,omitempty"`
 	Data                 []string    `protobuf:"bytes,2,rep,name=data,proto3" json:"data,omitempty"`
@@ -181,48 +148,31 @@ type MonitorManagerRequest struct {
 	XXX_sizecache        int32       `json:"-"`
 }
 
-// Reset ...
-func (m *MonitorManagerRequest) Reset() { *m = MonitorManagerRequest{} }
-
-// String ...
+func (m *MonitorManagerRequest) Reset()         { *m = MonitorManagerRequest{} }
 func (m *MonitorManagerRequest) String() string { return proto.CompactTextString(m) }
-
-// ProtoMessage ...
-func (*MonitorManagerRequest) ProtoMessage() {}
-
-// Descriptor ...
+func (*MonitorManagerRequest) ProtoMessage()    {}
 func (*MonitorManagerRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_44174b7b2a306b71, []int{1}
 }
 
-// XXX_Unmarshal ...
 func (m *MonitorManagerRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MonitorManagerRequest.Unmarshal(m, b)
 }
-
-// XXX_Marshal ...
 func (m *MonitorManagerRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_MonitorManagerRequest.Marshal(b, m, deterministic)
 }
-
-// XXX_Merge ...
 func (m *MonitorManagerRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MonitorManagerRequest.Merge(m, src)
 }
-
-// XXX_Size ...
 func (m *MonitorManagerRequest) XXX_Size() int {
 	return xxx_messageInfo_MonitorManagerRequest.Size(m)
 }
-
-// XXX_DiscardUnknown ...
 func (m *MonitorManagerRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_MonitorManagerRequest.DiscardUnknown(m)
 }
 
 var xxx_messageInfo_MonitorManagerRequest proto.InternalMessageInfo
 
-// GetType ...
 func (m *MonitorManagerRequest) GetType() ManagerType {
 	if m != nil {
 		return m.Type
@@ -230,7 +180,6 @@ func (m *MonitorManagerRequest) GetType() ManagerType {
 	return ManagerType_BootstrapAdd
 }
 
-// GetData ...
 func (m *MonitorManagerRequest) GetData() []string {
 	if m != nil {
 		return m.Data
@@ -238,7 +187,6 @@ func (m *MonitorManagerRequest) GetData() []string {
 	return nil
 }
 
-// MonitorInitRequest ...
 type MonitorInitRequest struct {
 	StartMode            StartMode `protobuf:"varint,1,opt,name=start_mode,json=startMode,proto3,enum=proto.StartMode" json:"start_mode,omitempty"`
 	Host                 string    `protobuf:"bytes,2,opt,name=host,proto3" json:"host,omitempty"`
@@ -250,48 +198,31 @@ type MonitorInitRequest struct {
 	XXX_sizecache        int32     `json:"-"`
 }
 
-// Reset ...
-func (m *MonitorInitRequest) Reset() { *m = MonitorInitRequest{} }
-
-// String ...
+func (m *MonitorInitRequest) Reset()         { *m = MonitorInitRequest{} }
 func (m *MonitorInitRequest) String() string { return proto.CompactTextString(m) }
-
-// ProtoMessage ...
-func (*MonitorInitRequest) ProtoMessage() {}
-
-// Descriptor ...
+func (*MonitorInitRequest) ProtoMessage()    {}
 func (*MonitorInitRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_44174b7b2a306b71, []int{2}
 }
 
-// XXX_Unmarshal ...
 func (m *MonitorInitRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MonitorInitRequest.Unmarshal(m, b)
 }
-
-// XXX_Marshal ...
 func (m *MonitorInitRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_MonitorInitRequest.Marshal(b, m, deterministic)
 }
-
-// XXX_Merge ...
 func (m *MonitorInitRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MonitorInitRequest.Merge(m, src)
 }
-
-// XXX_Size ...
 func (m *MonitorInitRequest) XXX_Size() int {
 	return xxx_messageInfo_MonitorInitRequest.Size(m)
 }
-
-// XXX_DiscardUnknown ...
 func (m *MonitorInitRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_MonitorInitRequest.DiscardUnknown(m)
 }
 
 var xxx_messageInfo_MonitorInitRequest proto.InternalMessageInfo
 
-// GetStartMode ...
 func (m *MonitorInitRequest) GetStartMode() StartMode {
 	if m != nil {
 		return m.StartMode
@@ -299,7 +230,6 @@ func (m *MonitorInitRequest) GetStartMode() StartMode {
 	return StartMode_Cluster
 }
 
-// GetHost ...
 func (m *MonitorInitRequest) GetHost() string {
 	if m != nil {
 		return m.Host
@@ -307,7 +237,6 @@ func (m *MonitorInitRequest) GetHost() string {
 	return ""
 }
 
-// GetBootstrap ...
 func (m *MonitorInitRequest) GetBootstrap() string {
 	if m != nil {
 		return m.Bootstrap
@@ -315,7 +244,6 @@ func (m *MonitorInitRequest) GetBootstrap() string {
 	return ""
 }
 
-// GetSecret ...
 func (m *MonitorInitRequest) GetSecret() string {
 	if m != nil {
 		return m.Secret
@@ -323,7 +251,6 @@ func (m *MonitorInitRequest) GetSecret() string {
 	return ""
 }
 
-// GetWorkspace ...
 func (m *MonitorInitRequest) GetWorkspace() string {
 	if m != nil {
 		return m.Workspace
@@ -331,7 +258,6 @@ func (m *MonitorInitRequest) GetWorkspace() string {
 	return ""
 }
 
-// MonitorBootstrapReply ...
 type MonitorBootstrapReply struct {
 	Bootstraps           []string `protobuf:"bytes,1,rep,name=bootstraps,proto3" json:"bootstraps,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -339,48 +265,31 @@ type MonitorBootstrapReply struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-// Reset ...
-func (m *MonitorBootstrapReply) Reset() { *m = MonitorBootstrapReply{} }
-
-// String ...
+func (m *MonitorBootstrapReply) Reset()         { *m = MonitorBootstrapReply{} }
 func (m *MonitorBootstrapReply) String() string { return proto.CompactTextString(m) }
-
-// ProtoMessage ...
-func (*MonitorBootstrapReply) ProtoMessage() {}
-
-// Descriptor ...
+func (*MonitorBootstrapReply) ProtoMessage()    {}
 func (*MonitorBootstrapReply) Descriptor() ([]byte, []int) {
 	return fileDescriptor_44174b7b2a306b71, []int{3}
 }
 
-// XXX_Unmarshal ...
 func (m *MonitorBootstrapReply) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MonitorBootstrapReply.Unmarshal(m, b)
 }
-
-// XXX_Marshal ...
 func (m *MonitorBootstrapReply) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_MonitorBootstrapReply.Marshal(b, m, deterministic)
 }
-
-// XXX_Merge ...
 func (m *MonitorBootstrapReply) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MonitorBootstrapReply.Merge(m, src)
 }
-
-// XXX_Size ...
 func (m *MonitorBootstrapReply) XXX_Size() int {
 	return xxx_messageInfo_MonitorBootstrapReply.Size(m)
 }
-
-// XXX_DiscardUnknown ...
 func (m *MonitorBootstrapReply) XXX_DiscardUnknown() {
 	xxx_messageInfo_MonitorBootstrapReply.DiscardUnknown(m)
 }
 
 var xxx_messageInfo_MonitorBootstrapReply proto.InternalMessageInfo
 
-// GetBootstraps ...
 func (m *MonitorBootstrapReply) GetBootstraps() []string {
 	if m != nil {
 		return m.Bootstraps
@@ -388,7 +297,6 @@ func (m *MonitorBootstrapReply) GetBootstraps() []string {
 	return nil
 }
 
-// MonitorAddressReply ...
 type MonitorAddressReply struct {
 	Addresses            []string `protobuf:"bytes,1,rep,name=addresses,proto3" json:"addresses,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -396,48 +304,31 @@ type MonitorAddressReply struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-// Reset ...
-func (m *MonitorAddressReply) Reset() { *m = MonitorAddressReply{} }
-
-// String ...
+func (m *MonitorAddressReply) Reset()         { *m = MonitorAddressReply{} }
 func (m *MonitorAddressReply) String() string { return proto.CompactTextString(m) }
-
-// ProtoMessage ...
-func (*MonitorAddressReply) ProtoMessage() {}
-
-// Descriptor ...
+func (*MonitorAddressReply) ProtoMessage()    {}
 func (*MonitorAddressReply) Descriptor() ([]byte, []int) {
 	return fileDescriptor_44174b7b2a306b71, []int{4}
 }
 
-// XXX_Unmarshal ...
 func (m *MonitorAddressReply) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MonitorAddressReply.Unmarshal(m, b)
 }
-
-// XXX_Marshal ...
 func (m *MonitorAddressReply) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_MonitorAddressReply.Marshal(b, m, deterministic)
 }
-
-// XXX_Merge ...
 func (m *MonitorAddressReply) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MonitorAddressReply.Merge(m, src)
 }
-
-// XXX_Size ...
 func (m *MonitorAddressReply) XXX_Size() int {
 	return xxx_messageInfo_MonitorAddressReply.Size(m)
 }
-
-// XXX_DiscardUnknown ...
 func (m *MonitorAddressReply) XXX_DiscardUnknown() {
 	xxx_messageInfo_MonitorAddressReply.DiscardUnknown(m)
 }
 
 var xxx_messageInfo_MonitorAddressReply proto.InternalMessageInfo
 
-// GetAddresses ...
 func (m *MonitorAddressReply) GetAddresses() []string {
 	if m != nil {
 		return m.Addresses
@@ -445,7 +336,6 @@ func (m *MonitorAddressReply) GetAddresses() []string {
 	return nil
 }
 
-// MonitorPinReply ...
 type MonitorPinReply struct {
 	Pins                 []string `protobuf:"bytes,1,rep,name=pins,proto3" json:"pins,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -453,48 +343,31 @@ type MonitorPinReply struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-// Reset ...
-func (m *MonitorPinReply) Reset() { *m = MonitorPinReply{} }
-
-// String ...
+func (m *MonitorPinReply) Reset()         { *m = MonitorPinReply{} }
 func (m *MonitorPinReply) String() string { return proto.CompactTextString(m) }
-
-// ProtoMessage ...
-func (*MonitorPinReply) ProtoMessage() {}
-
-// Descriptor ...
+func (*MonitorPinReply) ProtoMessage()    {}
 func (*MonitorPinReply) Descriptor() ([]byte, []int) {
 	return fileDescriptor_44174b7b2a306b71, []int{5}
 }
 
-// XXX_Unmarshal ...
 func (m *MonitorPinReply) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MonitorPinReply.Unmarshal(m, b)
 }
-
-// XXX_Marshal ...
 func (m *MonitorPinReply) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_MonitorPinReply.Marshal(b, m, deterministic)
 }
-
-// XXX_Merge ...
 func (m *MonitorPinReply) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MonitorPinReply.Merge(m, src)
 }
-
-// XXX_Size ...
 func (m *MonitorPinReply) XXX_Size() int {
 	return xxx_messageInfo_MonitorPinReply.Size(m)
 }
-
-// XXX_DiscardUnknown ...
 func (m *MonitorPinReply) XXX_DiscardUnknown() {
 	xxx_messageInfo_MonitorPinReply.DiscardUnknown(m)
 }
 
 var xxx_messageInfo_MonitorPinReply proto.InternalMessageInfo
 
-// GetPins ...
 func (m *MonitorPinReply) GetPins() []string {
 	if m != nil {
 		return m.Pins
@@ -502,59 +375,42 @@ func (m *MonitorPinReply) GetPins() []string {
 	return nil
 }
 
-// MonitorProcRequest ...
 type MonitorProcRequest struct {
 	Type                 MonitorType `protobuf:"varint,1,opt,name=type,proto3,enum=proto.MonitorType" json:"type,omitempty"`
 	BootStrap            string      `protobuf:"bytes,2,opt,name=boot_strap,json=bootStrap,proto3" json:"boot_strap,omitempty"`
 	Secret               string      `protobuf:"bytes,3,opt,name=secret,proto3" json:"secret,omitempty"`
 	Workspace            string      `protobuf:"bytes,4,opt,name=workspace,proto3" json:"workspace,omitempty"`
+	MaxSize              string      `protobuf:"bytes,5,opt,name=max_size,json=maxSize,proto3" json:"max_size,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
 	XXX_unrecognized     []byte      `json:"-"`
 	XXX_sizecache        int32       `json:"-"`
 }
 
-// Reset ...
-func (m *MonitorProcRequest) Reset() { *m = MonitorProcRequest{} }
-
-// String ...
+func (m *MonitorProcRequest) Reset()         { *m = MonitorProcRequest{} }
 func (m *MonitorProcRequest) String() string { return proto.CompactTextString(m) }
-
-// ProtoMessage ...
-func (*MonitorProcRequest) ProtoMessage() {}
-
-// Descriptor ...
+func (*MonitorProcRequest) ProtoMessage()    {}
 func (*MonitorProcRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_44174b7b2a306b71, []int{6}
 }
 
-// XXX_Unmarshal ...
 func (m *MonitorProcRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MonitorProcRequest.Unmarshal(m, b)
 }
-
-// XXX_Marshal ...
 func (m *MonitorProcRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_MonitorProcRequest.Marshal(b, m, deterministic)
 }
-
-// XXX_Merge ...
 func (m *MonitorProcRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MonitorProcRequest.Merge(m, src)
 }
-
-// XXX_Size ...
 func (m *MonitorProcRequest) XXX_Size() int {
 	return xxx_messageInfo_MonitorProcRequest.Size(m)
 }
-
-// XXX_DiscardUnknown ...
 func (m *MonitorProcRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_MonitorProcRequest.DiscardUnknown(m)
 }
 
 var xxx_messageInfo_MonitorProcRequest proto.InternalMessageInfo
 
-// GetType ...
 func (m *MonitorProcRequest) GetType() MonitorType {
 	if m != nil {
 		return m.Type
@@ -562,7 +418,6 @@ func (m *MonitorProcRequest) GetType() MonitorType {
 	return MonitorType_Init
 }
 
-// GetBootStrap ...
 func (m *MonitorProcRequest) GetBootStrap() string {
 	if m != nil {
 		return m.BootStrap
@@ -570,7 +425,6 @@ func (m *MonitorProcRequest) GetBootStrap() string {
 	return ""
 }
 
-// GetSecret ...
 func (m *MonitorProcRequest) GetSecret() string {
 	if m != nil {
 		return m.Secret
@@ -578,7 +432,6 @@ func (m *MonitorProcRequest) GetSecret() string {
 	return ""
 }
 
-// GetWorkspace ...
 func (m *MonitorProcRequest) GetWorkspace() string {
 	if m != nil {
 		return m.Workspace
@@ -586,7 +439,13 @@ func (m *MonitorProcRequest) GetWorkspace() string {
 	return ""
 }
 
-// MonitorCensorRequest ...
+func (m *MonitorProcRequest) GetMaxSize() string {
+	if m != nil {
+		return m.MaxSize
+	}
+	return ""
+}
+
 type MonitorCensorRequest struct {
 	ID                   string   `protobuf:"bytes,1,opt,name=ID,proto3" json:"ID,omitempty"`
 	Detail               string   `protobuf:"bytes,2,opt,name=detail,proto3" json:"detail,omitempty"`
@@ -595,48 +454,31 @@ type MonitorCensorRequest struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-// Reset ...
-func (m *MonitorCensorRequest) Reset() { *m = MonitorCensorRequest{} }
-
-// String ...
+func (m *MonitorCensorRequest) Reset()         { *m = MonitorCensorRequest{} }
 func (m *MonitorCensorRequest) String() string { return proto.CompactTextString(m) }
-
-// ProtoMessage ...
-func (*MonitorCensorRequest) ProtoMessage() {}
-
-// Descriptor ...
+func (*MonitorCensorRequest) ProtoMessage()    {}
 func (*MonitorCensorRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_44174b7b2a306b71, []int{7}
 }
 
-// XXX_Unmarshal ...
 func (m *MonitorCensorRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MonitorCensorRequest.Unmarshal(m, b)
 }
-
-// XXX_Marshal ...
 func (m *MonitorCensorRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_MonitorCensorRequest.Marshal(b, m, deterministic)
 }
-
-// XXX_Merge ...
 func (m *MonitorCensorRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MonitorCensorRequest.Merge(m, src)
 }
-
-// XXX_Size ...
 func (m *MonitorCensorRequest) XXX_Size() int {
 	return xxx_messageInfo_MonitorCensorRequest.Size(m)
 }
-
-// XXX_DiscardUnknown ...
 func (m *MonitorCensorRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_MonitorCensorRequest.DiscardUnknown(m)
 }
 
 var xxx_messageInfo_MonitorCensorRequest proto.InternalMessageInfo
 
-// GetID ...
 func (m *MonitorCensorRequest) GetID() string {
 	if m != nil {
 		return m.ID
@@ -644,7 +486,6 @@ func (m *MonitorCensorRequest) GetID() string {
 	return ""
 }
 
-// GetDetail ...
 func (m *MonitorCensorRequest) GetDetail() string {
 	if m != nil {
 		return m.Detail
@@ -652,7 +493,6 @@ func (m *MonitorCensorRequest) GetDetail() string {
 	return ""
 }
 
-// MonitorReply ...
 type MonitorReply struct {
 	Code                 int32    `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
 	Message              string   `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
@@ -662,48 +502,31 @@ type MonitorReply struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-// Reset ...
-func (m *MonitorReply) Reset() { *m = MonitorReply{} }
-
-// String ...
+func (m *MonitorReply) Reset()         { *m = MonitorReply{} }
 func (m *MonitorReply) String() string { return proto.CompactTextString(m) }
-
-// ProtoMessage ...
-func (*MonitorReply) ProtoMessage() {}
-
-// Descriptor ...
+func (*MonitorReply) ProtoMessage()    {}
 func (*MonitorReply) Descriptor() ([]byte, []int) {
 	return fileDescriptor_44174b7b2a306b71, []int{8}
 }
 
-// XXX_Unmarshal ...
 func (m *MonitorReply) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MonitorReply.Unmarshal(m, b)
 }
-
-// XXX_Marshal ...
 func (m *MonitorReply) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_MonitorReply.Marshal(b, m, deterministic)
 }
-
-// XXX_Merge ...
 func (m *MonitorReply) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MonitorReply.Merge(m, src)
 }
-
-// XXX_Size ...
 func (m *MonitorReply) XXX_Size() int {
 	return xxx_messageInfo_MonitorReply.Size(m)
 }
-
-// XXX_DiscardUnknown ...
 func (m *MonitorReply) XXX_DiscardUnknown() {
 	xxx_messageInfo_MonitorReply.DiscardUnknown(m)
 }
 
 var xxx_messageInfo_MonitorReply proto.InternalMessageInfo
 
-// GetCode ...
 func (m *MonitorReply) GetCode() int32 {
 	if m != nil {
 		return m.Code
@@ -711,7 +534,6 @@ func (m *MonitorReply) GetCode() int32 {
 	return 0
 }
 
-// GetMessage ...
 func (m *MonitorReply) GetMessage() string {
 	if m != nil {
 		return m.Message
@@ -719,7 +541,6 @@ func (m *MonitorReply) GetMessage() string {
 	return ""
 }
 
-// GetDetail ...
 func (m *MonitorReply) GetDetail() string {
 	if m != nil {
 		return m.Detail
@@ -745,45 +566,47 @@ func init() {
 func init() { proto.RegisterFile("monitor.proto", fileDescriptor_44174b7b2a306b71) }
 
 var fileDescriptor_44174b7b2a306b71 = []byte{
-	// 598 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x54, 0x5d, 0x6f, 0xd3, 0x30,
-	0x14, 0xcd, 0x57, 0x37, 0x72, 0xb7, 0x75, 0xd1, 0x2d, 0x9b, 0xc2, 0x34, 0xa0, 0x8a, 0x00, 0x4d,
-	0x15, 0x2a, 0xd2, 0xf6, 0x00, 0x2f, 0x80, 0xd6, 0x8d, 0x87, 0x3e, 0x54, 0x54, 0xe9, 0xde, 0xa7,
-	0x2c, 0x31, 0x25, 0xa2, 0x89, 0x43, 0xec, 0x15, 0xf5, 0x67, 0xf0, 0x37, 0x90, 0xf8, 0x8f, 0xc8,
-	0x8e, 0x93, 0x3a, 0x91, 0x2a, 0x9e, 0x62, 0x9f, 0xeb, 0x73, 0x1c, 0x9f, 0x7b, 0x6c, 0x38, 0xca,
-	0x68, 0x9e, 0x72, 0x5a, 0x8e, 0x8b, 0x92, 0x72, 0x8a, 0x3d, 0xf9, 0x09, 0x3c, 0xe8, 0xcf, 0x2a,
-	0x3c, 0x24, 0x3f, 0x1f, 0x09, 0xe3, 0xc1, 0x02, 0x4e, 0x14, 0x32, 0x8b, 0xf2, 0x68, 0x49, 0xea,
-	0x02, 0xbe, 0x01, 0x87, 0x6f, 0x0a, 0xe2, 0x9b, 0x43, 0xf3, 0xa2, 0x7f, 0x89, 0x95, 0xce, 0x58,
-	0x2d, 0xba, 0xdb, 0x14, 0x24, 0x94, 0x75, 0x44, 0x70, 0x92, 0x88, 0x47, 0xbe, 0x35, 0xb4, 0x2f,
-	0xdc, 0x50, 0x8e, 0x83, 0xbf, 0x26, 0xa0, 0x52, 0x9d, 0xe6, 0x29, 0xaf, 0x25, 0xdf, 0x01, 0x30,
-	0x1e, 0x95, 0xfc, 0x3e, 0xa3, 0x49, 0x2d, 0xec, 0x29, 0xe1, 0x85, 0x28, 0xcc, 0x68, 0x42, 0x42,
-	0x97, 0xd5, 0x43, 0xa1, 0xfd, 0x9d, 0x32, 0xee, 0x5b, 0x43, 0x53, 0x68, 0x8b, 0x31, 0x9e, 0x83,
-	0xfb, 0x40, 0x29, 0x67, 0xbc, 0x8c, 0x0a, 0xdf, 0x96, 0x85, 0x2d, 0x80, 0xa7, 0xb0, 0xc7, 0x48,
-	0x5c, 0x12, 0xee, 0x3b, 0xb2, 0xa4, 0x66, 0x82, 0xf5, 0x8b, 0x96, 0x3f, 0x58, 0x11, 0xc5, 0xc4,
-	0xef, 0x55, 0xac, 0x06, 0x08, 0xde, 0x37, 0x26, 0x4c, 0x6a, 0xa5, 0x90, 0x14, 0xab, 0x0d, 0xbe,
-	0x00, 0x68, 0xb4, 0x99, 0x6f, 0xca, 0x23, 0x6a, 0x48, 0x70, 0x05, 0x03, 0x45, 0xbc, 0x4e, 0x92,
-	0x92, 0x30, 0x56, 0xd1, 0xce, 0xc1, 0x8d, 0xaa, 0x39, 0xa9, 0x59, 0x5b, 0x20, 0x78, 0x0d, 0xc7,
-	0x8a, 0x34, 0x4f, 0xf3, 0x8a, 0x80, 0xe0, 0x14, 0x69, 0x5e, 0xaf, 0x95, 0xe3, 0xe0, 0xf7, 0xd6,
-	0xc4, 0x79, 0x49, 0xe3, 0xff, 0xf4, 0xa5, 0x5a, 0xa8, 0xf5, 0xe5, 0x79, 0xf5, 0xeb, 0xf7, 0x95,
-	0x51, 0xd6, 0xd6, 0xa8, 0x45, 0xc7, 0x28, 0x7b, 0xb7, 0x51, 0x4e, 0xd7, 0xa8, 0x4f, 0xf0, 0x54,
-	0xed, 0x74, 0x43, 0x72, 0xd6, 0xa4, 0x08, 0xfb, 0x60, 0x4d, 0x6f, 0xe5, 0x2f, 0xb9, 0xa1, 0x35,
-	0xbd, 0x15, 0xea, 0x09, 0xe1, 0x51, 0xba, 0x52, 0x1b, 0xab, 0x59, 0x70, 0x07, 0x87, 0x4d, 0xfe,
-	0xd4, 0xb9, 0xe3, 0x3a, 0x0b, 0xbd, 0x50, 0x8e, 0xd1, 0x87, 0xfd, 0x8c, 0x30, 0x16, 0x2d, 0x89,
-	0x22, 0xd7, 0x53, 0x4d, 0xd5, 0xd6, 0x55, 0x47, 0x5f, 0xe1, 0x40, 0xcb, 0x25, 0x7a, 0x70, 0xd8,
-	0xb4, 0xf1, 0x3a, 0x49, 0x3c, 0x03, 0x07, 0x70, 0xac, 0x35, 0x36, 0xa3, 0x6b, 0xe2, 0x99, 0x08,
-	0xb0, 0x37, 0x4f, 0x73, 0xb1, 0xc0, 0xc2, 0x23, 0x70, 0x65, 0x2f, 0x64, 0xc9, 0x1e, 0xbd, 0x02,
-	0xb7, 0xc9, 0x23, 0x1e, 0xc0, 0xfe, 0xcd, 0xea, 0x91, 0x71, 0x52, 0x7a, 0x86, 0x20, 0x2d, 0xd2,
-	0xac, 0x58, 0x11, 0xcf, 0x1c, 0xbd, 0x85, 0x03, 0xcd, 0x76, 0x7c, 0x02, 0x8e, 0x08, 0xbb, 0x67,
-	0xa0, 0x0b, 0xbd, 0x90, 0x30, 0xc2, 0x3d, 0xb3, 0x02, 0xbf, 0x51, 0xcf, 0xba, 0xfc, 0x63, 0x43,
-	0x5f, 0xe9, 0x28, 0x16, 0x7e, 0x6e, 0x04, 0x04, 0x11, 0x9f, 0xb5, 0x7b, 0xa9, 0xdd, 0x9c, 0xb3,
-	0x41, 0xbb, 0x24, 0xcd, 0x0b, 0x0c, 0x4d, 0x40, 0x24, 0xa4, 0x2b, 0xa0, 0xa5, 0x66, 0x97, 0xc0,
-	0x97, 0xe6, 0x3d, 0x50, 0xf9, 0xc5, 0x93, 0xee, 0xc2, 0x8a, 0x7f, 0xd6, 0x86, 0xf5, 0xb4, 0x07,
-	0x06, 0x4e, 0xc1, 0xeb, 0xde, 0x9f, 0x5d, 0x42, 0xe7, 0x6d, 0xb8, 0x7d, 0xdf, 0x02, 0x03, 0x3f,
-	0x02, 0x6c, 0x2f, 0xc7, 0x2e, 0x91, 0xd3, 0xce, 0x41, 0xd5, 0x35, 0x6a, 0x1d, 0x48, 0x25, 0x02,
-	0x3b, 0x1b, 0xb6, 0x5f, 0xb9, 0x1d, 0xbe, 0x4c, 0x3e, 0xc0, 0xcb, 0x98, 0x66, 0xe3, 0xf5, 0x2a,
-	0x5a, 0x97, 0xe3, 0x25, 0x4d, 0x62, 0x9a, 0x2f, 0xc7, 0xad, 0x17, 0x75, 0x32, 0x68, 0x37, 0x73,
-	0x2e, 0xc0, 0xb9, 0xf9, 0xb0, 0x27, 0xab, 0x57, 0xff, 0x02, 0x00, 0x00, 0xff, 0xff, 0x2f, 0xec,
-	0xaa, 0xfe, 0x80, 0x05, 0x00, 0x00,
+	// 627 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x94, 0x4d, 0x4f, 0xdb, 0x4c,
+	0x10, 0xc7, 0x63, 0x3b, 0x01, 0x3c, 0x40, 0x58, 0x4d, 0x1e, 0x90, 0x41, 0x3c, 0x2d, 0x5a, 0xb5,
+	0x15, 0xe2, 0x90, 0x4a, 0x70, 0x28, 0x97, 0xb6, 0xe2, 0xa5, 0x87, 0x1c, 0x50, 0x23, 0x87, 0x3b,
+	0x5a, 0xe2, 0x6d, 0xb0, 0x1a, 0x7b, 0x5d, 0xef, 0x42, 0x09, 0x1f, 0xa9, 0x6a, 0xbf, 0x63, 0xb5,
+	0xeb, 0xb5, 0x63, 0x5b, 0x8a, 0x7a, 0xf2, 0xec, 0xcc, 0xce, 0xcf, 0xbb, 0xff, 0x99, 0x59, 0xd8,
+	0x4e, 0x44, 0x1a, 0x2b, 0x91, 0x0f, 0xb3, 0x5c, 0x28, 0x81, 0x3d, 0xf3, 0xa1, 0x04, 0xfa, 0x37,
+	0x85, 0x3f, 0xe4, 0x3f, 0x1e, 0xb9, 0x54, 0x74, 0x02, 0xbb, 0xd6, 0x73, 0xc3, 0x52, 0x36, 0xe3,
+	0x65, 0x00, 0xdf, 0x41, 0x57, 0x2d, 0x32, 0x1e, 0x38, 0x47, 0xce, 0x71, 0xff, 0x14, 0x0b, 0xce,
+	0xd0, 0x6e, 0xba, 0x5d, 0x64, 0x3c, 0x34, 0x71, 0x44, 0xe8, 0x46, 0x4c, 0xb1, 0xc0, 0x3d, 0xf2,
+	0x8e, 0xfd, 0xd0, 0xd8, 0xf4, 0x8f, 0x03, 0x68, 0xa9, 0xa3, 0x34, 0x56, 0x25, 0xf2, 0x3d, 0x80,
+	0x54, 0x2c, 0x57, 0x77, 0x89, 0x88, 0x4a, 0x30, 0xb1, 0xe0, 0x89, 0x0e, 0xdc, 0x88, 0x88, 0x87,
+	0xbe, 0x2c, 0x4d, 0xcd, 0x7e, 0x10, 0x52, 0x05, 0xee, 0x91, 0xa3, 0xd9, 0xda, 0xc6, 0x43, 0xf0,
+	0xef, 0x85, 0x50, 0x52, 0xe5, 0x2c, 0x0b, 0x3c, 0x13, 0x58, 0x3a, 0x70, 0x0f, 0xd6, 0x24, 0x9f,
+	0xe6, 0x5c, 0x05, 0x5d, 0x13, 0xb2, 0x2b, 0x9d, 0xf5, 0x53, 0xe4, 0xdf, 0x65, 0xc6, 0xa6, 0x3c,
+	0xe8, 0x15, 0x59, 0x95, 0x83, 0x7e, 0xa8, 0x44, 0xb8, 0x2c, 0x49, 0x21, 0xcf, 0xe6, 0x0b, 0x7c,
+	0x05, 0x50, 0xb1, 0x65, 0xe0, 0x98, 0x2b, 0xd6, 0x3c, 0xf4, 0x0c, 0x06, 0x36, 0xf1, 0x22, 0x8a,
+	0x72, 0x2e, 0x65, 0x91, 0x76, 0x08, 0x3e, 0x2b, 0xd6, 0xbc, 0xcc, 0x5a, 0x3a, 0xe8, 0x5b, 0xd8,
+	0xb1, 0x49, 0xe3, 0x38, 0x2d, 0x12, 0x10, 0xba, 0x59, 0x9c, 0x96, 0x7b, 0x8d, 0x4d, 0x7f, 0x2f,
+	0x45, 0x1c, 0xe7, 0x62, 0xfa, 0x8f, 0xba, 0x14, 0x1b, 0x6b, 0x75, 0xf9, 0xbf, 0x38, 0xfa, 0x5d,
+	0x21, 0x94, 0xbb, 0x14, 0x6a, 0xd2, 0x12, 0xca, 0x5b, 0x2d, 0x54, 0xb7, 0x25, 0x14, 0xee, 0xc3,
+	0x46, 0xc2, 0x9e, 0xef, 0x64, 0xfc, 0x52, 0xaa, 0xb8, 0x9e, 0xb0, 0xe7, 0x49, 0xfc, 0xc2, 0xe9,
+	0x27, 0xf8, 0xcf, 0x1e, 0xe2, 0x8a, 0xa7, 0xb2, 0x6a, 0x30, 0xec, 0x83, 0x3b, 0xba, 0x36, 0xa7,
+	0xf5, 0x43, 0x77, 0x74, 0xad, 0x7f, 0x1c, 0x71, 0xc5, 0xe2, 0xb9, 0x3d, 0x93, 0x5d, 0xd1, 0x5b,
+	0xd8, 0xaa, 0x5a, 0xd3, 0x4a, 0x32, 0x2d, 0xdb, 0xa4, 0x17, 0x1a, 0x1b, 0x03, 0x58, 0x4f, 0xb8,
+	0x94, 0x6c, 0xc6, 0x6d, 0x72, 0xb9, 0xac, 0x51, 0xbd, 0x3a, 0xf5, 0xe4, 0x2b, 0x6c, 0xd6, 0x5a,
+	0x16, 0x09, 0x6c, 0x55, 0x15, 0xbe, 0x88, 0x22, 0xd2, 0xc1, 0x01, 0xec, 0xd4, 0x6a, 0x9e, 0x88,
+	0x27, 0x4e, 0x1c, 0x04, 0x58, 0x1b, 0xc7, 0xa9, 0xde, 0xe0, 0xe2, 0x36, 0xf8, 0xa6, 0x4c, 0x26,
+	0xe4, 0x9d, 0xbc, 0x01, 0xbf, 0x6a, 0x55, 0xdc, 0x84, 0xf5, 0xab, 0xf9, 0xa3, 0x54, 0x3c, 0x27,
+	0x1d, 0x9d, 0x34, 0x89, 0x93, 0x6c, 0xce, 0x89, 0x73, 0x72, 0x0e, 0x9b, 0xb5, 0x8a, 0xe0, 0x06,
+	0x74, 0xf5, 0x1c, 0x90, 0x4e, 0x61, 0x7d, 0x13, 0xc4, 0x41, 0x1f, 0x7a, 0x21, 0x97, 0x5c, 0x11,
+	0x57, 0x67, 0x5e, 0x3d, 0xb0, 0x74, 0xc6, 0x89, 0x77, 0xfa, 0xcb, 0x83, 0xbe, 0x65, 0x5a, 0x02,
+	0x7e, 0xae, 0x60, 0x1a, 0x82, 0xfb, 0xcd, 0x92, 0xd7, 0x06, 0xec, 0x60, 0xd0, 0x0c, 0x19, 0x21,
+	0x69, 0xa7, 0x06, 0xd0, 0x8d, 0xd4, 0x06, 0xd4, 0x9a, 0x6b, 0x15, 0xe0, 0x4b, 0xf5, 0x6c, 0xd8,
+	0x36, 0xc7, 0xdd, 0xf6, 0xc6, 0x22, 0xff, 0xa0, 0xe9, 0xae, 0x0f, 0x05, 0xed, 0xe0, 0x08, 0x48,
+	0x7b, 0xcc, 0x56, 0x81, 0x0e, 0x9b, 0xee, 0xe6, 0x58, 0xd2, 0x0e, 0x7e, 0x04, 0x58, 0xce, 0xd0,
+	0x2a, 0xc8, 0x5e, 0xeb, 0xa2, 0x76, 0xda, 0x1a, 0x17, 0xb2, 0xdd, 0x81, 0xad, 0x1f, 0x36, 0x1f,
+	0xc3, 0x15, 0xba, 0x5c, 0x9e, 0xc3, 0xeb, 0xa9, 0x48, 0x86, 0x4f, 0x73, 0xf6, 0x94, 0x0f, 0x67,
+	0x22, 0x9a, 0x8a, 0x74, 0x36, 0x6c, 0x3c, 0xbc, 0x97, 0x83, 0x66, 0x31, 0xc7, 0xda, 0x39, 0x76,
+	0xee, 0xd7, 0x4c, 0xf4, 0xec, 0x6f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x9f, 0xd5, 0x36, 0x38, 0xa7,
+	0x05, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -810,12 +633,10 @@ type clusterMonitorClient struct {
 	cc *grpc.ClientConn
 }
 
-// NewClusterMonitorClient ...
 func NewClusterMonitorClient(cc *grpc.ClientConn) ClusterMonitorClient {
 	return &clusterMonitorClient{cc}
 }
 
-// MonitorInit ...
 func (c *clusterMonitorClient) MonitorInit(ctx context.Context, in *MonitorInitRequest, opts ...grpc.CallOption) (*MonitorReply, error) {
 	out := new(MonitorReply)
 	err := c.cc.Invoke(ctx, "/proto.ClusterMonitor/MonitorInit", in, out, opts...)
@@ -825,7 +646,6 @@ func (c *clusterMonitorClient) MonitorInit(ctx context.Context, in *MonitorInitR
 	return out, nil
 }
 
-// MonitorProc ...
 func (c *clusterMonitorClient) MonitorProc(ctx context.Context, in *MonitorProcRequest, opts ...grpc.CallOption) (*MonitorReply, error) {
 	out := new(MonitorReply)
 	err := c.cc.Invoke(ctx, "/proto.ClusterMonitor/MonitorProc", in, out, opts...)
@@ -835,7 +655,6 @@ func (c *clusterMonitorClient) MonitorProc(ctx context.Context, in *MonitorProcR
 	return out, nil
 }
 
-// MonitorAddress ...
 func (c *clusterMonitorClient) MonitorAddress(ctx context.Context, in *MonitorRequest, opts ...grpc.CallOption) (*MonitorAddressReply, error) {
 	out := new(MonitorAddressReply)
 	err := c.cc.Invoke(ctx, "/proto.ClusterMonitor/MonitorAddress", in, out, opts...)
@@ -845,7 +664,6 @@ func (c *clusterMonitorClient) MonitorAddress(ctx context.Context, in *MonitorRe
 	return out, nil
 }
 
-// MonitorBootstrap ...
 func (c *clusterMonitorClient) MonitorBootstrap(ctx context.Context, in *MonitorRequest, opts ...grpc.CallOption) (*MonitorBootstrapReply, error) {
 	out := new(MonitorBootstrapReply)
 	err := c.cc.Invoke(ctx, "/proto.ClusterMonitor/MonitorBootstrap", in, out, opts...)
@@ -855,7 +673,6 @@ func (c *clusterMonitorClient) MonitorBootstrap(ctx context.Context, in *Monitor
 	return out, nil
 }
 
-// MonitorPin ...
 func (c *clusterMonitorClient) MonitorPin(ctx context.Context, in *MonitorRequest, opts ...grpc.CallOption) (*MonitorPinReply, error) {
 	out := new(MonitorPinReply)
 	err := c.cc.Invoke(ctx, "/proto.ClusterMonitor/MonitorPin", in, out, opts...)
@@ -865,7 +682,6 @@ func (c *clusterMonitorClient) MonitorPin(ctx context.Context, in *MonitorReques
 	return out, nil
 }
 
-// MonitorManager ...
 func (c *clusterMonitorClient) MonitorManager(ctx context.Context, in *MonitorManagerRequest, opts ...grpc.CallOption) (*MonitorReply, error) {
 	out := new(MonitorReply)
 	err := c.cc.Invoke(ctx, "/proto.ClusterMonitor/MonitorManager", in, out, opts...)
@@ -885,7 +701,6 @@ type ClusterMonitorServer interface {
 	MonitorManager(context.Context, *MonitorManagerRequest) (*MonitorReply, error)
 }
 
-// RegisterClusterMonitorServer ...
 func RegisterClusterMonitorServer(s *grpc.Server, srv ClusterMonitorServer) {
 	s.RegisterService(&_ClusterMonitor_serviceDesc, srv)
 }
