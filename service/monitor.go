@@ -139,7 +139,6 @@ func (m *Monitor) InitMaker(monitor *config.Monitor) error {
 // CustomMaker ...
 func (m *Monitor) CustomMaker(monitor *config.Monitor) error {
 	log.Printf("client:%+v", *monitor)
-	config.SetMonitor(monitor)
 	err := cluster.InitMaker(m.config)
 	if err == nil {
 		return nil

@@ -94,7 +94,15 @@ func (s *GRPCServer) MonitorProc(ctx context.Context, req *proto.MonitorProcRequ
 		}
 	} else if req.Type == proto.MonitorType_Change {
 		server.monitor.Stop()
-
+		s.config.Monitor.Workspace = req.Workspace
+		s.config.Custom.Workspace = req.Workspace
+		s.config.Custom.MaxSize = req.MaxSize
+		s.config.UseCustom = true
+		err := server.monitor.CustomMaker(&s.config.Monitor)
+		if err != nil {
+			log.Println(err)
+			return nil, xerrors.Errorf("client custom %w", err)
+		}
 	}
 	return Result("")
 }

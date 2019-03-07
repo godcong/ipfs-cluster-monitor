@@ -130,7 +130,7 @@ type Logger struct {
 
 // Custom ...
 type Custom struct {
-	Size      string `toml:"size"`
+	MaxSize   string `toml:"max_size"`
 	Workspace string `toml:"workspace"`
 }
 
