@@ -136,6 +136,17 @@ func (m *Monitor) InitMaker(monitor *config.Monitor) error {
 	return xerrors.Errorf("init maker:%w", err)
 }
 
+// CustomMaker ...
+func (m *Monitor) CustomMaker(monitor *config.Monitor) error {
+	log.Printf("client:%+v", *monitor)
+	config.SetMonitor(monitor)
+	err := cluster.InitMaker(m.config)
+	if err == nil {
+		return nil
+	}
+	return xerrors.Errorf("init maker:%w", err)
+}
+
 // FileDir ...
 func FileDir(path, name string) string {
 	return filepath.Join(filepath.Dir(path), name)

@@ -120,6 +120,7 @@ type MonitorProperty struct {
 	ServerCheckInterval time.Duration `toml:"server_check_interval"`
 	MonitorInterval     time.Duration `toml:"monitor_interval"`
 	ResetWaiting        int           `toml:"reset_waiting"`
+	Workspace           string        `toml:"workspace"`
 }
 
 // Logger ...
@@ -127,8 +128,15 @@ type Logger struct {
 	Level string `toml:"level"`
 }
 
+// Custom ...
+type Custom struct {
+	Size      string `toml:"size"`
+	Workspace string `toml:"workspace"`
+}
+
 // Configure ...
 type Configure struct {
+	UseCustom       bool            `toml:"use_custom"`
 	Mode            int             `toml:"mode"`
 	Logger          Logger          `toml:"logger"`
 	Initialize      bool            `toml:"-"`
@@ -140,6 +148,7 @@ type Configure struct {
 	GRPC            GRPC            `toml:"grpc"`
 	REST            REST            `toml:"rest"`
 	IPFS            IPFS            `toml:"ipfs"`
+	Custom          Custom          `toml:"custom"`
 	Callback        Callback        `toml:"callback"`
 }
 
@@ -355,9 +364,10 @@ func MustMonitorProperty(runPath string) *MonitorProperty {
 		IpfsCommandName:     filepath.Join(runPath, "ipfs"),
 		ClusterCommandName:  filepath.Join(runPath, "ipfs-cluster-service"),
 		Interval:            1 * time.Second,
-		MonitorInterval:     5 * time.Second,
 		ServerCheckInterval: 60 * time.Second,
+		MonitorInterval:     5 * time.Second,
 		ResetWaiting:        30,
+		Workspace:           runPath,
 	}
 }
 
