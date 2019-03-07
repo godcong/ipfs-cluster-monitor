@@ -143,6 +143,7 @@ func (m *Monitor) CustomMaker(monitor *config.Monitor) error {
 	if err == nil {
 		return nil
 	}
+
 	return xerrors.Errorf("init maker:%w", err)
 }
 

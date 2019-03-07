@@ -103,6 +103,7 @@ func (s *GRPCServer) MonitorProc(ctx context.Context, req *proto.MonitorProcRequ
 			log.Println(err)
 			return nil, xerrors.Errorf("client custom %w", err)
 		}
+		server.monitor.Start()
 	}
 	return Result("")
 }
@@ -196,7 +197,7 @@ func NewMonitorGRPC(cfg *config.Configure) *GRPCClient {
 		config: cfg,
 		Type:   config.DefaultString(cfg.Monitor.Type, GRPCType),
 		Port:   config.DefaultString(cfg.Monitor.Port, ":7784"),
-		Addr:   config.DefaultString(cfg.Monitor.Addr, "/tmp/client.sock"),
+		Addr:   config.DefaultString(cfg.Monitor.Addr, "localhost"),
 	}
 }
 
