@@ -98,6 +98,8 @@ func (s *GRPCServer) MonitorProc(ctx context.Context, req *proto.MonitorProcRequ
 		s.config.Custom.Workspace = req.Workspace
 		s.config.Custom.MaxSize = req.MaxSize
 		s.config.UseCustom = true
+		s.config.Monitor.IPFSClient = *config.MustIPFSClient(req.Workspace)
+		s.config.Monitor.ClusterClient = *config.MustClusterClient(req.Workspace, "", "")
 		err := server.monitor.CustomMaker(&s.config.Monitor)
 		if err != nil {
 			log.Println(err)

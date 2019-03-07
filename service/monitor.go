@@ -164,21 +164,21 @@ func (m *Monitor) Start() {
 
 		if m.waitingForInitialize(ctx) {
 			if cluster.InitRunning(filepath.Join(m.config.Monitor.Workspace, config.IpfsTmp)) {
-				log.Println("init ipfs")
+				log.Info("init ipfs")
 				err := cluster.RunIPFSInit(ctx, m.config)
 				if err != nil {
 					log.Error(err)
 					defer func() { m.Reset() }()
 					return
 				}
-			}
-			if m.config.UseCustom {
-				log.Info("storage max set with:", m.config.Custom.MaxSize)
-				e := cluster.StorageMaxSet(ctx, m.config, m.config.Custom.MaxSize)
-				if e != nil {
-					log.Error(e)
-				}
+				if m.config.UseCustom {
+					log.Info("storage max set with:", m.config.Custom.MaxSize)
+					e := cluster.StorageMaxSet(ctx, m.config, m.config.Custom.MaxSize)
+					if e != nil {
+						log.Error(e)
+					}
 
+				}
 			}
 
 			if m.Mode() == proto.StartMode_Cluster {
