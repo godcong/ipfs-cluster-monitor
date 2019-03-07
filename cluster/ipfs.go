@@ -132,15 +132,17 @@ func PinAdd(arg string) error {
 	return e
 }
 
+// PinLsType ...
 type PinLsType struct {
 	Type string `json:"Type"`
 }
 
+// PinLsRes ...
 type PinLsRes struct {
 	Keys map[string]PinLsType `json:"Keys"`
 }
 
-// PinAdd ...
+// PinLs ...
 func PinLs(args ...string) (*PinLsRes, error) {
 	q := "http://localhost:5001/api/v0/pin/ls?"
 	if args != nil {
@@ -174,4 +176,14 @@ func SwarmAddress(arg string) error {
 	bytes, e := ioutil.ReadAll(resp.Body)
 	log.Info("address res:", string(bytes), e)
 	return e
+}
+
+// StorageMaxSet ...
+func StorageMaxSet(ctx context.Context, cfg *config.Configure, size string) error {
+	return optimizeRunCMD(ctx, cfg.MonitorProperty.IpfsCommandName, cfg.Monitor.Env(), "config", "Datastore.StorageMax", size)
+}
+
+// StorageMaxGet ...
+func StorageMaxGet(ctx context.Context, cfg *config.Configure) {
+	optimizeRunCMD(ctx, cfg.MonitorProperty.IpfsCommandName, cfg.Monitor.Env(), "config", "Datastore.StorageMax")
 }

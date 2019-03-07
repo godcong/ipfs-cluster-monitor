@@ -104,6 +104,7 @@ func (s *GRPCServer) MonitorProc(ctx context.Context, req *proto.MonitorProcRequ
 			return nil, xerrors.Errorf("client custom %w", err)
 		}
 		server.monitor.Start()
+
 	} else if req.Type == proto.MonitorType_Info {
 		return Result("processing")
 	}

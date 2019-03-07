@@ -1,5 +1,6 @@
 package cluster
 
+// FileConfig ...
 type FileConfig struct {
 	Identity struct {
 		PeerID  string `json:"PeerID"`

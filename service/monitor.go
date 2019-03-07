@@ -172,6 +172,14 @@ func (m *Monitor) Start() {
 					return
 				}
 			}
+			if m.config.UseCustom {
+				log.Info("storage max set with:", m.config.Custom.MaxSize)
+				e := cluster.StorageMaxSet(ctx, m.config, m.config.Custom.MaxSize)
+				if e != nil {
+					log.Error(e)
+				}
+
+			}
 
 			if m.Mode() == proto.StartMode_Cluster {
 				if cluster.InitRunning(filepath.Join(m.config.Monitor.Workspace, config.ClusterTmp)) {
