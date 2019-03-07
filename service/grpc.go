@@ -29,7 +29,7 @@ type GRPCServer struct {
 	Path                     string
 }
 
-// MonitorAddress ...
+// MonitorAddress do nothing on client
 func (s *GRPCServer) MonitorAddress(context.Context, *proto.MonitorRequest) (*proto.MonitorAddressReply, error) {
 	return &proto.MonitorAddressReply{}, nil
 }
@@ -45,14 +45,14 @@ func (s *GRPCServer) MonitorManager(ctx context.Context, in *proto.MonitorManage
 	return Result("")
 }
 
-// MonitorBootstrap ...
+// MonitorBootstrap do nothing on client
 func (s *GRPCServer) MonitorBootstrap(context.Context, *proto.MonitorRequest) (*proto.MonitorBootstrapReply, error) {
 	return &proto.MonitorBootstrapReply{
 		Bootstraps: nil,
 	}, nil
 }
 
-// MonitorPin ...
+// MonitorPin do nothing on client
 func (s *GRPCServer) MonitorPin(context.Context, *proto.MonitorRequest) (*proto.MonitorPinReply, error) {
 	return &proto.MonitorPinReply{
 		Pins: nil,
@@ -84,6 +84,7 @@ func (s *GRPCServer) MonitorInit(ctx context.Context, req *proto.MonitorInitRequ
 // MonitorProc ...
 func (s *GRPCServer) MonitorProc(ctx context.Context, req *proto.MonitorProcRequest) (*proto.MonitorReply, error) {
 	if req.Type == proto.MonitorType_Init {
+		//do same with init
 		return &proto.MonitorReply{}, nil
 	} else if req.Type == proto.MonitorType_Reset {
 		err := server.monitor.Reset()
@@ -91,6 +92,8 @@ func (s *GRPCServer) MonitorProc(ctx context.Context, req *proto.MonitorProcRequ
 			log.Println(err)
 			return nil, xerrors.Errorf("client proc %w", err)
 		}
+	} else if req.Type == proto.MonitorType_Change {
+
 	}
 	return Result("")
 }
