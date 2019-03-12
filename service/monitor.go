@@ -192,7 +192,11 @@ func (m *Monitor) Start() {
 					}
 				}
 			}
-
+			if m.Mode() == proto.StartMode_Simple {
+				cluster.WriterSwarm(m.config.Monitor.IPFSClient.IpfsPath)
+				cluster.RemoveBootstrapIPFS(ctx, m.config)
+				cluster.AddBootstrapIPFS(ctx, m.config, m.config.Monitor.IPFSClient.Bootstrap)
+			}
 			cluster.RunIPFS(ctx, m.config)
 			cluster.WaitingIPFS(ctx)
 

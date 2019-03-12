@@ -39,6 +39,16 @@ func RunIPFS(ctx context.Context, cfg *config.Configure) {
 	go optimizeRunCMD(ctx, cfg.MonitorProperty.IpfsCommandName, cfg.Monitor.Env(), "daemon")
 }
 
+// RemoveBootstrapIPFS ...
+func RemoveBootstrapIPFS(ctx context.Context, cfg *config.Configure) {
+	optimizeRunCMD(ctx, cfg.MonitorProperty.IpfsCommandName, cfg.Monitor.Env(), "bootstrap", "rm", "all")
+}
+
+// AddBootstrapIPFS ...
+func AddBootstrapIPFS(ctx context.Context, cfg *config.Configure, address string) {
+	optimizeRunCMD(ctx, cfg.MonitorProperty.IpfsCommandName, cfg.Monitor.Env(), "bootstrap", "add", address)
+}
+
 // RunIPFSInit ...
 func RunIPFSInit(ctx context.Context, cfg *config.Configure) error {
 	cmd := exec.CommandContext(ctx, cfg.MonitorProperty.IpfsCommandName, "init")

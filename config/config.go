@@ -91,7 +91,8 @@ type ClusterClient struct {
 
 // IPFSClient ...
 type IPFSClient struct {
-	IpfsPath string `toml:"ipfs_path"`
+	IpfsPath  string `toml:"ipfs_path"`
+	Bootstrap string `toml:"bootstrap"`
 }
 
 // MonitorServer ...
@@ -157,7 +158,8 @@ var config *Configure
 // MustIPFSClient ...
 func MustIPFSClient(ws string) *IPFSClient {
 	return &IPFSClient{
-		IpfsPath: DefaultString(filepath.Join(ws, "data", Ipfs), HomePath(".ipfs")),
+		IpfsPath:  DefaultString(filepath.Join(ws, "data", Ipfs), HomePath(".ipfs")),
+		Bootstrap: DefaultString("", "/ip4/47.101.169.94/tcp/4001/ipfs/QmRkiD3iWg3W2yJG5g9YD3jhRn5CX9HqG2uVAGjNFdNGQ2"),
 	}
 }
 

@@ -21,8 +21,9 @@ import (
 
 // GRPCServer ...
 type GRPCServer struct {
-	config                   *config.Configure
-	server                   *grpc.Server
+	config *config.Configure
+	server *grpc.Server
+
 	requireTransportSecurity bool
 	Type                     string
 	Port                     string

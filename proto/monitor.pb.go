@@ -22,8 +22,10 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
+// ManagerType ...
 type ManagerType int32
 
+// ManagerType_BootstrapAdd ...
 const (
 	ManagerType_BootstrapAdd    ManagerType = 0
 	ManagerType_BootstrapRemove ManagerType = 1
@@ -31,6 +33,7 @@ const (
 	ManagerType_PinRemove       ManagerType = 3
 )
 
+// ManagerType_name ...
 var ManagerType_name = map[int32]string{
 	0: "BootstrapAdd",
 	1: "BootstrapRemove",
@@ -38,6 +41,7 @@ var ManagerType_name = map[int32]string{
 	3: "PinRemove",
 }
 
+// ManagerType_value ...
 var ManagerType_value = map[string]int32{
 	"BootstrapAdd":    0,
 	"BootstrapRemove": 1,
@@ -45,41 +49,51 @@ var ManagerType_value = map[string]int32{
 	"PinRemove":       3,
 }
 
+// String ...
 func (x ManagerType) String() string {
 	return proto.EnumName(ManagerType_name, int32(x))
 }
 
+// EnumDescriptor ...
 func (ManagerType) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_44174b7b2a306b71, []int{0}
 }
 
+// StartMode ...
 type StartMode int32
 
+// StartMode_Cluster ...
 const (
 	StartMode_Cluster StartMode = 0
 	StartMode_Simple  StartMode = 1
 )
 
+// StartMode_name ...
 var StartMode_name = map[int32]string{
 	0: "Cluster",
 	1: "Simple",
 }
 
+// StartMode_value ...
 var StartMode_value = map[string]int32{
 	"Cluster": 0,
 	"Simple":  1,
 }
 
+// String ...
 func (x StartMode) String() string {
 	return proto.EnumName(StartMode_name, int32(x))
 }
 
+// EnumDescriptor ...
 func (StartMode) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_44174b7b2a306b71, []int{1}
 }
 
+// MonitorType ...
 type MonitorType int32
 
+// MonitorType_Init ...
 const (
 	MonitorType_Init   MonitorType = 0
 	MonitorType_Info   MonitorType = 1
@@ -87,6 +101,7 @@ const (
 	MonitorType_Change MonitorType = 3
 )
 
+// MonitorType_name ...
 var MonitorType_name = map[int32]string{
 	0: "Init",
 	1: "Info",
@@ -94,6 +109,7 @@ var MonitorType_name = map[int32]string{
 	3: "Change",
 }
 
+// MonitorType_value ...
 var MonitorType_value = map[string]int32{
 	"Init":   0,
 	"Info":   1,
@@ -101,45 +117,65 @@ var MonitorType_value = map[string]int32{
 	"Change": 3,
 }
 
+// String ...
 func (x MonitorType) String() string {
 	return proto.EnumName(MonitorType_name, int32(x))
 }
 
+// EnumDescriptor ...
 func (MonitorType) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_44174b7b2a306b71, []int{2}
 }
 
+// MonitorRequest ...
 type MonitorRequest struct {
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *MonitorRequest) Reset()         { *m = MonitorRequest{} }
+// Reset ...
+func (m *MonitorRequest) Reset() { *m = MonitorRequest{} }
+
+// String ...
 func (m *MonitorRequest) String() string { return proto.CompactTextString(m) }
-func (*MonitorRequest) ProtoMessage()    {}
+
+// ProtoMessage ...
+func (*MonitorRequest) ProtoMessage() {}
+
+// Descriptor ...
 func (*MonitorRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_44174b7b2a306b71, []int{0}
 }
 
+// XXX_Unmarshal ...
 func (m *MonitorRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MonitorRequest.Unmarshal(m, b)
 }
+
+// XXX_Marshal ...
 func (m *MonitorRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_MonitorRequest.Marshal(b, m, deterministic)
 }
+
+// XXX_Merge ...
 func (m *MonitorRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MonitorRequest.Merge(m, src)
 }
+
+// XXX_Size ...
 func (m *MonitorRequest) XXX_Size() int {
 	return xxx_messageInfo_MonitorRequest.Size(m)
 }
+
+// XXX_DiscardUnknown ...
 func (m *MonitorRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_MonitorRequest.DiscardUnknown(m)
 }
 
 var xxx_messageInfo_MonitorRequest proto.InternalMessageInfo
 
+// MonitorManagerRequest ...
 type MonitorManagerRequest struct {
 	Type                 ManagerType `protobuf:"varint,1,opt,name=type,proto3,enum=proto.ManagerType" json:"type,omitempty"`
 	Data                 []string    `protobuf:"bytes,2,rep,name=data,proto3" json:"data,omitempty"`
@@ -148,31 +184,48 @@ type MonitorManagerRequest struct {
 	XXX_sizecache        int32       `json:"-"`
 }
 
-func (m *MonitorManagerRequest) Reset()         { *m = MonitorManagerRequest{} }
+// Reset ...
+func (m *MonitorManagerRequest) Reset() { *m = MonitorManagerRequest{} }
+
+// String ...
 func (m *MonitorManagerRequest) String() string { return proto.CompactTextString(m) }
-func (*MonitorManagerRequest) ProtoMessage()    {}
+
+// ProtoMessage ...
+func (*MonitorManagerRequest) ProtoMessage() {}
+
+// Descriptor ...
 func (*MonitorManagerRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_44174b7b2a306b71, []int{1}
 }
 
+// XXX_Unmarshal ...
 func (m *MonitorManagerRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MonitorManagerRequest.Unmarshal(m, b)
 }
+
+// XXX_Marshal ...
 func (m *MonitorManagerRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_MonitorManagerRequest.Marshal(b, m, deterministic)
 }
+
+// XXX_Merge ...
 func (m *MonitorManagerRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MonitorManagerRequest.Merge(m, src)
 }
+
+// XXX_Size ...
 func (m *MonitorManagerRequest) XXX_Size() int {
 	return xxx_messageInfo_MonitorManagerRequest.Size(m)
 }
+
+// XXX_DiscardUnknown ...
 func (m *MonitorManagerRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_MonitorManagerRequest.DiscardUnknown(m)
 }
 
 var xxx_messageInfo_MonitorManagerRequest proto.InternalMessageInfo
 
+// GetType ...
 func (m *MonitorManagerRequest) GetType() ManagerType {
 	if m != nil {
 		return m.Type
@@ -180,6 +233,7 @@ func (m *MonitorManagerRequest) GetType() ManagerType {
 	return ManagerType_BootstrapAdd
 }
 
+// GetData ...
 func (m *MonitorManagerRequest) GetData() []string {
 	if m != nil {
 		return m.Data
@@ -187,6 +241,7 @@ func (m *MonitorManagerRequest) GetData() []string {
 	return nil
 }
 
+// MonitorInitRequest ...
 type MonitorInitRequest struct {
 	StartMode            StartMode `protobuf:"varint,1,opt,name=start_mode,json=startMode,proto3,enum=proto.StartMode" json:"start_mode,omitempty"`
 	Host                 string    `protobuf:"bytes,2,opt,name=host,proto3" json:"host,omitempty"`
@@ -198,31 +253,48 @@ type MonitorInitRequest struct {
 	XXX_sizecache        int32     `json:"-"`
 }
 
-func (m *MonitorInitRequest) Reset()         { *m = MonitorInitRequest{} }
+// Reset ...
+func (m *MonitorInitRequest) Reset() { *m = MonitorInitRequest{} }
+
+// String ...
 func (m *MonitorInitRequest) String() string { return proto.CompactTextString(m) }
-func (*MonitorInitRequest) ProtoMessage()    {}
+
+// ProtoMessage ...
+func (*MonitorInitRequest) ProtoMessage() {}
+
+// Descriptor ...
 func (*MonitorInitRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_44174b7b2a306b71, []int{2}
 }
 
+// XXX_Unmarshal ...
 func (m *MonitorInitRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MonitorInitRequest.Unmarshal(m, b)
 }
+
+// XXX_Marshal ...
 func (m *MonitorInitRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_MonitorInitRequest.Marshal(b, m, deterministic)
 }
+
+// XXX_Merge ...
 func (m *MonitorInitRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MonitorInitRequest.Merge(m, src)
 }
+
+// XXX_Size ...
 func (m *MonitorInitRequest) XXX_Size() int {
 	return xxx_messageInfo_MonitorInitRequest.Size(m)
 }
+
+// XXX_DiscardUnknown ...
 func (m *MonitorInitRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_MonitorInitRequest.DiscardUnknown(m)
 }
 
 var xxx_messageInfo_MonitorInitRequest proto.InternalMessageInfo
 
+// GetStartMode ...
 func (m *MonitorInitRequest) GetStartMode() StartMode {
 	if m != nil {
 		return m.StartMode
@@ -230,6 +302,7 @@ func (m *MonitorInitRequest) GetStartMode() StartMode {
 	return StartMode_Cluster
 }
 
+// GetHost ...
 func (m *MonitorInitRequest) GetHost() string {
 	if m != nil {
 		return m.Host
@@ -237,6 +310,7 @@ func (m *MonitorInitRequest) GetHost() string {
 	return ""
 }
 
+// GetBootstrap ...
 func (m *MonitorInitRequest) GetBootstrap() string {
 	if m != nil {
 		return m.Bootstrap
@@ -244,6 +318,7 @@ func (m *MonitorInitRequest) GetBootstrap() string {
 	return ""
 }
 
+// GetSecret ...
 func (m *MonitorInitRequest) GetSecret() string {
 	if m != nil {
 		return m.Secret
@@ -251,6 +326,7 @@ func (m *MonitorInitRequest) GetSecret() string {
 	return ""
 }
 
+// GetWorkspace ...
 func (m *MonitorInitRequest) GetWorkspace() string {
 	if m != nil {
 		return m.Workspace
@@ -258,6 +334,7 @@ func (m *MonitorInitRequest) GetWorkspace() string {
 	return ""
 }
 
+// MonitorBootstrapReply ...
 type MonitorBootstrapReply struct {
 	Bootstraps           []string `protobuf:"bytes,1,rep,name=bootstraps,proto3" json:"bootstraps,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -265,31 +342,48 @@ type MonitorBootstrapReply struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *MonitorBootstrapReply) Reset()         { *m = MonitorBootstrapReply{} }
+// Reset ...
+func (m *MonitorBootstrapReply) Reset() { *m = MonitorBootstrapReply{} }
+
+// String ...
 func (m *MonitorBootstrapReply) String() string { return proto.CompactTextString(m) }
-func (*MonitorBootstrapReply) ProtoMessage()    {}
+
+// ProtoMessage ...
+func (*MonitorBootstrapReply) ProtoMessage() {}
+
+// Descriptor ...
 func (*MonitorBootstrapReply) Descriptor() ([]byte, []int) {
 	return fileDescriptor_44174b7b2a306b71, []int{3}
 }
 
+// XXX_Unmarshal ...
 func (m *MonitorBootstrapReply) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MonitorBootstrapReply.Unmarshal(m, b)
 }
+
+// XXX_Marshal ...
 func (m *MonitorBootstrapReply) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_MonitorBootstrapReply.Marshal(b, m, deterministic)
 }
+
+// XXX_Merge ...
 func (m *MonitorBootstrapReply) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MonitorBootstrapReply.Merge(m, src)
 }
+
+// XXX_Size ...
 func (m *MonitorBootstrapReply) XXX_Size() int {
 	return xxx_messageInfo_MonitorBootstrapReply.Size(m)
 }
+
+// XXX_DiscardUnknown ...
 func (m *MonitorBootstrapReply) XXX_DiscardUnknown() {
 	xxx_messageInfo_MonitorBootstrapReply.DiscardUnknown(m)
 }
 
 var xxx_messageInfo_MonitorBootstrapReply proto.InternalMessageInfo
 
+// GetBootstraps ...
 func (m *MonitorBootstrapReply) GetBootstraps() []string {
 	if m != nil {
 		return m.Bootstraps
@@ -297,6 +391,7 @@ func (m *MonitorBootstrapReply) GetBootstraps() []string {
 	return nil
 }
 
+// MonitorAddressReply ...
 type MonitorAddressReply struct {
 	Addresses            []string `protobuf:"bytes,1,rep,name=addresses,proto3" json:"addresses,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -304,31 +399,48 @@ type MonitorAddressReply struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *MonitorAddressReply) Reset()         { *m = MonitorAddressReply{} }
+// Reset ...
+func (m *MonitorAddressReply) Reset() { *m = MonitorAddressReply{} }
+
+// String ...
 func (m *MonitorAddressReply) String() string { return proto.CompactTextString(m) }
-func (*MonitorAddressReply) ProtoMessage()    {}
+
+// ProtoMessage ...
+func (*MonitorAddressReply) ProtoMessage() {}
+
+// Descriptor ...
 func (*MonitorAddressReply) Descriptor() ([]byte, []int) {
 	return fileDescriptor_44174b7b2a306b71, []int{4}
 }
 
+// XXX_Unmarshal ...
 func (m *MonitorAddressReply) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MonitorAddressReply.Unmarshal(m, b)
 }
+
+// XXX_Marshal ...
 func (m *MonitorAddressReply) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_MonitorAddressReply.Marshal(b, m, deterministic)
 }
+
+// XXX_Merge ...
 func (m *MonitorAddressReply) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MonitorAddressReply.Merge(m, src)
 }
+
+// XXX_Size ...
 func (m *MonitorAddressReply) XXX_Size() int {
 	return xxx_messageInfo_MonitorAddressReply.Size(m)
 }
+
+// XXX_DiscardUnknown ...
 func (m *MonitorAddressReply) XXX_DiscardUnknown() {
 	xxx_messageInfo_MonitorAddressReply.DiscardUnknown(m)
 }
 
 var xxx_messageInfo_MonitorAddressReply proto.InternalMessageInfo
 
+// GetAddresses ...
 func (m *MonitorAddressReply) GetAddresses() []string {
 	if m != nil {
 		return m.Addresses
@@ -336,6 +448,7 @@ func (m *MonitorAddressReply) GetAddresses() []string {
 	return nil
 }
 
+// MonitorPinReply ...
 type MonitorPinReply struct {
 	Pins                 []string `protobuf:"bytes,1,rep,name=pins,proto3" json:"pins,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -343,31 +456,48 @@ type MonitorPinReply struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *MonitorPinReply) Reset()         { *m = MonitorPinReply{} }
+// Reset ...
+func (m *MonitorPinReply) Reset() { *m = MonitorPinReply{} }
+
+// String ...
 func (m *MonitorPinReply) String() string { return proto.CompactTextString(m) }
-func (*MonitorPinReply) ProtoMessage()    {}
+
+// ProtoMessage ...
+func (*MonitorPinReply) ProtoMessage() {}
+
+// Descriptor ...
 func (*MonitorPinReply) Descriptor() ([]byte, []int) {
 	return fileDescriptor_44174b7b2a306b71, []int{5}
 }
 
+// XXX_Unmarshal ...
 func (m *MonitorPinReply) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MonitorPinReply.Unmarshal(m, b)
 }
+
+// XXX_Marshal ...
 func (m *MonitorPinReply) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_MonitorPinReply.Marshal(b, m, deterministic)
 }
+
+// XXX_Merge ...
 func (m *MonitorPinReply) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MonitorPinReply.Merge(m, src)
 }
+
+// XXX_Size ...
 func (m *MonitorPinReply) XXX_Size() int {
 	return xxx_messageInfo_MonitorPinReply.Size(m)
 }
+
+// XXX_DiscardUnknown ...
 func (m *MonitorPinReply) XXX_DiscardUnknown() {
 	xxx_messageInfo_MonitorPinReply.DiscardUnknown(m)
 }
 
 var xxx_messageInfo_MonitorPinReply proto.InternalMessageInfo
 
+// GetPins ...
 func (m *MonitorPinReply) GetPins() []string {
 	if m != nil {
 		return m.Pins
@@ -375,6 +505,7 @@ func (m *MonitorPinReply) GetPins() []string {
 	return nil
 }
 
+// MonitorProcRequest ...
 type MonitorProcRequest struct {
 	Type                 MonitorType `protobuf:"varint,1,opt,name=type,proto3,enum=proto.MonitorType" json:"type,omitempty"`
 	BootStrap            string      `protobuf:"bytes,2,opt,name=boot_strap,json=bootStrap,proto3" json:"boot_strap,omitempty"`
@@ -386,31 +517,48 @@ type MonitorProcRequest struct {
 	XXX_sizecache        int32       `json:"-"`
 }
 
-func (m *MonitorProcRequest) Reset()         { *m = MonitorProcRequest{} }
+// Reset ...
+func (m *MonitorProcRequest) Reset() { *m = MonitorProcRequest{} }
+
+// String ...
 func (m *MonitorProcRequest) String() string { return proto.CompactTextString(m) }
-func (*MonitorProcRequest) ProtoMessage()    {}
+
+// ProtoMessage ...
+func (*MonitorProcRequest) ProtoMessage() {}
+
+// Descriptor ...
 func (*MonitorProcRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_44174b7b2a306b71, []int{6}
 }
 
+// XXX_Unmarshal ...
 func (m *MonitorProcRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MonitorProcRequest.Unmarshal(m, b)
 }
+
+// XXX_Marshal ...
 func (m *MonitorProcRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_MonitorProcRequest.Marshal(b, m, deterministic)
 }
+
+// XXX_Merge ...
 func (m *MonitorProcRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MonitorProcRequest.Merge(m, src)
 }
+
+// XXX_Size ...
 func (m *MonitorProcRequest) XXX_Size() int {
 	return xxx_messageInfo_MonitorProcRequest.Size(m)
 }
+
+// XXX_DiscardUnknown ...
 func (m *MonitorProcRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_MonitorProcRequest.DiscardUnknown(m)
 }
 
 var xxx_messageInfo_MonitorProcRequest proto.InternalMessageInfo
 
+// GetType ...
 func (m *MonitorProcRequest) GetType() MonitorType {
 	if m != nil {
 		return m.Type
@@ -418,6 +566,7 @@ func (m *MonitorProcRequest) GetType() MonitorType {
 	return MonitorType_Init
 }
 
+// GetBootStrap ...
 func (m *MonitorProcRequest) GetBootStrap() string {
 	if m != nil {
 		return m.BootStrap
@@ -425,6 +574,7 @@ func (m *MonitorProcRequest) GetBootStrap() string {
 	return ""
 }
 
+// GetSecret ...
 func (m *MonitorProcRequest) GetSecret() string {
 	if m != nil {
 		return m.Secret
@@ -432,6 +582,7 @@ func (m *MonitorProcRequest) GetSecret() string {
 	return ""
 }
 
+// GetWorkspace ...
 func (m *MonitorProcRequest) GetWorkspace() string {
 	if m != nil {
 		return m.Workspace
@@ -439,6 +590,7 @@ func (m *MonitorProcRequest) GetWorkspace() string {
 	return ""
 }
 
+// GetMaxSize ...
 func (m *MonitorProcRequest) GetMaxSize() string {
 	if m != nil {
 		return m.MaxSize
@@ -446,6 +598,7 @@ func (m *MonitorProcRequest) GetMaxSize() string {
 	return ""
 }
 
+// MonitorCensorRequest ...
 type MonitorCensorRequest struct {
 	ID                   string   `protobuf:"bytes,1,opt,name=ID,proto3" json:"ID,omitempty"`
 	Detail               string   `protobuf:"bytes,2,opt,name=detail,proto3" json:"detail,omitempty"`
@@ -454,31 +607,48 @@ type MonitorCensorRequest struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *MonitorCensorRequest) Reset()         { *m = MonitorCensorRequest{} }
+// Reset ...
+func (m *MonitorCensorRequest) Reset() { *m = MonitorCensorRequest{} }
+
+// String ...
 func (m *MonitorCensorRequest) String() string { return proto.CompactTextString(m) }
-func (*MonitorCensorRequest) ProtoMessage()    {}
+
+// ProtoMessage ...
+func (*MonitorCensorRequest) ProtoMessage() {}
+
+// Descriptor ...
 func (*MonitorCensorRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_44174b7b2a306b71, []int{7}
 }
 
+// XXX_Unmarshal ...
 func (m *MonitorCensorRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MonitorCensorRequest.Unmarshal(m, b)
 }
+
+// XXX_Marshal ...
 func (m *MonitorCensorRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_MonitorCensorRequest.Marshal(b, m, deterministic)
 }
+
+// XXX_Merge ...
 func (m *MonitorCensorRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MonitorCensorRequest.Merge(m, src)
 }
+
+// XXX_Size ...
 func (m *MonitorCensorRequest) XXX_Size() int {
 	return xxx_messageInfo_MonitorCensorRequest.Size(m)
 }
+
+// XXX_DiscardUnknown ...
 func (m *MonitorCensorRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_MonitorCensorRequest.DiscardUnknown(m)
 }
 
 var xxx_messageInfo_MonitorCensorRequest proto.InternalMessageInfo
 
+// GetID ...
 func (m *MonitorCensorRequest) GetID() string {
 	if m != nil {
 		return m.ID
@@ -486,6 +656,7 @@ func (m *MonitorCensorRequest) GetID() string {
 	return ""
 }
 
+// GetDetail ...
 func (m *MonitorCensorRequest) GetDetail() string {
 	if m != nil {
 		return m.Detail
@@ -493,6 +664,7 @@ func (m *MonitorCensorRequest) GetDetail() string {
 	return ""
 }
 
+// MonitorReply ...
 type MonitorReply struct {
 	Code                 int32    `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
 	Message              string   `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
@@ -502,31 +674,48 @@ type MonitorReply struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *MonitorReply) Reset()         { *m = MonitorReply{} }
+// Reset ...
+func (m *MonitorReply) Reset() { *m = MonitorReply{} }
+
+// String ...
 func (m *MonitorReply) String() string { return proto.CompactTextString(m) }
-func (*MonitorReply) ProtoMessage()    {}
+
+// ProtoMessage ...
+func (*MonitorReply) ProtoMessage() {}
+
+// Descriptor ...
 func (*MonitorReply) Descriptor() ([]byte, []int) {
 	return fileDescriptor_44174b7b2a306b71, []int{8}
 }
 
+// XXX_Unmarshal ...
 func (m *MonitorReply) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MonitorReply.Unmarshal(m, b)
 }
+
+// XXX_Marshal ...
 func (m *MonitorReply) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_MonitorReply.Marshal(b, m, deterministic)
 }
+
+// XXX_Merge ...
 func (m *MonitorReply) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MonitorReply.Merge(m, src)
 }
+
+// XXX_Size ...
 func (m *MonitorReply) XXX_Size() int {
 	return xxx_messageInfo_MonitorReply.Size(m)
 }
+
+// XXX_DiscardUnknown ...
 func (m *MonitorReply) XXX_DiscardUnknown() {
 	xxx_messageInfo_MonitorReply.DiscardUnknown(m)
 }
 
 var xxx_messageInfo_MonitorReply proto.InternalMessageInfo
 
+// GetCode ...
 func (m *MonitorReply) GetCode() int32 {
 	if m != nil {
 		return m.Code
@@ -534,6 +723,7 @@ func (m *MonitorReply) GetCode() int32 {
 	return 0
 }
 
+// GetMessage ...
 func (m *MonitorReply) GetMessage() string {
 	if m != nil {
 		return m.Message
@@ -541,6 +731,7 @@ func (m *MonitorReply) GetMessage() string {
 	return ""
 }
 
+// GetDetail ...
 func (m *MonitorReply) GetDetail() string {
 	if m != nil {
 		return m.Detail
@@ -633,10 +824,12 @@ type clusterMonitorClient struct {
 	cc *grpc.ClientConn
 }
 
+// NewClusterMonitorClient ...
 func NewClusterMonitorClient(cc *grpc.ClientConn) ClusterMonitorClient {
 	return &clusterMonitorClient{cc}
 }
 
+// MonitorInit ...
 func (c *clusterMonitorClient) MonitorInit(ctx context.Context, in *MonitorInitRequest, opts ...grpc.CallOption) (*MonitorReply, error) {
 	out := new(MonitorReply)
 	err := c.cc.Invoke(ctx, "/proto.ClusterMonitor/MonitorInit", in, out, opts...)
@@ -646,6 +839,7 @@ func (c *clusterMonitorClient) MonitorInit(ctx context.Context, in *MonitorInitR
 	return out, nil
 }
 
+// MonitorProc ...
 func (c *clusterMonitorClient) MonitorProc(ctx context.Context, in *MonitorProcRequest, opts ...grpc.CallOption) (*MonitorReply, error) {
 	out := new(MonitorReply)
 	err := c.cc.Invoke(ctx, "/proto.ClusterMonitor/MonitorProc", in, out, opts...)
@@ -655,6 +849,7 @@ func (c *clusterMonitorClient) MonitorProc(ctx context.Context, in *MonitorProcR
 	return out, nil
 }
 
+// MonitorAddress ...
 func (c *clusterMonitorClient) MonitorAddress(ctx context.Context, in *MonitorRequest, opts ...grpc.CallOption) (*MonitorAddressReply, error) {
 	out := new(MonitorAddressReply)
 	err := c.cc.Invoke(ctx, "/proto.ClusterMonitor/MonitorAddress", in, out, opts...)
@@ -664,6 +859,7 @@ func (c *clusterMonitorClient) MonitorAddress(ctx context.Context, in *MonitorRe
 	return out, nil
 }
 
+// MonitorBootstrap ...
 func (c *clusterMonitorClient) MonitorBootstrap(ctx context.Context, in *MonitorRequest, opts ...grpc.CallOption) (*MonitorBootstrapReply, error) {
 	out := new(MonitorBootstrapReply)
 	err := c.cc.Invoke(ctx, "/proto.ClusterMonitor/MonitorBootstrap", in, out, opts...)
@@ -673,6 +869,7 @@ func (c *clusterMonitorClient) MonitorBootstrap(ctx context.Context, in *Monitor
 	return out, nil
 }
 
+// MonitorPin ...
 func (c *clusterMonitorClient) MonitorPin(ctx context.Context, in *MonitorRequest, opts ...grpc.CallOption) (*MonitorPinReply, error) {
 	out := new(MonitorPinReply)
 	err := c.cc.Invoke(ctx, "/proto.ClusterMonitor/MonitorPin", in, out, opts...)
@@ -682,6 +879,7 @@ func (c *clusterMonitorClient) MonitorPin(ctx context.Context, in *MonitorReques
 	return out, nil
 }
 
+// MonitorManager ...
 func (c *clusterMonitorClient) MonitorManager(ctx context.Context, in *MonitorManagerRequest, opts ...grpc.CallOption) (*MonitorReply, error) {
 	out := new(MonitorReply)
 	err := c.cc.Invoke(ctx, "/proto.ClusterMonitor/MonitorManager", in, out, opts...)
@@ -701,6 +899,7 @@ type ClusterMonitorServer interface {
 	MonitorManager(context.Context, *MonitorManagerRequest) (*MonitorReply, error)
 }
 
+// RegisterClusterMonitorServer ...
 func RegisterClusterMonitorServer(s *grpc.Server, srv ClusterMonitorServer) {
 	s.RegisterService(&_ClusterMonitor_serviceDesc, srv)
 }
