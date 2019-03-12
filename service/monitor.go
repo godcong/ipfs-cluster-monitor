@@ -91,11 +91,7 @@ func NewMonitor(cfg *config.Configure) *Monitor {
 			RWMutex: sync.RWMutex{},
 			pins:    nil,
 		},
-		monitorServer: MonitorClient(NewServerMonitorGRPC(&config.Monitor{
-			Type: "tcp",
-			Addr: "47.101.169.94",
-			Port: ":7774",
-		})),
+		monitorServer: MonitorClient(NewServerMonitorGRPC(cfg)),
 	}
 }
 

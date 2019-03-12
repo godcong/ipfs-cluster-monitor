@@ -136,9 +136,9 @@ func NewGRPCServer(cfg *config.Configure) *GRPCServer {
 	return &GRPCServer{
 		config: cfg,
 		server: grpc.NewServer(),
-		Type:   config.DefaultString("", GRPCType),
-		Port:   config.DefaultString("", ":7784"),
-		Path:   config.DefaultString("", "/tmp/client.sock"),
+		Type:   config.DefaultString(cfg.GRPC.Type, GRPCType),
+		Port:   config.DefaultString(cfg.GRPC.Port, ":7784"),
+		Path:   config.DefaultString(cfg.GRPC.Path, "/tmp/client.sock"),
 	}
 }
 
@@ -201,18 +201,19 @@ func MonitorClient(g *GRPCClient) proto.ClusterMonitorClient {
 func NewMonitorGRPC(cfg *config.Configure) *GRPCClient {
 	return &GRPCClient{
 		config: cfg,
-		Type:   config.DefaultString(cfg.Monitor.Type, GRPCType),
-		Port:   config.DefaultString(cfg.Monitor.Port, ":7784"),
-		Addr:   config.DefaultString(cfg.Monitor.Addr, "localhost"),
+		Type:   config.DefaultString(cfg.GRPC.Type, GRPCType),
+		Port:   config.DefaultString(cfg.GRPC.Port, ":7784"),
+		Addr:   config.DefaultString(cfg.GRPC.Path, "localhost"),
 	}
 }
 
 // NewServerMonitorGRPC ...
-func NewServerMonitorGRPC(cfg *config.Monitor) *GRPCClient {
+func NewServerMonitorGRPC(cfg *config.Configure) *GRPCClient {
 	return &GRPCClient{
-		Type: config.DefaultString(cfg.Type, GRPCType),
-		Port: config.DefaultString(cfg.Port, ":7774"),
-		Addr: config.DefaultString(cfg.Addr, "/tmp/server-client.sock"),
+		config: cfg,
+		Type:   config.DefaultString(cfg.Monitor.GRPC.Type, GRPCType),
+		Port:   config.DefaultString(cfg.Monitor.GRPC.Port, ":7774"),
+		Addr:   config.DefaultString(cfg.Monitor.GRPC.Path, "/tmp/server-client.sock"),
 	}
 }
 

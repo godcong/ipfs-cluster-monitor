@@ -101,12 +101,11 @@ type MonitorServer struct {
 
 // Monitor ...
 type Monitor struct {
+	GRPC          GRPC            `toml:"grpc"`
+	REST          REST            `toml:"rest"`
 	Mode          proto.StartMode `toml:"mode"`
 	Token         string          `toml:"token"`
 	Enable        bool            `toml:"enable"`
-	Type          string          `toml:"type"`
-	Addr          string          `toml:"addr"`
-	Port          string          `toml:"port"`
 	Workspace     string          `toml:"workspace"`
 	IPFSClient    IPFSClient      `toml:"ipfs_client"`
 	ClusterClient ClusterClient   `toml:"cluster_client"`
@@ -184,8 +183,16 @@ func MustMonitor(mode proto.StartMode, secret, boot, workspace string) *Monitor 
 	}
 	log.Debug(workspace, ipfs, cluster)
 	return &Monitor{
-		Enable:        true,
+		GRPC: GRPC{
+			Enable: true,
+			Type:   "tcp",
+			Path:   "47.101.169.94",
+			Port:   ":7774",
+		},
+		REST:          REST{},
 		Mode:          mode,
+		Token:         "",
+		Enable:        true,
 		Workspace:     workspace,
 		IPFSClient:    ipfs,
 		ClusterClient: cluster,
@@ -304,9 +311,9 @@ func DefaultConfig(runPath string) *Configure {
 		MonitorProperty: *MustMonitorProperty(runPath),
 		GRPC: GRPC{
 			Enable: true,
-			Type:   "",
-			Path:   "",
-			Port:   "",
+			Type:   "tcp",
+			Path:   "127.0.0.1",
+			Port:   ":7784",
 		},
 		REST:     REST{},
 		IPFS:     IPFS{},
