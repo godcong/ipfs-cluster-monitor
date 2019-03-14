@@ -4,7 +4,7 @@ require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
 	github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7 // indirect
 	github.com/gin-gonic/gin v1.3.0
-	github.com/godcong/go-trait v0.0.0-20190308094246-c2aaaec3a01c
+	github.com/godcong/go-trait v0.0.0-20190314060719-7776fc37e37f
 	github.com/golang/protobuf v1.2.0
 	github.com/json-iterator/go v1.1.5
 	github.com/juju/errors v0.0.0-20181118221551-089d3ea4e4d5
