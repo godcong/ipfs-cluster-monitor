@@ -22,7 +22,7 @@ func main() {
 
 	flag.Parse()
 
-	trait.InitRotateLog(*logPath, nil)
+	trait.InitRotateLog(*logPath)
 
 	err := config.Initialize(os.Args[0], *configPath)
 	if err != nil {
