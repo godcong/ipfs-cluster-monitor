@@ -112,6 +112,7 @@ func (m *Monitor) waitingForInitialize(ctx context.Context) bool {
 				return false
 			default:
 				time.Sleep(m.config.MonitorProperty.Interval)
+				m.config.MonitorProperty.Interval *= m.config.MonitorProperty.Interval
 				log.Println("waiting for init")
 				continue
 			}
@@ -193,7 +194,7 @@ func (m *Monitor) Start() {
 				cluster.RemoveBootstrapIPFS(ctx, m.config)
 				cluster.AddBootstrapIPFS(ctx, m.config, m.config.Monitor.IPFSClient.Bootstrap)
 			}
-			cluster.RunIPFS(ctx, m.config)
+			cluster.RunIPFSWithInit(ctx, m.config)
 			cluster.WaitingIPFS(ctx)
 
 			if m.Mode() == proto.StartMode_Cluster {

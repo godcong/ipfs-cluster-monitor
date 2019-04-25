@@ -372,7 +372,7 @@ func ClusterPath() string {
 func DefaultConfig(ws string) *Configure {
 	return &Configure{
 		Initialize:      false,
-		Monitor:         *MustMonitor(proto.StartMode_Cluster, "", "", ws),
+		Monitor:         *MustMonitor(proto.StartMode_Simple, "", "", ws),
 		MonitorProperty: *MustMonitorProperty(ws),
 		GRPC: GRPC{
 			Enable: true,
