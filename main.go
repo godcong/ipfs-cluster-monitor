@@ -14,15 +14,19 @@ import (
 	"syscall"
 )
 
-var configPath = flag.String("config", "/data/local/.ipfs/config.toml", "config path")
-var logPath = flag.String("log", "/data/local/.ipfs/logs/monitor.log", "log path")
-var level = flag.String("level", "debug", "set log output level")
+var configPath = flag.String("config", "/data/local/.ipfs/config.toml", "config pathname")
+var logPath = flag.String("log", "logs/monitor.log", "log path")
+var debug = flag.Bool("debug", false, "set log output level")
 
 func main() {
 
 	flag.Parse()
 
-	trait.InitRotateLog(*logPath)
+	if *debug {
+		trait.InitRotateLog(*logPath, trait.RotateLogLevel(trait.RotateLogDebug))
+	} else {
+		trait.InitRotateLog(*logPath)
+	}
 
 	err := config.Initialize(os.Args[0], *configPath)
 	if err != nil {

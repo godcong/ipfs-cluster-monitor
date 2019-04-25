@@ -124,6 +124,7 @@ type MonitorProperty struct {
 
 // Logger ...
 type Logger struct {
+	Path  string `toml:"path"`
 	Level string `toml:"level"`
 }
 
@@ -200,41 +201,60 @@ func MustMonitor(mode proto.StartMode, secret, boot, workspace string) *Monitor 
 
 // Env ...
 func (m *Monitor) Env() (env []string) {
-	var e error
-	e = os.Setenv("IPFS_PATH", m.IPFSClient.IpfsPath)
-	if e != nil {
-		panic(e)
+	var err error
+	defer func() {
+		if err != nil {
+			log.Error(err)
+		}
+	}()
+	p := os.Getenv("PATH")
+	if err := os.Setenv("PATH", p+":"+m.Workspace); err != nil {
+		err = xerrors.Errorf("PATH error:%+v", err)
+		return nil
+	}
+
+	if err := os.Setenv("IPFS_PATH", m.IPFSClient.IpfsPath); err != nil {
+		err = xerrors.Errorf("IPFS_PATH error:%+v", err)
+		return nil
 	}
 
 	if m.Mode == proto.StartMode_Cluster {
-		e = os.Setenv("CLUSTER_SECRET", m.ClusterClient.Secret)
-		if e != nil {
-			panic(e)
+		if err := os.Setenv("CLUSTER_SECRET", m.ClusterClient.Secret); err != nil {
+			err = xerrors.Errorf("CLUSTER_SECRET error:%+v", err)
+			return nil
 		}
-
-		e = os.Setenv("IPFS_CLUSTER_PATH", m.ClusterClient.ClusterPath)
-		if e != nil {
-			panic(e)
+		if err := os.Setenv("IPFS_CLUSTER_PATH", m.ClusterClient.ClusterPath); err != nil {
+			err = xerrors.Errorf("IPFS_CLUSTER_PATH error:%+v", err)
+			return nil
 		}
 	}
 
 	env = os.Environ()
-	log.Debug(env)
 	return
 }
 
 // Initialize ...
 func Initialize(runPath string, configPath ...string) error {
 	log.Info(runPath, configPath)
-	s, e := filepath.Abs(filepath.Dir(runPath))
+
+	dir, file := filepath.Split(configPath[0])
+	if file == "" {
+		file = "config.toml"
+	}
+
+	s, e := filepath.Abs(dir)
 	if e != nil {
 		s = ""
 	}
 	log.Info(s)
-	config = DefaultConfig(s)
+	config = DefaultConfig(dir)
 
-	config.LoadConfig(configPath[0])
-	config.ConfigPath, config.ConfigName = filepath.Split(configPath[0])
+	e = config.ReadConfig(configPath[0])
+	config.RunPath = runPath
+	config.ConfigPath, config.ConfigName = dir, file
+	if e != nil || !config.Initialize {
+		return create(config)
+	}
 	return nil
 }
 
@@ -248,23 +268,70 @@ func IsExists(name string) bool {
 	return true
 }
 
-// LoadConfig ...
-func (c *Configure) LoadConfig(filePath string) *Configure {
+// ReadConfig ...
+func (c *Configure) ReadConfig(filePath string) (e error) {
 	openFile, err := os.OpenFile(filePath, os.O_RDONLY|os.O_SYNC, os.ModePerm)
+
 	if err != nil {
-		log.Error("config open:", err)
-		return c
+		return xerrors.Errorf("open config file error:%+v", err)
 	}
+
 	defer openFile.Close()
 	decoder := toml.NewDecoder(openFile)
 	err = decoder.Decode(c)
 	if err != nil {
-		log.Error("config decode:", err)
-		return c
+		return xerrors.Errorf("decode config file error:%+v", err)
 	}
 	c.Initialize = true
-	log.Debugf("config: %+v", c)
-	return c
+	return nil
+}
+
+func create(cfg *Configure) error {
+	//file, e := os.OpenFile(configure.ConfigPath, os.O_RDWR|os.O_CREATE|os.O_SYNC, os.ModePerm)
+	_, e := os.Stat(cfg.ConfigPath)
+	log.Info("init dictionary stat:", e)
+	if os.IsNotExist(e) {
+		log.Println("dictionary not exist creating... ")
+		_ = os.MkdirAll(cfg.ConfigPath, os.ModePerm)
+	}
+	file, e := os.OpenFile(config.FileConfig(), os.O_RDWR|os.O_CREATE|os.O_SYNC, os.ModePerm)
+	if e != nil {
+		return xerrors.Errorf("make file error:%+v", e)
+	}
+	defer file.Close()
+	//create config file
+	enc := toml.NewEncoder(file)
+	e = enc.Encode(*cfg)
+	if e != nil {
+		return xerrors.Errorf("encode file:%w", e)
+	}
+	log.Println("created:", file.Name())
+	//create directory
+	e = os.MkdirAll(filepath.Join(cfg.Monitor.Workspace, "data"), os.ModePerm)
+	if e != nil {
+		log.Println("make workspace err:", cfg.Monitor.Workspace, e)
+	}
+	//
+	cfile, e := os.Create(filepath.Join(cfg.Monitor.Workspace, IpfsTmp))
+	if e != nil {
+		log.Println(e)
+		return xerrors.Errorf("ipfs file:%w", e)
+	}
+	log.Println("created:", cfile.Name())
+	defer cfile.Close()
+
+	sfile, e := os.Create(filepath.Join(cfg.Monitor.Workspace, ClusterTmp))
+	if e != nil {
+		log.Println(e)
+		return xerrors.Errorf("cluster file:%w", e)
+	}
+	log.Println("created:", sfile.Name())
+	defer sfile.Close()
+
+	time.Sleep(3 * time.Second)
+	cfg.Initialize = true
+
+	return nil
 }
 
 // HomePath ...
@@ -302,12 +369,11 @@ func ClusterPath() string {
 }
 
 // DefaultConfig ...
-func DefaultConfig(runPath string) *Configure {
+func DefaultConfig(ws string) *Configure {
 	return &Configure{
 		Initialize:      false,
-		RunPath:         runPath,
-		Monitor:         *MustMonitor(proto.StartMode_Cluster, "", "", runPath),
-		MonitorProperty: *MustMonitorProperty(runPath),
+		Monitor:         *MustMonitor(proto.StartMode_Cluster, "", "", ws),
+		MonitorProperty: *MustMonitorProperty(ws),
 		GRPC: GRPC{
 			Enable: true,
 			Type:   "tcp",
@@ -342,8 +408,8 @@ func SetRunPath(fp string) (err error) {
 	return
 }
 
-// FD config file dictionary
-func (c *Configure) FD() string {
+// FileConfig config file dictionary
+func (c *Configure) FileConfig() string {
 	return filepath.Join(c.ConfigPath, c.ConfigName)
 }
 
@@ -366,16 +432,16 @@ func (c *Configure) CheckExist() bool {
 }
 
 // MustMonitorProperty ...
-func MustMonitorProperty(runPath string) *MonitorProperty {
+func MustMonitorProperty(ws string) *MonitorProperty {
 	return &MonitorProperty{
 		Version:             "v0",
-		IpfsCommandName:     filepath.Join(runPath, "ipfs"),
-		ClusterCommandName:  filepath.Join(runPath, "ipfs-cluster-service"),
+		IpfsCommandName:     "ipfs",
+		ClusterCommandName:  "ipfs-cluster-service",
 		Interval:            1 * time.Second,
 		ServerCheckInterval: 60 * time.Second,
 		MonitorInterval:     5 * time.Second,
 		ResetWaiting:        30,
-		Workspace:           runPath,
+		Workspace:           ws,
 	}
 }
 
