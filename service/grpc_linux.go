@@ -1,4 +1,4 @@
 package service
 
 // GRPCType ...
-const GRPCType = "sock"
+const GRPCType = "tcp"

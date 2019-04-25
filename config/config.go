@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"github.com/godcong/ipfs-cluster-monitor/proto"
 	"github.com/pelletier/go-toml"
 	log "github.com/sirupsen/logrus"
@@ -278,7 +277,7 @@ func HomePath(name string) string {
 	if home == "" {
 		usr, err := user.Current()
 		if err != nil {
-			panic(fmt.Sprintf("cannot get current user: %s", err))
+			return filepath.Join(home, name)
 		}
 		home = usr.HomeDir
 	}

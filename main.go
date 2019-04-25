@@ -14,8 +14,8 @@ import (
 	"syscall"
 )
 
-var configPath = flag.String("config", "config.toml", "config path")
-var logPath = flag.String("log", "logs/monitor.log", "log path")
+var configPath = flag.String("config", "/data/local/.ipfs/config.toml", "config path")
+var logPath = flag.String("log", "/data/local/.ipfs/logs/monitor.log", "log path")
 var level = flag.String("level", "debug", "set log output level")
 
 func main() {
